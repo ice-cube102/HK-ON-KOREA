@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES, NOTICES } from './constants';
 import { AccordionMenu } from './components/AccordionMenu';
+import companyLogo from './images/company.png';
 
 const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onClose: () => void; title: string; content: string }) => (
   <AnimatePresence>
@@ -41,10 +42,11 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState('ko');
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string }>({ isOpen: false, title: '', content: '' });
 
-  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  const t = TRANSLATIONS.ko;
 
   const openModal = (title: string, content: string) => setModal({ isOpen: true, title, content });
 
@@ -96,15 +98,24 @@ export default function App() {
         {isMobileMenuOpen && (
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: '100vh' }}
             exit={{ opacity: 0, height: 0 }}
-            className="fixed inset-0 z-50 bg-white border-b border-gray-100 overflow-hidden"
+            className="fixed inset-0 z-50 bg-white border-b border-gray-100 overflow-y-auto"
           >
-            <div className="px-6 py-4 flex flex-col gap-4">
+            <div className="px-6 py-4 flex flex-col gap-4 pb-20">
               <button onClick={() => setIsMobileMenuOpen(false)} className="self-end p-2"><X size={24} /></button>
               {navItems.map((item, idx) => {
                 if (menuData[item]) {
-                  return <AccordionMenu key={idx} title={item} items={menuData[item]} openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} />;
+                  return (
+                    <AccordionMenu 
+                      key={idx} 
+                      title={item} 
+                      items={menuData[item]} 
+                      isOpen={openAccordion === item}
+                      onToggle={() => setOpenAccordion(openAccordion === item ? null : item)}
+                      openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} 
+                    />
+                  );
                 }
                 return (
                   <button key={idx} onClick={() => { openModal(item, `${item} page content.`); setIsMobileMenuOpen(false); }} className="text-lg font-medium text-gray-800 text-left py-2">
@@ -137,7 +148,7 @@ export default function App() {
         {/* Header inside Hero */}
         <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
           <div className="text-3xl font-bold tracking-tighter text-emerald-800">
-            에이치케이온
+            <img src={companyLogo} alt="에이치케이온" className="h-12 w-auto" referrerPolicy="no-referrer" />
           </div>
           <div className="flex items-center gap-4 text-white">
             <button onClick={() => openModal("Search", "Search functionality coming soon.")} className="p-2 hover:text-emerald-400 transition-colors">

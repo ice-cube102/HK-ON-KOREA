@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-export const AccordionMenu: React.FC<{ title: string; items: string[]; openModal: (t: string, c: string) => void }> = ({ title, items, openModal }) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const AccordionMenu: React.FC<{ title: string; items: string[]; openModal: (t: string, c: string) => void; isOpen: boolean; onToggle: () => void }> = ({ title, items, openModal, isOpen, onToggle }) => {
   return (
     <div className="w-full">
       <button 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={onToggle}
         className="w-full flex justify-between items-center p-4 bg-[#8B0033] text-white font-bold"
       >
         {title}
