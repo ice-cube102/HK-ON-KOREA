@@ -5,25 +5,68 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES, NOTICES } from './constants';
+import { AccordionMenu } from './components/AccordionMenu';
+
+const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onClose: () => void; title: string; content: string }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      >
+        <motion.div 
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.9, opacity: 0 }}
+          className="bg-white rounded-2xl p-8 max-w-lg w-full shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full"><X size={20} /></button>
+          </div>
+          <p className="text-gray-600 leading-relaxed">{content}</p>
+        </motion.div>
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState('ko');
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string }>({ isOpen: false, title: '', content: '' });
 
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+
+  const openModal = (title: string, content: string) => setModal({ isOpen: true, title, content });
 
   const navItems = [
     t.company, t.products, t.support, t.resources, t.ir, t.csr, t.infoCenter, t.careers
   ];
 
+  const menuData: { [key: string]: string[] } = {
+    [t.company]: ["CEO", "회사개요", "회사연혁", "CI소개"],
+    [t.products]: ["제품1", "제품2", "제품3"],
+    [t.support]: ["FAQ", "문의하기", "다운로드"],
+    [t.resources]: ["기술자료", "뉴스", "블로그"],
+    [t.ir]: ["재무정보", "공시자료"],
+    [t.csr]: ["사회공헌활동", "환경경영"],
+    [t.infoCenter]: ["공지사항", "이벤트"],
+    [t.careers]: ["채용공고", "인재상"]
+  };
+
   const quickLinks = [
     { icon: <FileText size={32} />, title: t.inquiry, desc: "Expert consultation" },
     { icon: <MonitorPlay size={32} />, title: t.remoteSupport, desc: "1:1 Remote help" },
-    { icon: <Building2 size={32} />, title: "HK Insight", desc: "Smart monitoring" },
+    { icon: <Building2 size={32} />, title: "에이치케이온 Insight", desc: "Smart monitoring" },
     { icon: <Phone size={32} />, title: t.customerSupport, desc: "1588-1285" },
     { icon: <Users size={32} />, title: t.training, desc: "Customized training" },
   ];
@@ -42,66 +85,11 @@ export default function App() {
     "https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=2000&auto=format&fit=crop"
   ];
 
+
+
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-emerald-500 selection:text-white">
-      {/* Top Bar */}
-      <div className="hidden lg:flex justify-end items-center px-8 py-2 border-b border-gray-100 text-xs text-gray-500 gap-6">
-        <a href="#" className="hover:text-emerald-600 transition-colors">HK Insight</a>
-        <a href="#" className="hover:text-emerald-600 transition-colors">Remote Support</a>
-        <div className="relative">
-          <button 
-            onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-            className="flex items-center gap-1 hover:text-emerald-600 transition-colors uppercase"
-          >
-            <Globe size={14} /> {currentLang}
-          </button>
-          {isLangMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 w-32 bg-white border border-gray-100 shadow-lg rounded-md overflow-hidden z-50">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    setCurrentLang(lang.code);
-                    setIsLangMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors"
-                >
-                  {lang.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Navigation */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="text-3xl font-bold tracking-tighter text-emerald-800">
-            HK ON
-          </div>
-          
-          <nav className="hidden lg:flex items-center gap-8">
-            {navItems.map((item, idx) => (
-              <a key={idx} href="#" className="text-[15px] font-medium text-gray-800 hover:text-emerald-600 transition-colors">
-                {item}
-              </a>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <button className="p-2 text-gray-600 hover:text-emerald-600 transition-colors">
-              <Search size={20} />
-            </button>
-            <button 
-              className="lg:hidden p-2 text-gray-600"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              <Menu size={24} />
-            </button>
-          </div>
-        </div>
-      </header>
+      <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -110,14 +98,20 @@ export default function App() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-b border-gray-100 overflow-hidden"
+            className="fixed inset-0 z-50 bg-white border-b border-gray-100 overflow-hidden"
           >
             <div className="px-6 py-4 flex flex-col gap-4">
-              {navItems.map((item, idx) => (
-                <a key={idx} href="#" className="text-lg font-medium text-gray-800">
-                  {item}
-                </a>
-              ))}
+              <button onClick={() => setIsMobileMenuOpen(false)} className="self-end p-2"><X size={24} /></button>
+              {navItems.map((item, idx) => {
+                if (menuData[item]) {
+                  return <AccordionMenu key={idx} title={item} items={menuData[item]} openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} />;
+                }
+                return (
+                  <button key={idx} onClick={() => { openModal(item, `${item} page content.`); setIsMobileMenuOpen(false); }} className="text-lg font-medium text-gray-800 text-left py-2">
+                    {item}
+                  </button>
+                );
+              })}
             </div>
           </motion.div>
         )}
@@ -140,6 +134,24 @@ export default function App() {
         
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
 
+        {/* Header inside Hero */}
+        <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
+          <div className="text-3xl font-bold tracking-tighter text-emerald-800">
+            에이치케이온
+          </div>
+          <div className="flex items-center gap-4 text-white">
+            <button onClick={() => openModal("Search", "Search functionality coming soon.")} className="p-2 hover:text-emerald-400 transition-colors">
+              <Search size={24} />
+            </button>
+            <button 
+              className="p-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu size={24} />
+            </button>
+          </div>
+        </div>
+
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-6 w-full">
             <motion.div
@@ -155,7 +167,7 @@ export default function App() {
               <p className="text-xl lg:text-2xl font-light text-gray-200 mb-10">
                 {t.heroSubtitle}
               </p>
-              <button className="px-8 py-4 bg-emerald-600 text-white font-medium rounded-sm hover:bg-emerald-700 transition-colors flex items-center gap-2">
+              <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className="px-8 py-4 bg-emerald-600 text-white font-medium rounded-sm hover:bg-emerald-700 transition-colors flex items-center gap-2">
                 {t.exploreProducts} <ArrowRight size={20} />
               </button>
             </motion.div>
@@ -181,13 +193,13 @@ export default function App() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-x divide-y lg:divide-y-0 divide-gray-200">
             {quickLinks.map((link, idx) => (
-              <a key={idx} href="#" className="flex flex-col items-center text-center p-10 hover:bg-white transition-colors group">
+              <button key={idx} onClick={() => openModal(link.title, `${link.title} details.`)} className="flex flex-col items-center text-center p-10 hover:bg-white transition-colors group w-full">
                 <div className="text-emerald-600 mb-4 group-hover:scale-110 transition-transform">
                   {link.icon}
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{link.title}</h3>
                 <p className="text-sm text-gray-500">{link.desc}</p>
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -198,16 +210,16 @@ export default function App() {
         <div className="flex justify-between items-end mb-12">
           <div>
             <h2 className="text-4xl font-bold text-gray-900 mb-4">{t.products}</h2>
-            <p className="text-gray-500">Discover HK ON's premium food lineup</p>
+            <p className="text-gray-500">Discover 에이치케이온's premium food lineup</p>
           </div>
-          <a href="#" className="hidden md:flex items-center gap-2 text-emerald-600 font-medium hover:text-emerald-700">
+          <button onClick={() => openModal(t.products, "All products.")} className="hidden md:flex items-center gap-2 text-emerald-600 font-medium hover:text-emerald-700">
             {t.readMore} <ArrowRight size={16} />
-          </a>
+          </button>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {PRODUCTS.map((product) => (
-            <div key={product.id} className="group cursor-pointer">
+            <button key={product.id} onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en)} className="group cursor-pointer text-left">
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg mb-6 bg-gray-100">
                 <img 
                   src={product.image} 
@@ -226,7 +238,7 @@ export default function App() {
               <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 group-hover:gap-2 transition-all">
                 {t.exploreProducts} <ChevronRight size={16} />
               </span>
-            </div>
+            </button>
           ))}
         </div>
       </section>
@@ -238,26 +250,26 @@ export default function App() {
           <div>
             <div className="flex justify-between items-center mb-8 border-b-2 border-gray-900 pb-4">
               <h2 className="text-2xl font-bold text-gray-900">{t.notice}</h2>
-              <button className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+              <button onClick={() => openModal(t.notice, "All notices.")} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
                 <ChevronRight size={20} />
               </button>
             </div>
             <ul className="divide-y divide-gray-200">
               {NOTICES.map((notice) => (
                 <li key={notice.id}>
-                  <a href="#" className="py-4 flex justify-between items-center group hover:bg-gray-100/50 transition-colors -mx-4 px-4 rounded-lg">
+                  <button onClick={() => openModal(notice.title[currentLang as keyof typeof notice.title] || notice.title.en, "Notice details.")} className="py-4 flex justify-between items-center group hover:bg-gray-100/50 transition-colors -mx-4 px-4 rounded-lg w-full text-left">
                     <span className="text-gray-800 font-medium group-hover:text-emerald-600 transition-colors line-clamp-1 pr-4">
                       {notice.title[currentLang as keyof typeof notice.title] || notice.title.en}
                     </span>
                     <span className="text-sm text-gray-500 flex-shrink-0">{notice.date}</span>
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* PR Banner */}
-          <div className="relative rounded-2xl overflow-hidden h-[300px] lg:h-auto group cursor-pointer">
+          <button onClick={() => openModal("PR CENTER", "에이치케이온's Commitment to Sustainability details.")} className="relative rounded-2xl overflow-hidden h-[300px] lg:h-auto group cursor-pointer w-full text-left">
             <img 
               src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1000&auto=format&fit=crop" 
               alt="Corporate PR"
@@ -270,13 +282,13 @@ export default function App() {
                 PR CENTER
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">
-                HK ON's Commitment to Sustainability
+                에이치케이온's Commitment to Sustainability
               </h3>
               <p className="text-gray-300 text-sm">
                 Discover how we are building a healthier future for everyone.
               </p>
             </div>
-          </div>
+          </button>
         </div>
       </section>
 
@@ -286,7 +298,7 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             <div>
               <div className="text-3xl font-bold tracking-tighter text-white mb-6">
-                HK ON
+                에이치케이온
               </div>
               <p className="text-sm leading-relaxed mb-6">
                 Delivering the purest ingredients from nature to your table. We believe in the power of healthy, delicious food.
@@ -296,10 +308,10 @@ export default function App() {
             <div>
               <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Quick Links</h4>
               <ul className="space-y-3 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">{t.company}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t.products}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t.support}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t.careers}</a></li>
+                <li><button onClick={() => openModal(t.company, "Company info.")} className="hover:text-white transition-colors">{t.company}</button></li>
+                <li><button onClick={() => openModal(t.products, "Products info.")} className="hover:text-white transition-colors">{t.products}</button></li>
+                <li><button onClick={() => openModal(t.support, "Support info.")} className="hover:text-white transition-colors">{t.support}</button></li>
+                <li><button onClick={() => openModal(t.careers, "Careers info.")} className="hover:text-white transition-colors">{t.careers}</button></li>
               </ul>
             </div>
 
@@ -313,21 +325,21 @@ export default function App() {
             <div>
               <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Global Network</h4>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <a href="#" className="hover:text-white transition-colors">Korea (HQ)</a>
-                <a href="#" className="hover:text-white transition-colors">USA</a>
-                <a href="#" className="hover:text-white transition-colors">Japan</a>
-                <a href="#" className="hover:text-white transition-colors">China</a>
-                <a href="#" className="hover:text-white transition-colors">Europe</a>
+                <button onClick={() => openModal("Global Network", "Korea (HQ) info.")} className="hover:text-white transition-colors text-left">Korea (HQ)</button>
+                <button onClick={() => openModal("Global Network", "USA info.")} className="hover:text-white transition-colors text-left">USA</button>
+                <button onClick={() => openModal("Global Network", "Japan info.")} className="hover:text-white transition-colors text-left">Japan</button>
+                <button onClick={() => openModal("Global Network", "China info.")} className="hover:text-white transition-colors text-left">China</button>
+                <button onClick={() => openModal("Global Network", "Europe info.")} className="hover:text-white transition-colors text-left">Europe</button>
               </div>
             </div>
           </div>
 
           <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <div className="flex gap-6">
-              <a href="#" className="text-white font-medium hover:text-emerald-400 transition-colors">{t.privacyPolicy}</a>
-              <a href="#" className="hover:text-white transition-colors">{t.termsOfService}</a>
-              <a href="#" className="hover:text-white transition-colors">{t.sitemap}</a>
-              <a href="#" className="hover:text-white transition-colors">{t.location}</a>
+              <button onClick={() => openModal(t.privacyPolicy, "Privacy Policy content.")} className="text-white font-medium hover:text-emerald-400 transition-colors">{t.privacyPolicy}</button>
+              <button onClick={() => openModal(t.termsOfService, "Terms of Service content.")} className="hover:text-white transition-colors">{t.termsOfService}</button>
+              <button onClick={() => openModal(t.sitemap, "Sitemap content.")} className="hover:text-white transition-colors">{t.sitemap}</button>
+              <button onClick={() => openModal(t.location, "Location content.")} className="hover:text-white transition-colors">{t.location}</button>
             </div>
             <p>{t.footerText}</p>
           </div>

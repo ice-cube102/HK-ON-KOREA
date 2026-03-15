@@ -9,7 +9,7 @@ export interface Product {
 export const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
     heroTitle: "Creating Value Through Customer Satisfaction",
-    heroSubtitle: "A company that brings health and joy. This is the vision and mission of HK ON.",
+    heroSubtitle: "A company that brings health and joy. This is the vision and mission of 에이치케이온.",
     exploreProducts: "View Details",
     company: "Company",
     products: "Products",
@@ -26,7 +26,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "Remote Support",
     customerSupport: "Customer Support",
     training: "Training",
-    footerText: "© 2026 HK ON. All rights reserved.",
+    footerText: "© 2026 에이치케이온. All rights reserved.",
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
     sitemap: "Sitemap",
@@ -52,7 +52,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "원격지원",
     customerSupport: "고객지원",
     training: "교육신청",
-    footerText: "© 2026 HK ON. All rights reserved.",
+    footerText: "© 2026 에이치케이온. All rights reserved.",
     privacyPolicy: "개인정보처리방침",
     termsOfService: "이용약관",
     sitemap: "사이트맵",
@@ -61,7 +61,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
   },
   fr: {
     heroTitle: "Créer de la valeur par la satisfaction client",
-    heroSubtitle: "Une entreprise qui apporte santé et joie. C'est la vision et la mission de HK ON.",
+    heroSubtitle: "Une entreprise qui apporte santé et joie. C'est la vision et la mission de 에이치케이온.",
     exploreProducts: "Voir les détails",
     company: "Entreprise",
     products: "Produits",
@@ -78,7 +78,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "Assistance à distance",
     customerSupport: "Service Client",
     training: "Formation",
-    footerText: "© 2026 HK ON. Tous droits réservés.",
+    footerText: "© 2026 에이치케이온. Tous droits réservés.",
     privacyPolicy: "Politique de confidentialité",
     termsOfService: "Conditions d'utilisation",
     sitemap: "Plan du site",
@@ -87,7 +87,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
   },
   ja: {
     heroTitle: "顧客満足を通じた価値創造",
-    heroSubtitle: "健康と喜びをもたらす企業。それがHK ONのビジョンとミッションです。",
+    heroSubtitle: "健康と喜びをもたらす企業。それが에이치케이온のビジョンとミッションです。",
     exploreProducts: "詳細を見る",
     company: "会社紹介",
     products: "製品紹介",
@@ -104,7 +104,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "遠隔サポート",
     customerSupport: "顧客サポート",
     training: "教育申請",
-    footerText: "© 2026 HK ON. All rights reserved.",
+    footerText: "© 2026 에이치케이온. All rights reserved.",
     privacyPolicy: "個人情報保護方針",
     termsOfService: "利用規約",
     sitemap: "サイトマップ",
@@ -166,9 +166,9 @@ export const PRODUCTS: Product[] = [
 
 export const NOTICES = [
   { id: 1, title: { ko: '2026 상반기 신제품 출시 안내', en: '2026 First Half New Product Launch', fr: 'Lancement de nouveaux produits premier semestre 2026', ja: '2026年上半期新製品発売のご案内' }, date: '26.03.10' },
-  { id: 2, title: { ko: 'HK ON 글로벌 식품 박람회 참가', en: 'HK ON Participates in Global Food Expo', fr: 'HK ON participe à l\'Expo alimentaire mondiale', ja: 'HK ON グローバル食品博覧会参加' }, date: '26.02.28' },
+  { id: 2, title: { ko: '에이치케이온 글로벌 식품 박람회 참가', en: '에이치케이온 Participates in Global Food Expo', fr: '에이치케이온 participe à l\'Expo alimentaire mondiale', ja: '에이치케이온 グローバル食品博覧会参加' }, date: '26.02.28' },
   { id: 3, title: { ko: '2025 지속가능경영 보고서 발간', en: '2025 Sustainability Report Published', fr: 'Publication du rapport de développement durable 2025', ja: '2025年持続可能性報告書発行' }, date: '25.12.15' },
-  { id: 4, title: { ko: 'HK ON 고객센터 운영 시간 변경 안내', en: 'HK ON Customer Center Operating Hours Change', fr: 'Changement des heures d\'ouverture du centre client HK ON', ja: 'HK ON カスタマーセンター営業時間変更のご案内' }, date: '25.11.02' }
+  { id: 4, title: { ko: '에이치케이온 고객센터 운영 시간 변경 안내', en: '에이치케이온 Customer Center Operating Hours Change', fr: 'Changement des heures d\'ouverture du centre client 에이치케이온', ja: '에이치케이온 カスタマーセンター営業時間変更のご案内' }, date: '25.11.02' }
 ];
 
 export const LANGUAGES = [
