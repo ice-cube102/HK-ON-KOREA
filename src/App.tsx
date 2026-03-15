@@ -5,9 +5,49 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, Globe, Menu, X, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, Volume2, VolumeX, Zap, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, Globe, Menu, X, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, Zap, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
 import { PRODUCTS, TRANSLATIONS, LANGUAGES } from './constants';
 import NOTICES from './announcement/notices.json';
+
+const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
+  return (
+    <motion.div
+      initial={{ y: 0 }}
+      animate={{ y: "-100%" }}
+      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 2.5 }}
+      onAnimationComplete={onComplete}
+      className="fixed top-0 left-0 w-full h-[105vh] z-[100] flex items-center justify-center bg-[#080b11]"
+    >
+      <div className="flex items-center gap-4 md:gap-6">
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-[#1b62d2] flex items-center justify-center shadow-[0_0_40px_rgba(27,98,210,0.6)]"
+        >
+          <span className="text-white font-black text-xl md:text-3xl">HK</span>
+        </motion.div>
+        <div className="flex overflow-hidden py-2">
+          {"에이치케이온 코리아".split("").map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{
+                duration: 0.6,
+                ease: [0.33, 1, 0.68, 1],
+                delay: 0.5 + index * 0.05,
+              }}
+              className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter"
+            >
+              {char === " " ? "\u00A0" : char}
+            </motion.span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; onClose: () => void; title: string; content: string; images?: string[] }) => (
   <AnimatePresence>
@@ -35,7 +75,7 @@ const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; o
               <X size={24} />
             </button>
           </div>
-          <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+          <div className="p-6 overflow-y-auto flex-1">
             {images && images.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {images.map((img, idx) => (
@@ -58,9 +98,8 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState('ko');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string; images?: string[] }>({ isOpen: false, title: '', content: '' });
-  const [isPlaying, setIsPlaying] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,36 +110,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const playAudio = async () => {
-      if (audioRef.current) {
-        try {
-          await audioRef.current.play();
-          setIsPlaying(true);
-        } catch (err) {
-          console.log("Autoplay blocked by browser.");
-          setIsPlaying(false);
-        }
-      }
-    };
-    playAudio();
-  }, []);
-
-  const toggleAudio = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioRef.current.play()
-          .then(() => setIsPlaying(true))
-          .catch(err => {
-            console.error("Audio play failed:", err);
-            alert("음악 파일을 재생할 수 없습니다. 'public/images/song.mp3' 파일이 정상적으로 업로드되었는지 확인해주세요.");
-            setIsPlaying(false);
-          });
-      }
+    if (showIntro) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
     }
-  };
+  }, [showIntro]);
 
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
 
@@ -116,7 +131,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080b11] text-slate-200 font-sans selection:bg-[#1b62d2]/30 selection:text-blue-200 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#080b11] text-slate-200 font-sans selection:bg-[#1b62d2]/30 selection:text-blue-200 relative overflow-hidden">
       {/* Global Grid Background */}
       <div className="fixed inset-0 z-0 pointer-events-none" style={{ 
         backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)',
@@ -127,28 +142,19 @@ export default function App() {
 
       <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
       
-      <audio ref={audioRef} loop>
-        <source src="/images/song.mp3" type="audio/mpeg" />
-      </audio>
-
-      {/* Floating Audio Toggle */}
-      <button
-        onClick={toggleAudio}
-        className="fixed bottom-6 right-6 z-50 p-4 bg-[#1b62d2] text-white rounded-full shadow-[0_0_20px_rgba(27,98,210,0.4)] hover:shadow-[0_0_30px_rgba(27,98,210,0.6)] hover:scale-110 transition-all duration-300 animate-float"
-        aria-label={isPlaying ? "음악 끄기" : "음악 켜기"}
-      >
-        {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
-      </button>
+      <AnimatePresence>
+        {showIntro && <IntroAnimation onComplete={() => setShowIntro(false)} />}
+      </AnimatePresence>
 
       {/* Navbar */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#080b11]/80 backdrop-blur-md border-b border-white/10 py-4' : 'bg-transparent py-6'}`}>
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 border-b backdrop-blur-md ${scrolled ? 'bg-[#080b11]/80 border-white/10 py-4' : 'bg-transparent border-transparent py-6'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <div className="flex items-center gap-10">
             <div className="text-2xl font-black tracking-tighter text-white flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-[#1b62d2] flex items-center justify-center shadow-[0_0_15px_rgba(27,98,210,0.5)]">
-                <Sparkles size={18} className="text-white" />
+                <span className="text-white font-bold text-sm">HK</span>
               </div>
-              {t.hkon}
+              {t.hkonKorea}
             </div>
             <nav className="hidden md:flex items-center gap-8">
               {navItems.map((item, idx) => (
@@ -204,7 +210,12 @@ export default function App() {
             className="fixed inset-0 z-[60] bg-[#080b11] border-b border-white/10 flex flex-col"
           >
             <div className="p-6 flex justify-between items-center border-b border-white/10">
-              <div className="text-xl font-bold text-white">{t.hkon}</div>
+              <div className="text-xl font-bold text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#1b62d2] flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">HK</span>
+                </div>
+                {t.hkonKorea}
+              </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white"><X size={24} /></button>
             </div>
             <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
@@ -236,12 +247,23 @@ export default function App() {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative pt-40 pb-24 lg:pt-56 lg:pb-40 overflow-hidden">
+      <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 pb-24 overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/images/company.png" 
+            alt="Company Background" 
+            className="w-full h-full object-cover opacity-30"
+          />
+          {/* Gradient Overlay for readability and blending with the next section */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080b11]/80 via-[#080b11]/50 to-[#080b11]" />
+        </div>
+
         {/* Background Effects */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-[#1b62d2]/15 rounded-[100%] blur-[120px] pointer-events-none" />
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-[#1b62d2]/20 rounded-[100%] blur-[120px] pointer-events-none z-0" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
         
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center w-full mt-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -299,8 +321,8 @@ export default function App() {
       <section className="py-24 relative border-t border-white/5 bg-[#0a0d14]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">Premium Lineup</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto text-lg">Discover our cutting-edge products designed for maximum efficiency and performance. Made for pros, by pros.</p>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">{t.premiumLineup}</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto text-lg">{t.premiumLineupDesc}</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -407,9 +429,9 @@ export default function App() {
             <div>
               <div className="text-2xl font-black tracking-tighter text-white flex items-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-[#1b62d2] flex items-center justify-center">
-                  <Sparkles size={16} className="text-white" />
+                  <span className="text-white font-bold text-sm">HK</span>
                 </div>
-                {t.hkon}
+                {t.hkonKorea}
               </div>
               <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
                 Revolutionize your workflow with AI-powered solutions made for pros, by pros.
@@ -454,18 +476,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Background Audio */}
-      <audio ref={audioRef} src="/images/song.mp3" loop preload="auto" />
-      
-      {/* Audio Toggle Button */}
-      <button
-        onClick={toggleAudio}
-        className="fixed bottom-8 right-8 z-50 p-4 bg-[#1b62d2] text-white rounded-full shadow-[0_0_20px_rgba(27,98,210,0.5)] hover:bg-[#1b62d2]/90 transition-all hover:scale-110 flex items-center justify-center animate-float"
-        aria-label="Toggle background music"
-      >
-        {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
-      </button>
     </div>
   );
 }

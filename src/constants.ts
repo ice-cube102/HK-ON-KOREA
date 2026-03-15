@@ -10,7 +10,7 @@ export interface Product {
 export const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
     heroTitle: "Creating Value Through Customer Satisfaction",
-    heroSubtitle: "A company that brings health and joy. This is the vision and mission of HKON.",
+    heroSubtitle: "A company that brings health and joy. This is the vision and mission of HK ON Korea.",
     exploreProducts: "View Details",
     company: "Company",
     products: "Products",
@@ -27,18 +27,20 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "Remote Support",
     customerSupport: "Customer Support",
     training: "Training",
-    footerText: "© 2026 HKON. All rights reserved.",
+    footerText: "© 2026 HK ON Korea. All rights reserved.",
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
     sitemap: "Sitemap",
     location: "Location",
     readMore: "Read More",
-    hkonKorea: "HKON Korea",
-    hkon: "HKON"
+    hkonKorea: "HK ON Korea",
+    hkon: "HK",
+    premiumLineup: "Premium Lineup",
+    premiumLineupDesc: "Discover our cutting-edge products designed for maximum efficiency and performance. Made for pros, by pros."
   },
   ko: {
     heroTitle: "고객 만족을 통한 가치 창조",
-    heroSubtitle: "건강하고 기쁨을 주는 기업, 에이치케이온의 비전과 미션입니다.",
+    heroSubtitle: "건강하고 기쁨을 주는 기업, 에이치케이온 코리아의 비전과 미션입니다.",
     exploreProducts: "자세히 보기",
     company: "회사소개",
     products: "제품소개",
@@ -55,18 +57,20 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "원격지원",
     customerSupport: "고객지원",
     training: "교육신청",
-    footerText: "© 2026 에이치케이온. All rights reserved.",
+    footerText: "© 2026 에이치케이온 코리아. All rights reserved.",
     privacyPolicy: "개인정보처리방침",
     termsOfService: "이용약관",
     sitemap: "사이트맵",
     location: "오시는길",
     readMore: "더보기",
     hkonKorea: "에이치케이온 코리아",
-    hkon: "에이치케이온"
+    hkon: "HK",
+    premiumLineup: "프리미엄 라인업",
+    premiumLineupDesc: "최고의 효율과 성능을 위해 설계된 최첨단 제품들을 만나보세요. 전문가를 위해, 전문가가 만들었습니다."
   },
   zh: {
     heroTitle: "通过客户满意创造价值",
-    heroSubtitle: "一家带来健康和快乐的公司。这是 HKON 的愿景和使命。",
+    heroSubtitle: "一家带来健康和快乐的公司。这是 HK ON Korea 的愿景和使命。",
     exploreProducts: "查看详情",
     company: "公司",
     products: "产品",
@@ -83,14 +87,16 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "远程支持",
     customerSupport: "客户支持",
     training: "培训",
-    footerText: "© 2026 HKON。版权所有。",
+    footerText: "© 2026 HK ON Korea。版权所有。",
     privacyPolicy: "隐私政策",
     termsOfService: "服务条款",
     sitemap: "网站地图",
     location: "位置",
     readMore: "阅读更多",
-    hkonKorea: "HKON 韩国",
-    hkon: "HKON"
+    hkonKorea: "HK ON Korea",
+    hkon: "HK",
+    premiumLineup: "高级阵容",
+    premiumLineupDesc: "探索我们为最高效率和性能而设计的尖端产品。由专业人士为专业人士打造。"
   }
 };
 
