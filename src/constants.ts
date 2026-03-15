@@ -10,7 +10,7 @@ export interface Product {
 export const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
     heroTitle: "Creating Value Through Customer Satisfaction",
-    heroSubtitle: "A company that brings health and joy. This is the vision and mission of 에이치케이온.",
+    heroSubtitle: "A company that brings health and joy. This is the vision and mission of HKON.",
     exploreProducts: "View Details",
     company: "Company",
     products: "Products",
@@ -27,12 +27,14 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "Remote Support",
     customerSupport: "Customer Support",
     training: "Training",
-    footerText: "© 2026 에이치케이온. All rights reserved.",
+    footerText: "© 2026 HKON. All rights reserved.",
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
     sitemap: "Sitemap",
     location: "Location",
-    readMore: "Read More"
+    readMore: "Read More",
+    hkonKorea: "HKON Korea",
+    hkon: "HKON"
   },
   ko: {
     heroTitle: "고객 만족을 통한 가치 창조",
@@ -58,11 +60,13 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     termsOfService: "이용약관",
     sitemap: "사이트맵",
     location: "오시는길",
-    readMore: "더보기"
+    readMore: "더보기",
+    hkonKorea: "에이치케이온 코리아",
+    hkon: "에이치케이온"
   },
   zh: {
     heroTitle: "通过客户满意创造价值",
-    heroSubtitle: "一家带来健康和快乐的公司。这是 에이치케이온 的愿景和使命。",
+    heroSubtitle: "一家带来健康和快乐的公司。这是 HKON 的愿景和使命。",
     exploreProducts: "查看详情",
     company: "公司",
     products: "产品",
@@ -79,12 +83,14 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     remoteSupport: "远程支持",
     customerSupport: "客户支持",
     training: "培训",
-    footerText: "© 2026 에이치케이온。版权所有。",
+    footerText: "© 2026 HKON。版权所有。",
     privacyPolicy: "隐私政策",
     termsOfService: "服务条款",
     sitemap: "网站地图",
     location: "位置",
-    readMore: "阅读更多"
+    readMore: "阅读更多",
+    hkonKorea: "HKON 韩国",
+    hkon: "HKON"
   }
 };
 

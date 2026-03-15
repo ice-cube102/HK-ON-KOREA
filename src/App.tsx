@@ -32,7 +32,7 @@ const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; o
             <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500"><X size={24} /></button>
           </div>
-          <div className="p-6 overflow-y-auto flex-1">
+          <div className="p-6 overflow-y-auto flex-1 bg-white">
             {images && images.length > 0 ? (
               <div className="grid grid-cols-2 gap-4">
                 {images.map((img, idx) => (
@@ -121,7 +121,7 @@ export default function App() {
         />
 
         <div className={`flex w-full px-4 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
-          {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">에이치케이온</div>}
+          {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">{t.hkon}</div>}
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
             <Menu size={20} />
           </button>
@@ -185,7 +185,7 @@ export default function App() {
               key={activeSlide}
               src={heroImages[activeSlide]}
               initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 0.6, scale: 1 }}
+              animate={{ opacity: 0.6, scale: 1, objectPosition: 'center 20%' }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
               className="absolute inset-0 w-full h-full object-cover"
@@ -198,7 +198,7 @@ export default function App() {
           {/* Header inside Hero */}
           <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
             <div className="text-3xl font-bold tracking-tighter text-emerald-800">
-              에이치케이온 코리아
+              {t.hkonKorea}
             </div>
             <div className="flex items-center gap-6 text-white text-sm font-medium">
               <div className="flex items-center gap-3">
@@ -265,7 +265,7 @@ export default function App() {
         {/* Haagen-Dazs Products Section */}
         <section className="py-24 px-6 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-16">
-            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">에이치케이온 코리아</h2>
+            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">{t.hkonKorea}</h2>
             <p className="text-gray-600 text-lg max-w-2xl">
               {currentLang === 'ko' ? '프리미엄 아이스크림의 기준, 하겐다즈의 깊고 진한 풍미를 경험해보세요.' : 
                currentLang === 'zh' ? '体验哈根达斯浓郁醇厚的风味，高级冰淇淋的标杆。' :
@@ -368,7 +368,7 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
               <div>
                 <div className="text-3xl font-bold tracking-tighter text-white mb-6">
-                  에이치케이온
+                  {t.hkon}
                 </div>
                 <p className="text-sm leading-relaxed mb-6">
                   Delivering the purest ingredients from nature to your table. We believe in the power of healthy, delicious food.
