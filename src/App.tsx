@@ -58,21 +58,41 @@ export default function App() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string; images?: string[] }>({ isOpen: false, title: '', content: '' });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (err) {
+          console.log("Autoplay blocked by browser. User interaction required.");
+          setIsPlaying(false);
+        }
+      }
+    };
+    playAudio();
+  }, []);
+
+  const toggleAudio = () => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play().catch(() => {
-          // Autoplay is often blocked by browsers until user interaction
-          setIsPlaying(false);
-        });
-      } else {
         audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(err => {
+            console.error("Audio play failed:", err);
+            alert("음악 파일을 재생할 수 없습니다. 'public/images/song.mp3' 파일이 정상적으로 업로드되었는지 확인해주세요.");
+            setIsPlaying(false);
+          });
       }
     }
-  }, [isPlaying]);
+  };
 
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
 
@@ -82,15 +102,39 @@ export default function App() {
     t.company, t.products, t.support, t.resources, t.ir, t.csr, t.infoCenter, t.careers
   ];
 
-  const menuData: { [key: string]: string[] } = {
-    [t.company]: ["CEO", "회사개요", "회사연혁", "CI소개"],
-    [t.products]: ["제품1", "제품2", "제품3"],
-    [t.support]: ["FAQ", "문의하기", "다운로드"],
-    [t.resources]: ["기술자료", "뉴스", "블로그"],
-    [t.ir]: ["재무정보", "공시자료"],
-    [t.csr]: ["사회공헌활동", "환경경영"],
-    [t.infoCenter]: ["공지사항", "이벤트"],
-    [t.careers]: ["채용공고", "인재상"]
+  const menuData: { [key: string]: { name: string; hasSub?: boolean }[] } = {
+    [t.company]: [
+      { name: "CEO" },
+      { name: "회사개요" },
+      { name: "회사연혁" },
+      { name: "CI소개" },
+      { name: "가치경영", hasSub: true },
+      { name: "지사안내", hasSub: true },
+    ],
+    [t.products]: [
+      { name: "Fiber", hasSub: true },
+      { name: "Conversion", hasSub: true },
+      { name: "Gantry", hasSub: true },
+      { name: "Tube", hasSub: true },
+      { name: "절곡기", hasSub: true },
+      { name: "디버링기" },
+      { name: "용접기" },
+    ],
+    [t.support]: [
+      { name: "서비스" },
+      { name: "트레이닝", hasSub: true },
+      { name: "원격지원" },
+      { name: "HK Insight" },
+      { name: "자료실" },
+    ],
+    [t.ir]: [
+      { name: "재무정보" },
+      { name: "IR자료실" },
+    ],
+    [t.csr]: [
+      { name: "사회공헌개요" },
+      { name: "사회공헌활동" },
+    ]
   };
 
   const quickLinks = [
@@ -117,15 +161,54 @@ export default function App() {
 
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-emerald-500 selection:text-white flex">
-      {/* New Left Sidebar */}
-      <motion.div 
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-emerald-500 selection:text-white">
+      <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: '100vh' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="fixed inset-0 z-50 bg-white border-b border-gray-100 overflow-y-auto"
+          >
+            <div className="px-6 py-4 flex flex-col gap-4 pb-20">
+              <button onClick={() => setIsMobileMenuOpen(false)} className="self-end p-2"><X size={24} /></button>
+              {navItems.map((item, idx) => {
+                if (menuData[item]) {
+                  return (
+                    <AccordionMenu 
+                      key={idx} 
+                      title={item} 
+                      items={menuData[item].map(sub => sub.name)} 
+                      isOpen={openAccordion === item}
+                      onToggle={() => setOpenAccordion(openAccordion === item ? null : item)}
+                      openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} 
+                    />
+                  );
+                }
+                return (
+                  <button key={idx} onClick={() => { openModal(item, `${item} page content.`); setIsMobileMenuOpen(false); }} className="text-lg font-medium text-gray-800 text-left py-2">
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Top Section: Sidebar + Hero */}
+      <div className="flex w-full">
+        {/* New Left Sidebar */}
+        <motion.div 
         animate={{ width: isSidebarOpen ? 224 : 64 }}
         onMouseMove={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
           setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
         }}
-        className="border-r border-[#5A1622] py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
+        className="border-r border-[#5A1622] py-4 hidden lg:flex flex-col items-center overflow-y-auto overflow-x-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
       >
         {/* Spotlight effect */}
         <div 
@@ -135,71 +218,68 @@ export default function App() {
           }}
         />
 
-        <div className={`flex w-full px-4 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
+        <div className={`flex w-full px-4 mb-4 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
           {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">{t.hkon}</div>}
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
             <Menu size={20} />
           </button>
         </div>
         
-        <div className="flex flex-col w-full relative z-10">
+        <div className="flex flex-col w-full relative z-10" onMouseLeave={() => setHoveredMenu(null)}>
           {navItems.map((item, idx) => (
-            <button 
-              key={idx} 
-              onClick={() => openModal(item, `${item} page content.`)} 
-              className={`text-base font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
-            >
-              {item}
-            </button>
+            <div key={idx} className="w-full" onMouseEnter={() => setHoveredMenu(item)}>
+              <button 
+                onClick={() => openModal(item, `${item} page content.`)} 
+                className={`flex justify-between items-center w-full text-sm font-medium text-white/80 text-left py-3 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
+              >
+                <span>{item}</span>
+                {menuData[item] && isSidebarOpen && <ChevronRight size={16} className="opacity-50" />}
+              </button>
+            </div>
           ))}
+
+          {/* Flyout Panel */}
+          <AnimatePresence>
+            {hoveredMenu && menuData[hoveredMenu] && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="fixed top-0 h-auto min-h-[200px] lg:min-h-[250px] max-h-screen w-[280px] bg-white shadow-2xl border-l border-gray-200 z-50 flex flex-col rounded-br-2xl"
+                style={{ left: isSidebarOpen ? 224 : 64 }}
+              >
+                <div className="bg-[#6D1B2A] py-6 px-6">
+                  <h2 className="text-white text-xl font-bold">{hoveredMenu}</h2>
+                </div>
+                <div className="flex-1 overflow-y-auto py-2 px-4">
+                  <ul className="space-y-1">
+                    {menuData[hoveredMenu].map((subItem, subIdx) => (
+                      <li key={subIdx}>
+                        <button
+                          onClick={() => openModal(subItem.name, `${subItem.name} content`)}
+                          className="flex justify-between items-center w-full py-3 px-4 text-gray-600 hover:text-[#6D1B2A] hover:bg-gray-50 rounded-lg transition-all text-sm"
+                        >
+                          <span>{subItem.name}</span>
+                          {subItem.hasSub && <ChevronDown size={14} className="rotate-[-90deg] opacity-40" />}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
 
       <div className="flex-1 overflow-x-hidden">
-        <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: '100vh' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="fixed inset-0 z-50 bg-white border-b border-gray-100 overflow-y-auto"
-            >
-              <div className="px-6 py-4 flex flex-col gap-4 pb-20">
-                <button onClick={() => setIsMobileMenuOpen(false)} className="self-end p-2"><X size={24} /></button>
-                {navItems.map((item, idx) => {
-                  if (menuData[item]) {
-                    return (
-                      <AccordionMenu 
-                        key={idx} 
-                        title={item} 
-                        items={menuData[item]} 
-                        isOpen={openAccordion === item}
-                        onToggle={() => setOpenAccordion(openAccordion === item ? null : item)}
-                        openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} 
-                      />
-                    );
-                  }
-                  return (
-                    <button key={idx} onClick={() => { openModal(item, `${item} page content.`); setIsMobileMenuOpen(false); }} className="text-lg font-medium text-gray-800 text-left py-2">
-                      {item}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Hero Slider */}
-        <section className="relative h-[80vh] lg:h-screen overflow-hidden bg-gray-900">
+        <section className="relative h-[200px] lg:h-[250px] overflow-hidden bg-gray-900">
           <img
             src={heroImages[0]}
             alt="Hero Background"
             className="absolute inset-0 w-full h-full object-cover opacity-60"
-            style={{ objectPosition: 'center top' }}
+            style={{ objectPosition: 'center center' }}
             referrerPolicy="no-referrer"
             fetchPriority="high"
             loading="eager"
@@ -245,14 +325,14 @@ export default function App() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="max-w-2xl text-white"
               >
-                <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg">
+                <h1 className="text-2xl lg:text-3xl font-bold mb-2 leading-tight drop-shadow-lg">
                   {t.heroTitle}
                 </h1>
-                <p className="text-xl lg:text-2xl font-light text-gray-200 mb-10 drop-shadow-md">
+                <p className="text-sm lg:text-base font-light text-gray-200 mb-4 drop-shadow-md">
                   {t.heroSubtitle}
                 </p>
-                <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className="px-8 py-4 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-900/20 flex items-center gap-2">
-                  {t.exploreProducts} <ArrowRight size={20} />
+                <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-900/20 flex items-center gap-2 text-xs">
+                  {t.exploreProducts} <ArrowRight size={16} />
                 </button>
               </motion.div>
             </div>
@@ -273,9 +353,13 @@ export default function App() {
           </div>
           */}
         </section>
+      </div>
+    </div>
 
-        {/* Haagen-Dazs Products Section */}
-        <section className="py-24 px-6 max-w-7xl mx-auto">
+    {/* Full width sections below */}
+    <div className="w-full">
+      {/* Haagen-Dazs Products Section */}
+      <section className="py-8 px-6 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-16">
             <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">{t.hkonKorea}</h2>
           </div>
@@ -425,11 +509,11 @@ export default function App() {
         </footer>
 
         {/* Background Audio */}
-        <audio ref={audioRef} src="/images/song.mp3" loop />
+        <audio ref={audioRef} src="/images/song.mp3" loop preload="auto" />
         
         {/* Audio Toggle Button */}
         <button
-          onClick={() => setIsPlaying(!isPlaying)}
+          onClick={toggleAudio}
           className="fixed bottom-8 right-8 z-50 p-4 bg-[#6D1B2A] text-white rounded-full shadow-2xl hover:bg-[#5A1622] transition-transform hover:scale-110 flex items-center justify-center"
           aria-label="Toggle background music"
         >
