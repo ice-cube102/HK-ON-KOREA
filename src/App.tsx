@@ -229,45 +229,46 @@ export default function App() {
           */}
         </section>
 
-        {/* Products Section */}
+        {/* Haagen-Dazs Products Section */}
         <section className="py-24 px-6 max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">{t.products}</h2>
-              <p className="text-gray-500">Discover 에이치케이온's premium food lineup</p>
-            </div>
-            <button onClick={() => openModal(t.products, "All products.")} className="hidden md:flex items-center gap-2 text-emerald-600 font-medium hover:text-emerald-700">
-              {t.readMore} <ArrowRight size={16} />
-            </button>
+          <div className="flex flex-col items-center text-center mb-16">
+            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">Häagen-Dazs</h2>
+            <p className="text-gray-600 text-lg max-w-2xl">
+              {currentLang === 'ko' ? '프리미엄 아이스크림의 기준, 하겐다즈의 깊고 진한 풍미를 경험해보세요.' : 
+               currentLang === 'zh' ? '体验哈根达斯浓郁醇厚的风味，高级冰淇淋的标杆。' :
+               'Experience the rich and deep flavor of Häagen-Dazs, the standard of premium ice cream.'}
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {PRODUCTS.map((product) => (
-              <button key={product.id} onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en)} className="group cursor-pointer text-left">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-lg mb-6 bg-gray-100">
+              <button key={product.id} onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en)} className="group cursor-pointer text-left flex flex-col h-full">
+                <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 shadow-md group-hover:shadow-xl transition-all duration-500">
                   <img 
                     src={product.image} 
                     alt={product.name[currentLang] || product.name.en}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {product.name[currentLang] || product.name.en}
-                </h3>
-                <p className="text-gray-600 text-sm line-clamp-2 mb-4">
-                  {product.description[currentLang] || product.description.en}
-                </p>
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600 group-hover:gap-2 transition-all">
-                  {t.exploreProducts} <ChevronRight size={16} />
-                </span>
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#6D1B2A] transition-colors">
+                    {product.name[currentLang] || product.name.en}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line flex-1">
+                    {product.description[currentLang] || product.description.en}
+                  </p>
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-[#6D1B2A] group-hover:gap-3 transition-all mt-auto">
+                    {t.exploreProducts} <ChevronRight size={16} />
+                  </span>
+                </div>
               </button>
             ))}
           </div>
 
           {/* Additional Image */}
-          <div className="mt-16 rounded-2xl overflow-hidden shadow-xl">
+          <div className="mt-20 rounded-3xl overflow-hidden shadow-2xl">
             <img 
               src="/images/image5.png" 
               alt="Brand Banner" 
