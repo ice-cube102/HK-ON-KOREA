@@ -99,7 +99,7 @@ export default function App() {
   const openModal = (title: string, content: string, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
   const navItems = [
-    t.company, t.products, t.support, t.resources, t.ir, t.csr, t.infoCenter, t.careers
+    t.company, t.products, t.support, t.resources, t.infoCenter
   ];
 
   const menuData: { [key: string]: { name: string; hasSub?: boolean }[] } = {
@@ -126,14 +126,6 @@ export default function App() {
       { name: "원격지원" },
       { name: "HK Insight" },
       { name: "자료실" },
-    ],
-    [t.ir]: [
-      { name: "재무정보" },
-      { name: "IR자료실" },
-    ],
-    [t.csr]: [
-      { name: "사회공헌개요" },
-      { name: "사회공헌활동" },
     ]
   };
 
@@ -200,7 +192,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Top Section: Sidebar + Hero */}
-      <div className="flex w-full">
+      <div className="flex w-full h-[260px]">
         {/* New Left Sidebar */}
         <motion.div 
         animate={{ width: isSidebarOpen ? 224 : 64 }}
@@ -208,7 +200,7 @@ export default function App() {
           const rect = e.currentTarget.getBoundingClientRect();
           setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
         }}
-        className="border-r border-[#5A1622] py-4 hidden lg:flex flex-col items-center overflow-y-auto overflow-x-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
+        className="border-r border-[#5A1622] py-4 hidden lg:flex flex-col items-center overflow-y-auto overflow-x-hidden flex-shrink-0 bg-[#6D1B2A] relative group h-full"
       >
         {/* Spotlight effect */}
         <div 
@@ -230,7 +222,7 @@ export default function App() {
             <div key={idx} className="w-full" onMouseEnter={() => setHoveredMenu(item)}>
               <button 
                 onClick={() => openModal(item, `${item} page content.`)} 
-                className={`flex justify-between items-center w-full text-sm font-medium text-white/80 text-left py-3 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
+                className={`flex justify-between items-center w-full text-sm font-medium text-white/80 text-left py-2 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
               >
                 <span>{item}</span>
                 {menuData[item] && isSidebarOpen && <ChevronRight size={16} className="opacity-50" />}
@@ -245,7 +237,7 @@ export default function App() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="fixed top-0 h-auto min-h-[200px] lg:min-h-[250px] max-h-screen w-[280px] bg-white shadow-2xl border-l border-gray-200 z-50 flex flex-col rounded-br-2xl"
+                className="fixed top-0 h-[260px] w-[280px] bg-white shadow-2xl border-l border-gray-200 z-50 flex flex-col rounded-br-2xl overflow-hidden"
                 style={{ left: isSidebarOpen ? 224 : 64 }}
               >
                 <div className="bg-[#6D1B2A] py-6 px-6">
@@ -272,9 +264,9 @@ export default function App() {
         </div>
       </motion.div>
 
-      <div className="flex-1 overflow-x-hidden">
+      <div className="flex-1 overflow-x-hidden h-full">
         {/* Hero Slider */}
-        <section className="relative h-[200px] lg:h-[250px] overflow-hidden bg-gray-900">
+        <section className="relative h-full overflow-hidden bg-gray-900">
           <img
             src={heroImages[0]}
             alt="Hero Background"
@@ -359,17 +351,17 @@ export default function App() {
     {/* Full width sections below */}
     <div className="w-full">
       {/* Haagen-Dazs Products Section */}
-      <section className="py-8 px-6 max-w-7xl mx-auto">
-          <div className="flex flex-col items-center text-center mb-16">
-            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">{t.hkonKorea}</h2>
+      <section className="py-6 px-4 w-full max-w-[1600px] mx-auto">
+          <div className="flex flex-col items-center text-center mb-6">
+            <h2 className="text-3xl font-black tracking-tight text-[#6D1B2A] mb-2 font-serif">{t.hkonKorea}</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             {PRODUCTS.map((product) => (
               <button 
                 key={product.id} 
                 onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en, product.detailImages)} 
-                className="group cursor-pointer text-left flex flex-col h-full relative p-4 rounded-3xl"
+                className="group cursor-pointer text-left flex flex-col h-full relative p-3 rounded-2xl"
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = e.clientX - rect.left;
@@ -379,29 +371,29 @@ export default function App() {
                 }}
               >
                 {/* Mouse tracking spotlight effect on card hover */}
-                <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
                      style={{
-                       background: 'radial-gradient(circle 150px at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.08), transparent)'
+                       background: 'radial-gradient(circle 100px at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.08), transparent)'
                      }}
                 />
-                <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 transition-all duration-500 z-10">
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl mb-3 bg-white border border-gray-100 transition-all duration-500 z-10 flex items-center justify-center p-4">
                   <img 
                     src={product.image} 
                     alt={product.name[currentLang] || product.name.en}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 <div className="flex-1 flex flex-col z-10">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#6D1B2A] transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-[#6D1B2A] transition-colors line-clamp-1">
                     {product.name[currentLang] || product.name.en}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line flex-1">
+                  <p className="text-gray-600 text-xs leading-relaxed mb-3 whitespace-pre-line flex-1 line-clamp-3">
                     {product.description[currentLang] || product.description.en}
                   </p>
-                  <span className="inline-flex items-center gap-2 text-sm font-bold text-[#6D1B2A] group-hover:gap-3 transition-all mt-auto">
-                    {t.exploreProducts} <ChevronRight size={16} />
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#6D1B2A] group-hover:gap-2 transition-all mt-auto">
+                    {t.exploreProducts} <ChevronRight size={14} />
                   </span>
                 </div>
               </button>
