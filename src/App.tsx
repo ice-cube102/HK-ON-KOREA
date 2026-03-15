@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES } from './constants';
 import { AccordionMenu } from './components/AccordionMenu';
 // import companyLogo from './images/company.png'; // Removed due to missing file
@@ -58,6 +58,21 @@ export default function App() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string; images?: string[] }>({ isOpen: false, title: '', content: '' });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isPlaying, setIsPlaying] = useState(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(() => {
+          // Autoplay is often blocked by browsers until user interaction
+          setIsPlaying(false);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
 
@@ -179,7 +194,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Hero Slider */}
-        <section className="relative h-[600px] lg:h-[800px] overflow-hidden bg-gray-900">
+        <section className="relative h-[80vh] lg:h-screen overflow-hidden bg-gray-900">
           <img
             src={heroImages[0]}
             alt="Hero Background"
@@ -408,6 +423,18 @@ export default function App() {
             </div>
           </div>
         </footer>
+
+        {/* Background Audio */}
+        <audio ref={audioRef} src="/images/song.mp3" loop />
+        
+        {/* Audio Toggle Button */}
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className="fixed bottom-8 right-8 z-50 p-4 bg-[#6D1B2A] text-white rounded-full shadow-2xl hover:bg-[#5A1622] transition-transform hover:scale-110 flex items-center justify-center"
+          aria-label="Toggle background music"
+        >
+          {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+        </button>
       </div>
     </div>
   );
