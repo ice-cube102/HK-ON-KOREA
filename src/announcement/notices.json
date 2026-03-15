@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": {
+      "ko": "2026 상반기 신제품 출시 안내",
+      "en": "2026 First Half New Product Launch",
+      "fr": "Lancement de nouveaux produits premier semestre 2026",
+      "ja": "2026年上半期新製品発売のご案内"
+    },
+    "date": "26.03.10"
+  },
+  {
+    "id": 2,
+    "title": {
+      "ko": "에이치케이온 글로벌 식품 박람회 참가",
+      "en": "에이치케이온 Participates in Global Food Expo",
+      "fr": "에이치케이온 participe à l'Expo alimentaire mondiale",
+      "ja": "에이치케이온 グローバル食品博覧会参加"
+    },
+    "date": "26.02.28"
+  },
+  {
+    "id": 3,
+    "title": {
+      "ko": "2025 지속가능경영 보고서 발간",
+      "en": "2025 Sustainability Report Published",
+      "fr": "Publication du rapport de développement durable 2025",
+      "ja": "2025年持続可能性報告書発行"
+    },
+    "date": "25.12.15"
+  },
+  {
+    "id": 4,
+    "title": {
+      "ko": "에이치케이온 고객센터 운영 시간 변경 안내",
+      "en": "에이치케이온 Customer Center Operating Hours Change",
+      "fr": "Changement des heures d'ouverture du centre client 에이치케이온",
+      "ja": "에이치케이온 カスタマーセンター営業時間変更のご案内"
+    },
+    "date": "25.11.02"
+  }
+]

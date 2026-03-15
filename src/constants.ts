@@ -59,121 +59,83 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     location: "오시는길",
     readMore: "더보기"
   },
-  fr: {
-    heroTitle: "Créer de la valeur par la satisfaction client",
-    heroSubtitle: "Une entreprise qui apporte santé et joie. C'est la vision et la mission de 에이치케이온.",
-    exploreProducts: "Voir les détails",
-    company: "Entreprise",
-    products: "Produits",
-    support: "Assistance",
-    resources: "Ressources",
-    ir: "IR",
-    csr: "RSE",
-    infoCenter: "Centre d'information",
-    careers: "Carrières",
-    notice: "Avis",
-    gallery: "Galerie",
-    contactUs: "Contactez-nous",
-    inquiry: "Demande",
-    remoteSupport: "Assistance à distance",
-    customerSupport: "Service Client",
-    training: "Formation",
-    footerText: "© 2026 에이치케이온. Tous droits réservés.",
-    privacyPolicy: "Politique de confidentialité",
-    termsOfService: "Conditions d'utilisation",
-    sitemap: "Plan du site",
-    location: "Emplacement",
-    readMore: "Lire la suite"
-  },
-  ja: {
-    heroTitle: "顧客満足を通じた価値創造",
-    heroSubtitle: "健康と喜びをもたらす企業。それが에이치케이온のビジョンとミッションです。",
-    exploreProducts: "詳細を見る",
-    company: "会社紹介",
-    products: "製品紹介",
-    support: "顧客サポート",
-    resources: "資料室",
-    ir: "投資情報",
-    csr: "社会貢献",
-    infoCenter: "情報センター",
-    careers: "採用情報",
-    notice: "お知らせ",
-    gallery: "ギャラリー",
-    contactUs: "お問い合わせ",
-    inquiry: "見積もり依頼",
-    remoteSupport: "遠隔サポート",
-    customerSupport: "顧客サポート",
-    training: "教育申請",
-    footerText: "© 2026 에이치케이온. All rights reserved.",
-    privacyPolicy: "個人情報保護方針",
-    termsOfService: "利用規約",
-    sitemap: "サイトマップ",
-    location: "アクセス",
-    readMore: "もっと見る"
+  zh: {
+    heroTitle: "通过客户满意创造价值",
+    heroSubtitle: "一家带来健康和快乐的公司。这是 에이치케이온 的愿景和使命。",
+    exploreProducts: "查看详情",
+    company: "公司",
+    products: "产品",
+    support: "支持",
+    resources: "资源",
+    ir: "投资者关系",
+    csr: "企业社会责任",
+    infoCenter: "信息中心",
+    careers: "职业生涯",
+    notice: "公告",
+    gallery: "画廊",
+    contactUs: "联系我们",
+    inquiry: "查询",
+    remoteSupport: "远程支持",
+    customerSupport: "客户支持",
+    training: "培训",
+    footerText: "© 2026 에이치케이온。版权所有。",
+    privacyPolicy: "隐私政策",
+    termsOfService: "服务条款",
+    sitemap: "网站地图",
+    location: "位置",
+    readMore: "阅读更多"
   }
 };
 
 export const PRODUCTS: Product[] = [
   {
-    id: 'kombucha',
-    name: { en: 'Signature Kombucha', ko: '시그니처 콤부차', fr: 'Kombucha Signature', ja: 'シグネチャーコンブチャ' },
+    id: 'hd-vanilla',
+    name: { en: 'Vanilla', ko: '바닐라', zh: '香草' },
     description: { 
-      en: 'A refreshing, naturally fermented tea rich in probiotics and antioxidants to revitalize your day.',
-      ko: '프로바이오틱스와 항산화 물질이 풍부하여 활력을 되찾아주는 상쾌하고 자연 발효된 콤부차입니다.',
-      fr: 'Un thé rafraîchissant, naturellement fermenté, riche en probiotiques et antioxydants pour revitaliser votre journée.',
-      ja: 'プロバイオティクスと抗酸化物質が豊富で、一日を活性化させる爽やかな自然発酵茶です。'
+      en: '5 pure ingredients for an elegant vanilla experience.',
+      ko: '5가지 순수한 원재료로만 입 안 가득 채우는 우아한 바닐라',
+      zh: '5种纯净原料，打造优雅香草体验。'
     },
-    image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=800&auto=format&fit=crop',
-    color: '#E8A87C'
+    image: '/images/image1.png',
+    color: '#F3E5AB'
   },
   {
-    id: 'red-ginseng',
-    name: { en: 'Premium Red Ginseng', ko: '프리미엄 홍삼정', fr: 'Ginseng Rouge Premium', ja: 'プレミアム紅参' },
+    id: 'hd-chocolate',
+    name: { en: 'Belgian Chocolate', ko: '벨지안 초콜릿', zh: '比利时巧克力' },
     description: { 
-      en: 'Deeply concentrated 6-year-old Korean red ginseng extract for ultimate immune support and energy.',
-      ko: '최고의 면역력 지원과 에너지를 위한 깊고 진한 6년근 한국산 홍삼 농축액입니다.',
-      fr: 'Extrait de ginseng rouge coréen de 6 ans d\'âge profondément concentré pour un soutien immunitaire et une énergie ultimes.',
-      ja: '究極の免疫サポートとエネルギーのための、深く濃縮された6年根の高麗紅参エキスです。'
+      en: 'Smooth vanilla ice cream with crunchy cookie pieces.',
+      ko: '부드러운 하겐다즈 바닐라 아이스크림에 달콤하고 바삭한 쿠키 조각을 듬뿍 넣은 완벽한 조합의 맛',
+      zh: '丝滑香草冰淇淋配上脆脆的饼干碎片。'
     },
-    image: 'https://images.unsplash.com/photo-1599940824399-b87987ceb72a?q=80&w=800&auto=format&fit=crop',
-    color: '#8B0000'
+    image: '/images/image2.png',
+    color: '#4B3621'
   },
   {
-    id: 'granola',
-    name: { en: 'Organic Granola Bites', ko: '유기농 그래놀라 바이트', fr: 'Bouchées de Granola Bio', ja: 'オーガニックグラノーラバイツ' },
+    id: 'hd-strawberry',
+    name: { en: 'Strawberry', ko: '스트로베리', zh: '草莓' },
     description: { 
-      en: 'Oven-baked clusters of organic oats, nuts, and honey. A perfect crunchy and healthy snack.',
-      ko: '유기농 귀리, 견과류, 꿀을 오븐에 구운 클러스터. 완벽하게 바삭하고 건강한 간식입니다.',
-      fr: 'Grappes cuites au four d\'avoine biologique, de noix et de miel. Une collation croquante et saine parfaite.',
-      ja: 'オーガニックオーツ麦、ナッツ、蜂蜜をオーブンで焼き上げたクラスター。完璧にサクサクで健康的なスナックです。'
+      en: 'Premium Pistachio & Cream for a rich flavor.',
+      ko: '하겐다즈만의 깊고 진한 크림에 프리미엄 피스타치오 원물 본연의 고소함이 어우러져 깊은 풍미를 선사합니다.',
+      zh: '优质开心果和奶油，风味浓郁。'
     },
-    image: 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?q=80&w=800&auto=format&fit=crop',
-    color: '#D2B48C'
+    image: '/images/image3.png',
+    color: '#E08E8E'
   },
   {
-    id: 'artisan-tea',
-    name: { en: 'Artisan Blended Tea', ko: '아티잔 블렌디드 티', fr: 'Thé Mélangé Artisanal', ja: '職人ブレンドティー' },
+    id: 'hd-matcha',
+    name: { en: 'Matcha Green Tea', ko: '그린티', zh: '抹茶' },
     description: { 
-      en: 'A calming blend of hand-picked herbs and flowers, designed to soothe your mind and body.',
-      ko: '몸과 마음을 진정시키기 위해 세심하게 디자인된 수제 허브와 꽃의 차분한 블렌드입니다.',
-      fr: 'Un mélange apaisant d\'herbes et de fleurs cueillies à la main, conçu pour apaiser votre esprit et votre corps.',
-      ja: '心と体を落ち着かせるためにデザインされた、手摘みのハーブと花の穏やかなブレンドです。'
+      en: 'Authentic Caramel Biscuit & Cream.',
+      ko: '벨기에 정통 카라멜 비스킷, 로투스가 가득한 카라멜 비스킷 & 크림',
+      zh: '正宗焦糖饼干和奶油。'
     },
-    image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=800&auto=format&fit=crop',
-    color: '#9DC183'
+    image: '/images/image4.png',
+    color: '#8A9A5B'
   }
-];
-
-export const NOTICES = [
-  { id: 1, title: { ko: '2026 상반기 신제품 출시 안내', en: '2026 First Half New Product Launch', fr: 'Lancement de nouveaux produits premier semestre 2026', ja: '2026年上半期新製品発売のご案内' }, date: '26.03.10' },
-  { id: 2, title: { ko: '에이치케이온 글로벌 식품 박람회 참가', en: '에이치케이온 Participates in Global Food Expo', fr: '에이치케이온 participe à l\'Expo alimentaire mondiale', ja: '에이치케이온 グローバル食品博覧会参加' }, date: '26.02.28' },
-  { id: 3, title: { ko: '2025 지속가능경영 보고서 발간', en: '2025 Sustainability Report Published', fr: 'Publication du rapport de développement durable 2025', ja: '2025年持続可能性報告書発行' }, date: '25.12.15' },
-  { id: 4, title: { ko: '에이치케이온 고객센터 운영 시간 변경 안내', en: '에이치케이온 Customer Center Operating Hours Change', fr: 'Changement des heures d\'ouverture du centre client 에이치케이온', ja: '에이치케이온 カスタマーセンター営業時間変更のご案内' }, date: '25.11.02' }
 ];
 
 export const LANGUAGES = [
   { code: 'ko', name: 'Korean' },
   { code: 'en', name: 'English' },
-  { code: 'fr', name: 'French' },
-  { code: 'ja', name: 'Japan' }
+  { code: 'zh', name: 'Chinese' }
 ];
