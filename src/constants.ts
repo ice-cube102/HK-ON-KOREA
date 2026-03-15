@@ -3,6 +3,7 @@ export interface Product {
   name: Record<string, string>;
   description: Record<string, string>;
   image: string;
+  detailImages: string[];
   color: string;
 }
 
@@ -90,46 +91,50 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
 export const PRODUCTS: Product[] = [
   {
     id: 'hd-vanilla',
-    name: { en: 'Vanilla Pint', ko: '바닐라 파인트', zh: '香草品脱' },
+    name: { en: 'Häagen-Dazs', ko: '하겐다즈', zh: '哈根达斯' },
     description: { 
-      en: '5 pure ingredients for an elegant vanilla experience.',
-      ko: '5가지 순수한 원재료로만 입 안 가득 채우는 우아한 바닐라',
-      zh: '5种纯净原料，打造优雅香草体验。'
+      en: 'Häagen-Dazs',
+      ko: '하겐다즈',
+      zh: '哈根达斯'
     },
-    image: '/images/image1.png',
+    image: '/images/image6.png',
+    detailImages: ['/images/image2.png', '/images/image3.png', '/images/image4.png', '/images/image5.png'],
     color: '#F3E5AB'
   },
   {
     id: 'hd-cookies-cream',
-    name: { en: 'Cookies & Cream Pint', ko: '쿠키앤크림 파인트', zh: '曲奇奶油品脱' },
+    name: { en: 'Caraci Pistachio Cream', ko: '카라치 피스타치오 크림', zh: '卡拉奇开心果奶油' },
     description: { 
-      en: 'Smooth vanilla ice cream with crunchy cookie pieces.',
-      ko: '부드러운 하겐다즈 바닐라 아이스크림에 달콤하고 바삭한 쿠키 조각을 듬뿍 넣은 완벽한 조합의 맛',
-      zh: '丝滑香草冰淇淋配上脆脆的饼干碎片。'
+      en: 'Caraci Pistachio Cream',
+      ko: '카라치 피스타치오 크림',
+      zh: '卡拉奇开心果奶油'
     },
-    image: '/images/image2.png',
+    image: '/images/image7.png',
+    detailImages: ['/images/image8.png', '/images/image9.png', '/images/image10.png'],
     color: '#4B3621'
   },
   {
     id: 'hd-pistachio-cream',
-    name: { en: 'Pistachio & Cream', ko: '피스타치오 & 크림', zh: '开心果奶油' },
+    name: { en: 'Nature Valley', ko: 'Nature Valley', zh: '自然谷' },
     description: { 
-      en: 'Premium Pistachio & Cream for a rich flavor.',
-      ko: '아이스크림 of 아이스크림 하겐다즈와 넛츠 of 넛츠 피스타치오와의 완벽한 만남\n\n하겐다즈만의 깊고 진한 크림에 프리미엄 피스타치오 원물 본연의 고소함이 어우러져 깊은 풍미를 선사합니다.',
-      zh: '优质开心果和奶油，风味浓郁。'
+      en: 'Nature Valley',
+      ko: 'Nature Valley',
+      zh: '自然谷'
     },
-    image: '/images/image3.png',
+    image: '/images/image11.png',
+    detailImages: ['/images/image12.png', '/images/image13.png'],
     color: '#E08E8E'
   },
   {
     id: 'hd-caramel-biscuit',
-    name: { en: 'Caramel Biscuit & Cream', ko: '카라멜 비스킷 & 크림', zh: '焦糖饼干奶油' },
+    name: { en: 'Fruit By The Foot', ko: 'Fruit By The Foot', zh: '水果卷' },
     description: { 
-      en: 'Authentic Caramel Biscuit & Cream.',
-      ko: '벨기에 정통 카라멜 비스킷, 로투스가 가득\n카라멜 비스킷 & 크림',
-      zh: '正宗焦糖饼干和奶油。'
+      en: 'Fruit By The Foot',
+      ko: 'Fruit By The Foot',
+      zh: '水果卷'
     },
-    image: '/images/image4.png',
+    image: '/images/image14.png',
+    detailImages: ['/images/image15.png', '/images/image16.png'],
     color: '#8A9A5B'
   }
 ];

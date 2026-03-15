@@ -11,7 +11,7 @@ import { AccordionMenu } from './components/AccordionMenu';
 // import companyLogo from './images/company.png'; // Removed due to missing file
 import NOTICES from './announcement/notices.json';
 
-const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onClose: () => void; title: string; content: string }) => (
+const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; onClose: () => void; title: string; content: string; images?: string[] }) => (
   <AnimatePresence>
     {isOpen && (
       <motion.div 
@@ -25,14 +25,22 @@ const Modal = ({ isOpen, onClose, title, content }: { isOpen: boolean; onClose: 
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white/95 backdrop-blur-md border border-gray-100 rounded-3xl p-8 max-w-lg w-full shadow-2xl"
+          className="bg-white/95 backdrop-blur-md border border-gray-100 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-6 sticky top-0 bg-white/95 py-2 z-10">
             <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X size={20} /></button>
           </div>
-          <p className="text-gray-600 leading-relaxed">{content}</p>
+          {images && images.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {images.map((img, idx) => (
+                <img key={idx} src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto rounded-xl" referrerPolicy="no-referrer" />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600 leading-relaxed">{content}</p>
+          )}
         </motion.div>
       </motion.div>
     )}
@@ -43,13 +51,14 @@ export default function App() {
   const [currentLang, setCurrentLang] = useState('ko');
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string }>({ isOpen: false, title: '', content: '' });
+  const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string; images?: string[] }>({ isOpen: false, title: '', content: '' });
 
   const t = TRANSLATIONS.ko;
 
-  const openModal = (title: string, content: string) => setModal({ isOpen: true, title, content });
+  const openModal = (title: string, content: string, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
   const navItems = [
     t.company, t.products, t.support, t.resources, t.ir, t.csr, t.infoCenter, t.careers
@@ -92,22 +101,31 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-emerald-500 selection:text-white flex">
       {/* New Left Sidebar */}
-      <div className="w-64 border-r border-gray-100 py-10 px-6 hidden lg:block">
-        <div className="text-emerald-600 font-bold text-2xl mb-12">에이치케이온</div>
-        <div className="flex flex-col gap-4">
+      <motion.div 
+        animate={{ width: isSidebarOpen ? 224 : 80 }}
+        className="border-r border-gray-100 py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-white relative"
+      >
+        <div className={`flex w-full px-6 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center`}>
+          {isSidebarOpen && <div className="text-emerald-600 font-bold text-2xl whitespace-nowrap">에이치케이온</div>}
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-gray-100 rounded-md transition-colors">
+            <Menu size={24} className="text-gray-700" />
+          </button>
+        </div>
+        
+        <div className="flex flex-col gap-4 w-full px-6">
           {navItems.map((item, idx) => (
             <button 
               key={idx} 
               onClick={() => openModal(item, `${item} page content.`)} 
-              className="text-lg font-medium text-gray-800 text-left py-2 hover:text-emerald-600 transition-colors"
+              className={`text-lg font-medium text-gray-800 text-left py-2 hover:text-emerald-600 transition-colors whitespace-nowrap ${!isSidebarOpen && 'hidden'}`}
             >
               {item}
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex-1">
+      <div className="flex-1 overflow-x-hidden">
         <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
 
         {/* Mobile Menu */}
@@ -183,7 +201,7 @@ export default function App() {
                 ))}
               </div>
               <button 
-                className="p-2 hover:text-emerald-400 transition-colors"
+                className="p-2 hover:text-emerald-400 transition-colors lg:hidden"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 <Menu size={24} />
@@ -232,7 +250,7 @@ export default function App() {
         {/* Haagen-Dazs Products Section */}
         <section className="py-24 px-6 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-16">
-            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">Häagen-Dazs</h2>
+            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">에이치케이온 코리아</h2>
             <p className="text-gray-600 text-lg max-w-2xl">
               {currentLang === 'ko' ? '프리미엄 아이스크림의 기준, 하겐다즈의 깊고 진한 풍미를 경험해보세요.' : 
                currentLang === 'zh' ? '体验哈根达斯浓郁醇厚的风味，高级冰淇淋的标杆。' :
@@ -242,7 +260,7 @@ export default function App() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {PRODUCTS.map((product) => (
-              <button key={product.id} onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en)} className="group cursor-pointer text-left flex flex-col h-full">
+              <button key={product.id} onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en, product.detailImages)} className="group cursor-pointer text-left flex flex-col h-full">
                 <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 shadow-md group-hover:shadow-xl transition-all duration-500">
                   <img 
                     src={product.image} 
@@ -265,16 +283,6 @@ export default function App() {
                 </div>
               </button>
             ))}
-          </div>
-
-          {/* Additional Image */}
-          <div className="mt-20 rounded-3xl overflow-hidden shadow-2xl">
-            <img 
-              src="/images/image5.png" 
-              alt="Brand Banner" 
-              className="w-full h-auto object-cover"
-              referrerPolicy="no-referrer"
-            />
           </div>
         </section>
 
