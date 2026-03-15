@@ -18,29 +18,31 @@ const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; o
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div 
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white/95 backdrop-blur-md border border-gray-100 rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+          initial={{ scale: 0.95, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 20 }}
+          className="bg-gray-50 border border-gray-200 rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex justify-between items-center mb-6 sticky top-0 bg-white/95 py-2 z-10">
+          <div className="flex justify-between items-center p-6 bg-white shrink-0">
             <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X size={20} /></button>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500"><X size={24} /></button>
           </div>
-          {images && images.length > 0 ? (
-            <div className="flex flex-col gap-4">
-              {images.map((img, idx) => (
-                <img key={idx} src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto rounded-xl" referrerPolicy="no-referrer" />
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-600 leading-relaxed">{content}</p>
-          )}
+          <div className="p-6 overflow-y-auto flex-1">
+            {images && images.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4">
+                {images.map((img, idx) => (
+                  <img key={idx} src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto rounded-xl shadow-sm object-cover" referrerPolicy="no-referrer" />
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-600 leading-relaxed text-lg">{content}</p>
+            )}
+          </div>
         </motion.div>
       </motion.div>
     )}
@@ -55,8 +57,9 @@ export default function App() {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string; images?: string[] }>({ isOpen: false, title: '', content: '' });
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  const t = TRANSLATIONS.ko;
+  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
 
   const openModal = (title: string, content: string, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
@@ -102,22 +105,34 @@ export default function App() {
     <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-emerald-500 selection:text-white flex">
       {/* New Left Sidebar */}
       <motion.div 
-        animate={{ width: isSidebarOpen ? 224 : 80 }}
-        className="border-r border-gray-100 py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-white relative"
+        animate={{ width: isSidebarOpen ? 224 : 64 }}
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        }}
+        className="border-r border-[#5A1622] py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
       >
-        <div className={`flex w-full px-6 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center`}>
-          {isSidebarOpen && <div className="text-emerald-600 font-bold text-2xl whitespace-nowrap">에이치케이온</div>}
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-gray-100 rounded-md transition-colors">
-            <Menu size={24} className="text-gray-700" />
+        {/* Spotlight effect */}
+        <div 
+          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle 50px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent)`
+          }}
+        />
+
+        <div className={`flex w-full px-4 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
+          {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">에이치케이온</div>}
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
+            <Menu size={20} />
           </button>
         </div>
         
-        <div className="flex flex-col gap-4 w-full px-6">
+        <div className="flex flex-col w-full relative z-10">
           {navItems.map((item, idx) => (
             <button 
               key={idx} 
               onClick={() => openModal(item, `${item} page content.`)} 
-              className={`text-lg font-medium text-gray-800 text-left py-2 hover:text-emerald-600 transition-colors whitespace-nowrap ${!isSidebarOpen && 'hidden'}`}
+              className={`text-base font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
             >
               {item}
             </button>
@@ -260,8 +275,25 @@ export default function App() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {PRODUCTS.map((product) => (
-              <button key={product.id} onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en, product.detailImages)} className="group cursor-pointer text-left flex flex-col h-full">
-                <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 shadow-md group-hover:shadow-xl transition-all duration-500">
+              <button 
+                key={product.id} 
+                onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en, product.detailImages)} 
+                className="group cursor-pointer text-left flex flex-col h-full relative p-4 rounded-3xl"
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+                  e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+                }}
+              >
+                {/* Mouse tracking spotlight effect on card hover */}
+                <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                     style={{
+                       background: 'radial-gradient(circle 150px at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.08), transparent)'
+                     }}
+                />
+                <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 transition-all duration-500 z-10">
                   <img 
                     src={product.image} 
                     alt={product.name[currentLang] || product.name.en}
@@ -270,7 +302,7 @@ export default function App() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col z-10">
                   <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#6D1B2A] transition-colors">
                     {product.name[currentLang] || product.name.en}
                   </h3>
@@ -356,8 +388,9 @@ export default function App() {
               <div>
                 <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Customer Center</h4>
                 <div className="text-2xl font-bold text-emerald-500 mb-2">1588-1285</div>
-                <p className="text-sm mb-4">Weekdays 09:00 - 18:00<br/>(Closed on Weekends & Holidays)</p>
-                <a href="mailto:contact@hkon.com" className="text-sm hover:text-white transition-colors">contact@hkon.com</a>
+                <p className="text-sm mb-4">Weekdays 09:30 - 18:30<br/>(Closed on Weekends & Holidays)</p>
+                <a href="mailto:hkonkorea@gmail.com" className="text-sm hover:text-white transition-colors block mb-2">hkonkorea@gmail.com</a>
+                <p className="text-sm text-gray-400">경기도 부천시 삼작로 164번길</p>
               </div>
 
               <div>
