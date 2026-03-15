@@ -180,24 +180,21 @@ export default function App() {
 
         {/* Hero Slider */}
         <section className="relative h-[600px] lg:h-[800px] overflow-hidden bg-gray-900">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={activeSlide}
-              src={heroImages[activeSlide]}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 0.6, scale: 1, objectPosition: 'center 20%' }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="absolute inset-0 w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </AnimatePresence>
+          <img
+            src={heroImages[0]}
+            alt="Hero Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+            style={{ objectPosition: 'center top' }}
+            referrerPolicy="no-referrer"
+            fetchPriority="high"
+            loading="eager"
+          />
           
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
 
           {/* Header inside Hero */}
           <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
-            <div className="text-3xl font-bold tracking-tighter text-emerald-800">
+            <div className="text-3xl font-bold tracking-tighter text-white">
               {t.hkonKorea}
             </div>
             <div className="flex items-center gap-6 text-white text-sm font-medium">
@@ -266,11 +263,6 @@ export default function App() {
         <section className="py-24 px-6 max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center mb-16">
             <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">{t.hkonKorea}</h2>
-            <p className="text-gray-600 text-lg max-w-2xl">
-              {currentLang === 'ko' ? '프리미엄 아이스크림의 기준, 하겐다즈의 깊고 진한 풍미를 경험해보세요.' : 
-               currentLang === 'zh' ? '体验哈根达斯浓郁醇厚的风味，高级冰淇淋的标杆。' :
-               'Experience the rich and deep flavor of Häagen-Dazs, the standard of premium ice cream.'}
-            </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
