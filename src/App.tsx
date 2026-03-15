@@ -99,7 +99,7 @@ export default function App() {
   const openModal = (title: string, content: string, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
   const navItems = [
-    t.company, t.products, t.support, t.resources, t.infoCenter
+    t.company, t.products, t.support, t.resources, t.ir, t.csr, t.infoCenter, t.careers
   ];
 
   const menuData: { [key: string]: { name: string; hasSub?: boolean }[] } = {
@@ -126,6 +126,14 @@ export default function App() {
       { name: "원격지원" },
       { name: "HK Insight" },
       { name: "자료실" },
+    ],
+    [t.ir]: [
+      { name: "재무정보" },
+      { name: "IR자료실" },
+    ],
+    [t.csr]: [
+      { name: "사회공헌개요" },
+      { name: "사회공헌활동" },
     ]
   };
 
@@ -192,7 +200,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Top Section: Sidebar + Hero */}
-      <div className="flex w-full h-[260px]">
+      <div className="flex w-full">
         {/* New Left Sidebar */}
         <motion.div 
         animate={{ width: isSidebarOpen ? 224 : 64 }}
@@ -200,7 +208,7 @@ export default function App() {
           const rect = e.currentTarget.getBoundingClientRect();
           setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
         }}
-        className="border-r border-[#5A1622] py-4 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group h-full"
+        className="border-r border-[#5A1622] py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
       >
         {/* Spotlight effect */}
         <div 
@@ -210,35 +218,67 @@ export default function App() {
           }}
         />
 
-        <div className={`flex w-full px-4 mb-4 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
+        <div className={`flex w-full px-4 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
           {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">{t.hkon}</div>}
           <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
             <Menu size={20} />
           </button>
         </div>
         
-        <div className="flex flex-col w-full relative z-10 flex-1 justify-center">
+        <div className="flex flex-col w-full relative z-10" onMouseLeave={() => setHoveredMenu(null)}>
           {navItems.map((item, idx) => (
-            <div key={idx} className="w-full">
+            <div key={idx} className="w-full" onMouseEnter={() => setHoveredMenu(item)}>
               <button 
                 onClick={() => openModal(item, `${item} page content.`)} 
-                className={`flex justify-center items-center w-full text-sm font-medium text-white/80 text-center py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
+                className={`flex justify-between items-center w-full text-base font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
               >
                 <span>{item}</span>
+                {menuData[item] && isSidebarOpen && <ChevronRight size={16} className="opacity-50" />}
               </button>
             </div>
           ))}
+
+          {/* Flyout Panel */}
+          <AnimatePresence>
+            {hoveredMenu && menuData[hoveredMenu] && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="absolute left-full top-0 h-screen w-[280px] bg-white shadow-2xl border-l border-gray-200 z-50 flex flex-col"
+              >
+                <div className="bg-[#6D1B2A] py-8 px-6">
+                  <h2 className="text-white text-2xl font-bold">{hoveredMenu}</h2>
+                </div>
+                <div className="flex-1 overflow-y-auto py-4 px-4">
+                  <ul className="space-y-1">
+                    {menuData[hoveredMenu].map((subItem, subIdx) => (
+                      <li key={subIdx}>
+                        <button
+                          onClick={() => openModal(subItem.name, `${subItem.name} content`)}
+                          className="flex justify-between items-center w-full py-3 px-4 text-gray-600 hover:text-[#6D1B2A] hover:bg-gray-50 rounded-lg transition-all text-sm"
+                        >
+                          <span>{subItem.name}</span>
+                          {subItem.hasSub && <ChevronDown size={14} className="rotate-[-90deg] opacity-40" />}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
 
-      <div className="flex-1 overflow-x-hidden h-full">
+      <div className="flex-1 overflow-x-hidden">
         {/* Hero Slider */}
-        <section className="relative h-full overflow-hidden bg-gray-900">
+        <section className="relative h-[80vh] lg:h-screen overflow-hidden bg-gray-900">
           <img
             src={heroImages[0]}
             alt="Hero Background"
             className="absolute inset-0 w-full h-full object-cover opacity-60"
-            style={{ objectPosition: 'center center' }}
+            style={{ objectPosition: 'center top' }}
             referrerPolicy="no-referrer"
             fetchPriority="high"
             loading="eager"
@@ -284,14 +324,14 @@ export default function App() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="max-w-2xl text-white"
               >
-                <h1 className="text-2xl lg:text-3xl font-bold mb-2 leading-tight drop-shadow-lg">
+                <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg">
                   {t.heroTitle}
                 </h1>
-                <p className="text-sm lg:text-base font-light text-gray-200 mb-4 drop-shadow-md">
+                <p className="text-xl lg:text-2xl font-light text-gray-200 mb-10 drop-shadow-md">
                   {t.heroSubtitle}
                 </p>
-                <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-900/20 flex items-center gap-2 text-xs">
-                  {t.exploreProducts} <ArrowRight size={16} />
+                <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className="px-8 py-4 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-900/20 flex items-center gap-2">
+                  {t.exploreProducts} <ArrowRight size={20} />
                 </button>
               </motion.div>
             </div>
@@ -318,17 +358,17 @@ export default function App() {
     {/* Full width sections below */}
     <div className="w-full">
       {/* Haagen-Dazs Products Section */}
-      <section className="py-6 px-4 w-full max-w-[1600px] mx-auto">
-          <div className="flex flex-col items-center text-center mb-6">
-            <h2 className="text-3xl font-black tracking-tight text-[#6D1B2A] mb-2 font-serif">{t.hkonKorea}</h2>
+      <section className="py-24 px-6 max-w-7xl mx-auto">
+          <div className="flex flex-col items-center text-center mb-16">
+            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">{t.hkonKorea}</h2>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 lg:gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {PRODUCTS.map((product) => (
               <button 
                 key={product.id} 
                 onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en, product.detailImages)} 
-                className="group cursor-pointer text-center flex flex-col items-center h-full relative p-3 rounded-2xl w-[160px] md:w-[180px] lg:w-[200px]"
+                className="group cursor-pointer text-left flex flex-col h-full relative p-4 rounded-3xl"
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = e.clientX - rect.left;
@@ -338,29 +378,29 @@ export default function App() {
                 }}
               >
                 {/* Mouse tracking spotlight effect on card hover */}
-                <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
                      style={{
-                       background: 'radial-gradient(circle 100px at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.08), transparent)'
+                       background: 'radial-gradient(circle 150px at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.08), transparent)'
                      }}
                 />
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl mb-3 bg-white border border-gray-100 transition-all duration-500 z-10 flex items-center justify-center p-4">
+                <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 transition-all duration-500 z-10">
                   <img 
                     src={product.image} 
                     alt={product.name[currentLang] || product.name.en}
-                    className="w-full h-full object-contain object-center group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                <div className="flex-1 flex flex-col z-10 items-center w-full">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-[#6D1B2A] transition-colors line-clamp-1">
+                <div className="flex-1 flex flex-col z-10">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#6D1B2A] transition-colors">
                     {product.name[currentLang] || product.name.en}
                   </h3>
-                  <p className="text-gray-600 text-xs leading-relaxed mb-3 whitespace-pre-line flex-1 line-clamp-3">
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line flex-1">
                     {product.description[currentLang] || product.description.en}
                   </p>
-                  <span className="inline-flex items-center justify-center gap-1 text-xs font-bold text-[#6D1B2A] group-hover:gap-2 transition-all mt-auto">
-                    {t.exploreProducts} <ChevronRight size={14} />
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-[#6D1B2A] group-hover:gap-3 transition-all mt-auto">
+                    {t.exploreProducts} <ChevronRight size={16} />
                   </span>
                 </div>
               </button>
