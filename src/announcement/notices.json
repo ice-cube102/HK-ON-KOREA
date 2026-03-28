@@ -12,10 +12,10 @@
   {
     "id": 2,
     "title": {
-      "ko": "에이치케이온 코리아 글로벌 식품 박람회 참가",
-      "en": "HK ON Korea Participates in Global Food Expo",
-      "fr": "HK ON Korea participe à l'Expo alimentaire mondiale",
-      "ja": "HK ON Korea グローバル食品博覧会参加"
+      "ko": "에이치케이온 글로벌 식품 박람회 참가",
+      "en": "에이치케이온 Participates in Global Food Expo",
+      "fr": "에이치케이온 participe à l'Expo alimentaire mondiale",
+      "ja": "에이치케이온 グローバル食品博覧会参加"
     },
     "date": "26.02.28"
   },
@@ -32,10 +32,10 @@
   {
     "id": 4,
     "title": {
-      "ko": "에이치케이온 코리아 고객센터 운영 시간 변경 안내",
-      "en": "HK ON Korea Customer Center Operating Hours Change",
-      "fr": "Changement des heures d'ouverture du centre client HK ON Korea",
-      "ja": "HK ON Korea カスタマーセンター営業時間変更のご案内"
+      "ko": "에이치케이온 고객센터 운영 시간 변경 안내",
+      "en": "에이치케이온 Customer Center Operating Hours Change",
+      "fr": "Changement des heures d'ouverture du centre client 에이치케이온",
+      "ja": "에이치케이온 カスタマーセンター営業時間変更のご案内"
     },
     "date": "25.11.02"
   }

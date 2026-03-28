@@ -5,49 +5,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, Globe, Menu, X, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, Zap, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
-import { PRODUCTS, TRANSLATIONS, LANGUAGES } from './constants';
+import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX } from 'lucide-react';
+import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES } from './constants';
+import { AccordionMenu } from './components/AccordionMenu';
+// import companyLogo from './images/company.png'; // Removed due to missing file
 import NOTICES from './announcement/notices.json';
-
-const IntroAnimation = ({ onComplete }: { onComplete: () => void }) => {
-  return (
-    <motion.div
-      initial={{ y: 0 }}
-      animate={{ y: "-100%" }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 2.5 }}
-      onAnimationComplete={onComplete}
-      className="fixed top-0 left-0 w-full h-[105vh] z-[100] flex items-center justify-center bg-[#080b11]"
-    >
-      <div className="flex items-center gap-4 md:gap-6">
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-[#1b62d2] flex items-center justify-center shadow-[0_0_40px_rgba(27,98,210,0.6)]"
-        >
-          <span className="text-white font-black text-xl md:text-3xl">HK</span>
-        </motion.div>
-        <div className="flex overflow-hidden py-2">
-          {"에이치케이온 코리아".split("").map((char, index) => (
-            <motion.span
-              key={index}
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{
-                duration: 0.6,
-                ease: [0.33, 1, 0.68, 1],
-                delay: 0.5 + index * 0.05,
-              }}
-              className="text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter"
-            >
-              {char === " " ? "\u00A0" : char}
-            </motion.span>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; onClose: () => void; title: string; content: string; images?: string[] }) => (
   <AnimatePresence>
@@ -56,36 +18,29 @@ const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; o
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div 
           initial={{ scale: 0.95, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          className="bg-[#0c101a] border border-white/10 rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl overflow-hidden relative"
+          className="bg-gray-50 border border-gray-200 rounded-2xl w-full max-w-4xl h-[90vh] flex flex-col shadow-2xl overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Subtle top glow */}
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#1b62d2]/50 to-transparent" />
-          
-          <div className="flex justify-between items-center p-6 border-b border-white/10 shrink-0 bg-white/5">
-            <h2 className="text-2xl font-bold text-white tracking-tight">{title}</h2>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white">
-              <X size={24} />
-            </button>
+          <div className="flex justify-between items-center p-6 bg-white shrink-0">
+            <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500"><X size={24} /></button>
           </div>
-          <div className="p-6 overflow-y-auto flex-1">
+          <div className="p-6 overflow-y-auto flex-1 bg-white">
             {images && images.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4">
                 {images.map((img, idx) => (
-                  <div key={idx} className="rounded-xl overflow-hidden border border-white/10 bg-[#080b11]">
-                    <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
-                  </div>
+                  <img key={idx} src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto rounded-xl shadow-sm object-cover" referrerPolicy="no-referrer" />
                 ))}
               </div>
             ) : (
-              <p className="text-slate-300 leading-relaxed text-lg whitespace-pre-line">{content}</p>
+              <p className="text-gray-600 leading-relaxed text-lg">{content}</p>
             )}
           </div>
         </motion.div>
@@ -96,386 +51,467 @@ const Modal = ({ isOpen, onClose, title, content, images }: { isOpen: boolean; o
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState('ko');
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+  const [activeSlide, setActiveSlide] = useState(0);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: string; images?: string[] }>({ isOpen: false, title: '', content: '' });
-  const [scrolled, setScrolled] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (err) {
+          console.log("Autoplay blocked by browser. User interaction required.");
+          setIsPlaying(false);
+        }
+      }
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    playAudio();
   }, []);
 
-  useEffect(() => {
-    if (showIntro) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(err => {
+            console.error("Audio play failed:", err);
+            setIsPlaying(false);
+          });
+      }
     }
-  }, [showIntro]);
+  };
 
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
 
   const openModal = (title: string, content: string, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
-  const navItems = [t.company, t.products, t.support, t.resources];
-
-  const quickLinks = [
-    { icon: <FileText size={24} />, title: t.inquiry, desc: "Expert consultation" },
-    { icon: <MonitorPlay size={24} />, title: t.remoteSupport, desc: "1:1 Remote help" },
-    { icon: <Building2 size={24} />, title: "Insight", desc: "Smart monitoring" },
-    { icon: <Users size={24} />, title: t.training, desc: "Customized training" },
+  const navItems = [
+    t.company, t.products, t.support, t.resources, t.ir, t.csr, t.infoCenter, t.careers
   ];
 
+  const menuData: { [key: string]: { name: string; hasSub?: boolean }[] } = {
+    [t.company]: [
+      { name: "CEO" },
+      { name: "회사개요" },
+      { name: "회사연혁" },
+      { name: "CI소개" },
+      { name: "가치경영", hasSub: true },
+      { name: "지사안내", hasSub: true },
+    ],
+    [t.products]: [
+      { name: "Fiber", hasSub: true },
+      { name: "Conversion", hasSub: true },
+      { name: "Gantry", hasSub: true },
+      { name: "Tube", hasSub: true },
+      { name: "절곡기", hasSub: true },
+      { name: "디버링기" },
+      { name: "용접기" },
+    ],
+    [t.support]: [
+      { name: "서비스" },
+      { name: "트레이닝", hasSub: true },
+      { name: "원격지원" },
+      { name: "HK Insight" },
+      { name: "자료실" },
+    ],
+    [t.ir]: [
+      { name: "재무정보" },
+      { name: "IR자료실" },
+    ],
+    [t.csr]: [
+      { name: "사회공헌개요" },
+      { name: "사회공헌활동" },
+    ]
+  };
+
+  const quickLinks = [
+    { icon: <FileText size={32} />, title: t.inquiry, desc: "Expert consultation" },
+    { icon: <MonitorPlay size={32} />, title: t.remoteSupport, desc: "1:1 Remote help" },
+    { icon: <Building2 size={32} />, title: "에이치케이온 Insight", desc: "Smart monitoring" },
+    { icon: <Phone size={32} />, title: t.customerSupport, desc: "1588-1285" },
+    { icon: <Users size={32} />, title: t.training, desc: "Customized training" },
+  ];
+
+  // Auto-slide hero (Disabled as there is only one image now)
+  /*
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+  */
+
+  const heroImages = [
+    "/images/company.png"
+  ];
+
+
   return (
-    <div className="min-h-[100dvh] bg-[#080b11] text-slate-200 font-sans selection:bg-[#1b62d2]/30 selection:text-blue-200 relative overflow-hidden">
-      {/* Global Grid Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none" style={{ 
-        backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)',
-        backgroundSize: '4rem 4rem',
-        maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)',
-        WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 80%)'
-      }} />
+    <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-emerald-500 selection:text-white flex">
+      {/* New Left Sidebar */}
+      <motion.div 
+        animate={{ width: isSidebarOpen ? 224 : 64 }}
+        onMouseMove={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        }}
+        className="border-r border-[#5A1622] py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
+      >
+        {/* Spotlight effect */}
+        <div 
+          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle 50px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent)`
+          }}
+        />
 
-      <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
-      
-      <AnimatePresence>
-        {showIntro && <IntroAnimation onComplete={() => setShowIntro(false)} />}
-      </AnimatePresence>
+        <div className={`flex w-full px-4 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
+          {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">{t.hkon}</div>}
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
+            <Menu size={20} />
+          </button>
+        </div>
+        
+        <div className="flex flex-col w-full relative z-10" onMouseLeave={() => setHoveredMenu(null)}>
+          {navItems.map((item, idx) => (
+            <div key={idx} className="w-full" onMouseEnter={() => setHoveredMenu(item)}>
+              <button 
+                onClick={() => openModal(item, `${item} page content.`)} 
+                className={`flex justify-between items-center w-full text-base font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
+              >
+                <span>{item}</span>
+                {menuData[item] && isSidebarOpen && <ChevronRight size={16} className="opacity-50" />}
+              </button>
+            </div>
+          ))}
 
-      {/* Navbar */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-300 border-b backdrop-blur-md ${scrolled ? 'bg-[#080b11]/80 border-white/10 py-4' : 'bg-transparent border-transparent py-6'}`}>
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <div className="flex items-center gap-10">
-            <div className="text-2xl font-black tracking-tighter text-white flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-[#1b62d2] flex items-center justify-center shadow-[0_0_15px_rgba(27,98,210,0.5)]">
-                <span className="text-white font-bold text-sm">HK</span>
+          {/* Flyout Panel */}
+          <AnimatePresence>
+            {hoveredMenu && menuData[hoveredMenu] && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="absolute left-full top-0 h-screen w-[280px] bg-white shadow-2xl border-l border-gray-200 z-50 flex flex-col"
+              >
+                <div className="bg-[#6D1B2A] py-8 px-6">
+                  <h2 className="text-white text-2xl font-bold">{hoveredMenu}</h2>
+                </div>
+                <div className="flex-1 overflow-y-auto py-4 px-4">
+                  <ul className="space-y-1">
+                    {menuData[hoveredMenu].map((subItem, subIdx) => (
+                      <li key={subIdx}>
+                        <button
+                          onClick={() => openModal(subItem.name, `${subItem.name} content`)}
+                          className="flex justify-between items-center w-full py-3 px-4 text-gray-600 hover:text-[#6D1B2A] hover:bg-gray-50 rounded-lg transition-all text-sm"
+                        >
+                          <span>{subItem.name}</span>
+                          {subItem.hasSub && <ChevronDown size={14} className="rotate-[-90deg] opacity-40" />}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      <div className="flex-1 overflow-x-hidden">
+        <Modal {...modal} onClose={() => setModal({ ...modal, isOpen: false })} />
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: '100vh' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="fixed inset-0 z-50 bg-white border-b border-gray-100 overflow-y-auto"
+            >
+              <div className="px-6 py-4 flex flex-col gap-4 pb-20">
+                <button onClick={() => setIsMobileMenuOpen(false)} className="self-end p-2"><X size={24} /></button>
+                {navItems.map((item, idx) => {
+                  if (menuData[item]) {
+                    return (
+                      <AccordionMenu 
+                        key={idx} 
+                        title={item} 
+                        items={menuData[item].map(sub => sub.name)} 
+                        isOpen={openAccordion === item}
+                        onToggle={() => setOpenAccordion(openAccordion === item ? null : item)}
+                        openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} 
+                      />
+                    );
+                  }
+                  return (
+                    <button key={idx} onClick={() => { openModal(item, `${item} page content.`); setIsMobileMenuOpen(false); }} className="text-lg font-medium text-gray-800 text-left py-2">
+                      {item}
+                    </button>
+                  );
+                })}
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Hero Slider */}
+        <section className="relative h-[80vh] lg:h-screen overflow-hidden bg-gray-900">
+          <img
+            src={heroImages[0]}
+            alt="Hero Background"
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+            style={{ objectPosition: 'center top' }}
+            referrerPolicy="no-referrer"
+            fetchPriority="high"
+            loading="eager"
+          />
+          
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+
+          {/* Header inside Hero */}
+          <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-10">
+            <div className="text-3xl font-bold tracking-tighter text-white">
               {t.hkonKorea}
             </div>
-            <nav className="hidden md:flex items-center gap-8">
-              {navItems.map((item, idx) => (
-                <button 
-                  key={idx} 
-                  onClick={() => openModal(item, `${item} content.`)}
-                  className="text-sm font-medium text-slate-400 hover:text-white transition-colors"
-                >
-                  {item}
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-3 bg-white/5 rounded-full px-4 py-2 border border-white/10">
-              <Globe size={14} className="text-[#1b62d2]" />
-              {LANGUAGES.map((lang, idx) => (
-                <React.Fragment key={lang.code}>
-                  <button 
-                    onClick={() => setCurrentLang(lang.code)} 
-                    className={`text-xs font-semibold tracking-wide transition-colors ${currentLang === lang.code ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
-                  >
-                    {lang.code.toUpperCase()}
-                  </button>
-                  {idx < LANGUAGES.length - 1 && <span className="text-slate-700 text-xs">|</span>}
-                </React.Fragment>
-              ))}
-            </div>
-            <button 
-              onClick={() => openModal(t.contactUs, "Contact us form.")}
-              className="hidden md:flex items-center gap-2 bg-[#1b62d2] hover:bg-[#1b62d2]/90 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-all animate-glow"
-            >
-              {t.contactUs}
-            </button>
-            <button 
-              className="md:hidden p-2 text-slate-300 hover:text-white"
-              onClick={() => setIsMobileMenuOpen(true)}
-            >
-              <Menu size={24} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[60] bg-[#080b11] border-b border-white/10 flex flex-col"
-          >
-            <div className="p-6 flex justify-between items-center border-b border-white/10">
-              <div className="text-xl font-bold text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-[#1b62d2] flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">HK</span>
-                </div>
-                {t.hkonKorea}
-              </div>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white"><X size={24} /></button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-              {navItems.map((item, idx) => (
-                <button 
-                  key={idx} 
-                  onClick={() => { openModal(item, `${item} content.`); setIsMobileMenuOpen(false); }} 
-                  className="text-xl font-medium text-slate-300 text-left py-2 hover:text-white"
-                >
-                  {item}
-                </button>
-              ))}
-              <div className="mt-auto pt-6 border-t border-white/10 flex flex-col gap-4">
-                <div className="flex items-center gap-4 justify-center">
-                  {LANGUAGES.map((lang) => (
+            <div className="flex items-center gap-6 text-white text-sm font-medium">
+              <div className="flex items-center gap-3">
+                <Globe size={18} className="text-emerald-400" />
+                {LANGUAGES.map((lang, idx) => (
+                  <React.Fragment key={lang.code}>
                     <button 
-                      key={lang.code}
-                      onClick={() => { setCurrentLang(lang.code); setIsMobileMenuOpen(false); }} 
-                      className={`text-sm font-medium px-4 py-2 rounded-full border ${currentLang === lang.code ? 'bg-[#1b62d2]/20 border-[#1b62d2] text-[#1b62d2]' : 'border-white/10 text-slate-400'}`}
+                      onClick={() => setCurrentLang(lang.code)} 
+                      className={`hover:text-emerald-400 transition-colors ${currentLang === lang.code ? 'text-emerald-400 font-bold' : ''}`}
                     >
                       {lang.name}
                     </button>
-                  ))}
-                </div>
+                    {idx < LANGUAGES.length - 1 && <span className="text-gray-500">|</span>}
+                  </React.Fragment>
+                ))}
               </div>
+              <button 
+                className="p-2 hover:text-emerald-400 transition-colors lg:hidden"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <Menu size={24} />
+              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Hero Section */}
-      <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 pb-24 overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/images/company.png" 
-            alt="Company Background" 
-            className="w-full h-full object-cover opacity-30"
-          />
-          {/* Gradient Overlay for readability and blending with the next section */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080b11]/80 via-[#080b11]/50 to-[#080b11]" />
-        </div>
-
-        {/* Background Effects */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-[#1b62d2]/20 rounded-[100%] blur-[120px] pointer-events-none z-0" />
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center w-full mt-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1b62d2]/10 border border-[#1b62d2]/20 text-[#1b62d2] text-sm font-semibold mb-8 tracking-wide uppercase"
-          >
-            <Sparkles size={14} />
-            <span>Revolutionize your workflow</span>
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 leading-[1.1]"
-          >
-            <span className="text-white">{t.heroTitle.split(' ')[0]} </span>
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#60a5fa] to-[#1b62d2]">
-              {t.heroTitle.split(' ').slice(1).join(' ')}
-            </span>
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed font-medium"
-          >
-            {t.heroSubtitle}
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <button 
-              onClick={() => openModal(t.products, "Explore our premium lineup.")} 
-              className="w-full sm:w-auto px-8 py-4 bg-[#1b62d2] hover:bg-[#1b62d2]/90 text-white font-bold rounded-xl transition-all animate-glow flex items-center justify-center gap-2 text-lg"
-            >
-              {t.exploreProducts} <ArrowRight size={20} />
-            </button>
-            <button 
-              onClick={() => openModal(t.contactUs, "Get in touch with us.")} 
-              className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-lg"
-            >
-              {t.contactUs}
-            </button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Products/Features Section */}
-      <section className="py-24 relative border-t border-white/5 bg-[#0a0d14]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 tracking-tight">{t.premiumLineup}</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto text-lg">{t.premiumLineupDesc}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="max-w-7xl mx-auto px-6 w-full">
+              <motion.div
+                key={`text-${activeSlide}`}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="max-w-2xl text-white"
+              >
+                <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg">
+                  {t.heroTitle}
+                </h1>
+                <p className="text-xl lg:text-2xl font-light text-gray-200 mb-10 drop-shadow-md">
+                  {t.heroSubtitle}
+                </p>
+                <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className="px-8 py-4 bg-emerald-600 text-white font-semibold rounded-full hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-900/20 flex items-center gap-2">
+                  {t.exploreProducts} <ArrowRight size={20} />
+                </button>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Slider Controls (Disabled for single image) */}
+          {/*
+          <div className="absolute bottom-10 left-0 w-full">
+            <div className="max-w-7xl mx-auto px-6 flex gap-3">
+              {heroImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveSlide(idx)}
+                  className={`w-12 h-1 transition-all ${activeSlide === idx ? 'bg-emerald-500' : 'bg-white/30 hover:bg-white/50'}`}
+                />
+              ))}
+            </div>
+          </div>
+          */}
+        </section>
+
+        {/* Haagen-Dazs Products Section */}
+        <section className="py-24 px-6 max-w-7xl mx-auto">
+          <div className="flex flex-col items-center text-center mb-16">
+            <h2 className="text-5xl font-black tracking-tight text-[#6D1B2A] mb-4 font-serif">{t.hkonKorea}</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {PRODUCTS.map((product) => (
               <button 
                 key={product.id} 
                 onClick={() => openModal(product.name[currentLang] || product.name.en, product.description[currentLang] || product.description.en, product.detailImages)} 
-                className="group text-left flex flex-col h-full bg-[#0c101a] border border-white/5 rounded-2xl p-5 hover:bg-[#111622] hover:border-[#1b62d2]/50 transition-all duration-300 relative overflow-hidden"
+                className="group cursor-pointer text-left flex flex-col h-full relative p-4 rounded-3xl"
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+                  e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-[#1b62d2]/0 to-[#1b62d2]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl mb-6 bg-[#080b11] border border-white/5 screenshot-3d">
+                {/* Mouse tracking spotlight effect on card hover */}
+                <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+                     style={{
+                       background: 'radial-gradient(circle 150px at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.08), transparent)'
+                     }}
+                />
+                <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl mb-6 bg-gray-50 transition-all duration-500 z-10">
                   <img 
                     src={product.image} 
                     alt={product.name[currentLang] || product.name.en}
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
-                
-                <div className="flex-1 flex flex-col relative z-10">
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#60a5fa] transition-colors">
+                <div className="flex-1 flex flex-col z-10">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-[#6D1B2A] transition-colors">
                     {product.name[currentLang] || product.name.en}
                   </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-3">
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line flex-1">
                     {product.description[currentLang] || product.description.en}
                   </p>
-                  <div className="mt-auto flex items-center text-sm font-bold text-[#1b62d2] group-hover:text-[#60a5fa] transition-colors uppercase tracking-wide">
-                    {t.exploreProducts} <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
-                  </div>
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-[#6D1B2A] group-hover:gap-3 transition-all mt-auto">
+                    {t.exploreProducts} <ChevronRight size={16} />
+                  </span>
                 </div>
               </button>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Notice & Quick Links Section */}
-      <section className="py-24 border-t border-white/5 relative bg-[#080b11]">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-3 gap-12">
-          
-          {/* Notices */}
-          <div className="lg:col-span-2">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-black text-white flex items-center gap-3 tracking-tight">
-                <Shield size={28} className="text-[#1b62d2]" />
-                {t.notice}
-              </h2>
-              <button onClick={() => openModal(t.notice, "All notices.")} className="text-sm font-semibold text-[#1b62d2] hover:text-[#60a5fa] flex items-center uppercase tracking-wide">
-                View All <ChevronRight size={16} />
-              </button>
-            </div>
-            <div className="bg-[#0c101a] border border-white/5 rounded-2xl overflow-hidden">
-              <ul className="divide-y divide-white/5">
-                {NOTICES.slice(0, 4).map((notice) => (
+        {/* Notice Section */}
+        <section className="bg-gray-50 py-24 px-6">
+          <div className="max-w-3xl mx-auto">
+            {/* Notice Board */}
+            <div>
+              <div className="flex justify-between items-center mb-8 border-b-2 border-gray-900 pb-4">
+                <h2 className="text-2xl font-bold text-gray-900">{t.notice}</h2>
+                <button onClick={() => openModal(t.notice, "All notices.")} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+              <ul className="divide-y divide-gray-200">
+                {NOTICES.map((notice) => (
                   <li key={notice.id}>
-                    <button 
-                      onClick={() => openModal(notice.title[currentLang as keyof typeof notice.title] || notice.title.en, "Notice details.")} 
-                      className="w-full text-left px-6 py-5 hover:bg-white/5 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
-                    >
-                      <span className="text-slate-300 font-medium group-hover:text-[#60a5fa] transition-colors line-clamp-1 text-lg">
+                    <button onClick={() => openModal(notice.title[currentLang as keyof typeof notice.title] || notice.title.en, "Notice details.")} className="py-4 flex justify-between items-center group hover:bg-gray-100/50 transition-colors -mx-4 px-4 rounded-lg w-full text-left">
+                      <span className="text-gray-800 font-medium group-hover:text-emerald-600 transition-colors line-clamp-1 pr-4">
                         {notice.title[currentLang as keyof typeof notice.title] || notice.title.en}
                       </span>
-                      <span className="text-sm text-slate-500 whitespace-nowrap font-mono bg-white/5 px-3 py-1 rounded-full border border-white/5">{notice.date}</span>
+                      <span className="text-sm text-gray-500 flex-shrink-0">{notice.date}</span>
                     </button>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
+        </section>
 
-          {/* Quick Links */}
-          <div>
-            <h2 className="text-3xl font-black text-white mb-8 flex items-center gap-3 tracking-tight">
-              <Zap size={28} className="text-[#1b62d2]" />
-              Quick Links
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+        {/* Quick Links (Moved to bottom) */}
+        <section className="bg-gray-50 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-x divide-y lg:divide-y-0 divide-gray-200">
               {quickLinks.map((link, idx) => (
-                <button 
-                  key={idx} 
-                  onClick={() => openModal(link.title, `${link.title} details.`)} 
-                  className="flex items-center gap-5 p-5 bg-[#0c101a] border border-white/5 rounded-xl hover:bg-[#111622] hover:border-[#1b62d2]/30 transition-all group text-left"
-                >
-                  <div className="w-12 h-12 rounded-lg bg-[#1b62d2]/10 flex items-center justify-center text-[#1b62d2] group-hover:scale-110 group-hover:bg-[#1b62d2]/20 transition-all shrink-0">
+                <button key={idx} onClick={() => openModal(link.title, `${link.title} details.`)} className="flex flex-col items-center text-center p-10 hover:bg-emerald-50/50 hover:border-emerald-200 transition-all duration-300 group w-full border border-transparent hover:shadow-lg rounded-2xl">
+                  <div className="text-emerald-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                     {link.icon}
                   </div>
-                  <div>
-                    <h3 className="text-white font-bold group-hover:text-[#60a5fa] transition-colors text-lg">{link.title}</h3>
-                    <p className="text-sm text-slate-500">{link.desc}</p>
-                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{link.title}</h3>
+                  <p className="text-sm text-gray-500">{link.desc}</p>
                 </button>
               ))}
             </div>
           </div>
+        </section>
 
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 bg-[#05070a] pt-20 pb-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            <div>
-              <div className="text-2xl font-black tracking-tighter text-white flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg bg-[#1b62d2] flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">HK</span>
+        {/* Footer */}
+        <footer className="bg-gray-900 text-gray-400 py-16 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+              <div>
+                <div className="text-3xl font-bold tracking-tighter text-white mb-6">
+                  {t.hkon}
                 </div>
-                {t.hkonKorea}
+                <p className="text-sm leading-relaxed mb-6">
+                  Delivering the purest ingredients from nature to your table. We believe in the power of healthy, delicious food.
+                </p>
               </div>
-              <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
-                Revolutionize your workflow with AI-powered solutions made for pros, by pros.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Company</h4>
-              <ul className="space-y-4 text-sm text-slate-400 font-medium">
-                <li><button onClick={() => openModal(t.company, "Company info.")} className="hover:text-[#60a5fa] transition-colors">{t.company}</button></li>
-                <li><button onClick={() => openModal(t.products, "Products info.")} className="hover:text-[#60a5fa] transition-colors">{t.products}</button></li>
-                <li><button onClick={() => openModal(t.careers, "Careers info.")} className="hover:text-[#60a5fa] transition-colors">{t.careers}</button></li>
-              </ul>
+              
+              <div>
+                <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Quick Links</h4>
+                <ul className="space-y-3 text-sm">
+                  <li><button onClick={() => openModal(t.company, "Company info.")} className="hover:text-white transition-colors">{t.company}</button></li>
+                  <li><button onClick={() => openModal(t.products, "Products info.")} className="hover:text-white transition-colors">{t.products}</button></li>
+                  <li><button onClick={() => openModal(t.support, "Support info.")} className="hover:text-white transition-colors">{t.support}</button></li>
+                  <li><button onClick={() => openModal(t.careers, "Careers info.")} className="hover:text-white transition-colors">{t.careers}</button></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Customer Center</h4>
+                <div className="text-2xl font-bold text-emerald-500 mb-2">1588-1285</div>
+                <p className="text-sm mb-4">Weekdays 09:30 - 18:30<br/>(Closed on Weekends & Holidays)</p>
+                <a href="mailto:hkonkorea@gmail.com" className="text-sm hover:text-white transition-colors block mb-2">hkonkorea@gmail.com</a>
+                <p className="text-sm text-gray-400">경기도 부천시 삼작로 164번길</p>
+              </div>
+
+              <div>
+                <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">Global Network</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <button onClick={() => openModal("Global Network", "Korea (HQ) info.")} className="hover:text-white transition-colors text-left">Korea (HQ)</button>
+                  <button onClick={() => openModal("Global Network", "USA info.")} className="hover:text-white transition-colors text-left">USA</button>
+                  <button onClick={() => openModal("Global Network", "Japan info.")} className="hover:text-white transition-colors text-left">Japan</button>
+                  <button onClick={() => openModal("Global Network", "China info.")} className="hover:text-white transition-colors text-left">China</button>
+                  <button onClick={() => openModal("Global Network", "Europe info.")} className="hover:text-white transition-colors text-left">Europe</button>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Support</h4>
-              <ul className="space-y-4 text-sm text-slate-400 font-medium">
-                <li><button onClick={() => openModal(t.support, "Support info.")} className="hover:text-[#60a5fa] transition-colors">{t.support}</button></li>
-                <li><button onClick={() => openModal(t.resources, "Resources info.")} className="hover:text-[#60a5fa] transition-colors">{t.resources}</button></li>
-                <li><button onClick={() => openModal(t.contactUs, "Contact info.")} className="hover:text-[#60a5fa] transition-colors">{t.contactUs}</button></li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact</h4>
-              <div className="flex items-center gap-3 text-slate-400 mb-4 font-medium">
-                <Phone size={18} className="text-[#1b62d2]" />
-                <span>1588-1285</span>
+            <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+              <div className="flex gap-6">
+                <button onClick={() => openModal(t.privacyPolicy, "Privacy Policy content.")} className="text-white font-medium hover:text-emerald-400 transition-colors">{t.privacyPolicy}</button>
+                <button onClick={() => openModal(t.termsOfService, "Terms of Service content.")} className="hover:text-white transition-colors">{t.termsOfService}</button>
+                <button onClick={() => openModal(t.sitemap, "Sitemap content.")} className="hover:text-white transition-colors">{t.sitemap}</button>
+                <button onClick={() => openModal(t.location, "Location content.")} className="hover:text-white transition-colors">{t.location}</button>
               </div>
-              <p className="text-sm text-slate-500 mb-4 font-medium">Weekdays 09:30 - 18:30</p>
-              <a href="mailto:hkonkorea@gmail.com" className="text-sm text-slate-400 hover:text-[#60a5fa] transition-colors block font-medium">hkonkorea@gmail.com</a>
+              <p>{t.footerText}</p>
             </div>
           </div>
+        </footer>
 
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500 font-medium">
-            <div className="flex gap-8">
-              <button onClick={() => openModal(t.privacyPolicy, "Privacy Policy content.")} className="hover:text-white transition-colors">{t.privacyPolicy}</button>
-              <button onClick={() => openModal(t.termsOfService, "Terms of Service content.")} className="hover:text-white transition-colors">{t.termsOfService}</button>
-            </div>
-            <p>{t.footerText}</p>
-          </div>
-        </div>
-      </footer>
+        {/* Background Audio */}
+        <audio ref={audioRef} src="/images/song.mp3" loop preload="auto" />
+        
+        {/* Audio Toggle Button */}
+        <button
+          onClick={toggleAudio}
+          className="fixed bottom-8 right-8 z-50 p-4 bg-[#6D1B2A] text-white rounded-full shadow-2xl hover:bg-[#5A1622] transition-transform hover:scale-110 flex items-center justify-center"
+          aria-label="Toggle background music"
+        >
+          {isPlaying ? <Volume2 size={24} /> : <VolumeX size={24} />}
+        </button>
+      </div>
     </div>
   );
 }
