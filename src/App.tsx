@@ -8,7 +8,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES } from './constants';
 import { AccordionMenu } from './components/AccordionMenu';
-// import companyLogo from './images/company.png'; // Removed due to missing file
+import companyLogo from '/images/company.png';
 import NOTICES from './announcement/notices.json';
 
 const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen: boolean; onClose: () => void; title: string; content: React.ReactNode; images?: string[]; isDarkMode?: boolean }) => (
@@ -34,10 +34,13 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
           </div>
           <div className={`p-6 overflow-y-auto flex-1 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
             {images && images.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {images.map((img, idx) => (
                   <img key={idx} src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto rounded-xl shadow-sm object-cover" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
                 ))}
+                <div className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed text-lg whitespace-pre-line`}>
+                  {typeof content === 'string' ? <p>{content}</p> : content}
+                </div>
               </div>
             ) : (
               typeof content === 'string' ? <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed text-lg whitespace-pre-line`}>{content}</p> : content
@@ -345,7 +348,7 @@ export default function App() {
           const rect = e.currentTarget.getBoundingClientRect();
           setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
         }}
-        className="border-r border-[#5A1622] py-10 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
+        className="border-r border-[#5A1622] py-4 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group"
       >
         {/* Spotlight effect */}
         <div 
@@ -355,14 +358,16 @@ export default function App() {
           }}
         />
 
-        <div className={`flex w-full px-4 mb-12 ${isSidebarOpen ? 'justify-between' : 'justify-center'} items-center relative z-10`}>
-          {isSidebarOpen && <div className="text-white font-bold text-xl whitespace-nowrap">{t.hkon}</div>}
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
-            <Menu size={20} />
-          </button>
+        <div className={`flex w-full px-4 mb-6 flex-col items-start relative z-10`}>
+          <div className="flex items-center gap-4">
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white">
+              <Menu size={24} />
+            </button>
+            <div className="text-xl font-bold text-white">{t.hkon}</div>
+          </div>
         </div>
         
-        <div className="flex flex-col w-full relative z-10" onMouseLeave={() => setHoveredMenu(null)}>
+        <div className="flex flex-col w-full relative z-10 flex-grow" onMouseLeave={() => setHoveredMenu(null)}>
           {navItems.map((item, idx) => (
             <div key={idx} className="w-full" onMouseEnter={() => setHoveredMenu(item)}>
               <button 
@@ -373,7 +378,7 @@ export default function App() {
                     openModal(item, `${item} page content.`);
                   }
                 }} 
-                className={`flex justify-between items-center w-full text-base font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
+                className={`flex justify-between items-center w-full text-lg font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
               >
                 <span>{item}</span>
                 {menuData[item] && isSidebarOpen && <ChevronRight size={16} className="opacity-50" />}
@@ -414,7 +419,32 @@ export default function App() {
         </div>
       </motion.div>
 
-      <div className="flex-1 overflow-x-hidden">
+      <div className="flex-1 overflow-x-hidden relative">
+        {/* Top Right Floating Controls */}
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-4 p-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
+          <button 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`p-2 transition-colors ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-emerald-600 hover:text-emerald-700'}`}
+            aria-label="Toggle Dark Mode"
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Globe size={18} className={isDarkMode ? 'text-blue-400' : 'text-emerald-600'} />
+            {LANGUAGES.map((lang, idx) => (
+              <React.Fragment key={lang.code}>
+                <button 
+                  onClick={() => setCurrentLang(lang.code)} 
+                  className={`transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-emerald-600'} ${currentLang === lang.code ? (isDarkMode ? 'text-blue-400 font-bold' : 'text-emerald-600 font-bold') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`}
+                >
+                  {lang.name}
+                </button>
+                {idx < LANGUAGES.length - 1 && <span className={isDarkMode ? 'text-gray-700' : 'text-gray-300'}>|</span>}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
         <Modal {...modal} isDarkMode={isDarkMode} onClose={() => setModal({ ...modal, isOpen: false })} />
 
         {/* Mobile Menu */}
@@ -506,43 +536,8 @@ export default function App() {
           
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
 
-          {/* Header inside Hero */}
-          <div className="absolute top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-10">
-            <div className="text-2xl md:text-3xl font-bold tracking-tighter text-white">
-              {t.hkonKorea}
-            </div>
-            <div className="flex items-center gap-4 md:gap-6 text-white text-sm font-medium">
-              <div className="hidden md:flex items-center gap-3">
-                <button 
-                  onClick={() => setIsDarkMode(!isDarkMode)}
-                  className={`p-2 transition-colors text-white ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-emerald-400'}`}
-                  aria-label="Toggle Dark Mode"
-                >
-                  {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                </button>
-                <div className="w-px h-4 bg-gray-500 mx-1"></div>
-                <Globe size={18} className={isDarkMode ? 'text-blue-400' : 'text-emerald-400'} />
-                {LANGUAGES.map((lang, idx) => (
-                  <React.Fragment key={lang.code}>
-                    <button 
-                      onClick={() => setCurrentLang(lang.code)} 
-                      className={`transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-emerald-400'} ${currentLang === lang.code ? (isDarkMode ? 'text-blue-400 font-bold' : 'text-emerald-400 font-bold') : ''}`}
-                    >
-                      {lang.name}
-                    </button>
-                    {idx < LANGUAGES.length - 1 && <span className="text-gray-500">|</span>}
-                  </React.Fragment>
-                ))}
-              </div>
-              <button 
-                className={`p-2 transition-colors lg:hidden ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-emerald-400'}`}
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                <Menu size={24} />
-              </button>
-            </div>
-          </div>
-
+          {/* Header inside Hero - Removed */}
+          
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-7xl mx-auto px-6 w-full mt-16 md:mt-0">
               <motion.div
