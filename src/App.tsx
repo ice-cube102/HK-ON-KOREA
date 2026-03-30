@@ -98,24 +98,17 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
 
 // 마우스 움직임에 따라 이미지가 기울어지는 3D 틸트 효과 컴포넌트
 const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkMode: boolean }) => {
-  // 마우스 X, Y 위치를 추적하는 motion value
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-
-  // 마우스 움직임을 부드럽게 만들어주는 스프링 애니메이션 설정
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 15 });
-
-  // 마우스 위치에 따라 X축, Y축 회전 각도 계산 (-15도 ~ 15도)
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
 
-  // 마우스가 이미지 위에서 움직일 때 호출되는 함수
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
-    // 마우스 위치를 -0.5 ~ 0.5 사이의 정규화된 값으로 변환
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     const xPct = mouseX / width - 0.5;
@@ -124,7 +117,6 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
     y.set(yPct);
   };
 
-  // 마우스가 이미지를 벗어날 때 원래 위치로 복귀
   const handleMouseLeave = () => {
     x.set(0);
     y.set(0);
@@ -134,29 +126,191 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
     <motion.div 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-      }}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       whileHover={{ scale: 1.05 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl ${isDarkMode ? 'bg-[#1a1a1a]/50 border-gray-700' : 'bg-white border-gray-200'} p-2 border cursor-pointer`}
+      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-[2.5rem] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-800 border-gray-700 shadow-blue-900/10' : 'bg-white border-gray-100 shadow-red-900/10'} border-4 p-2 cursor-pointer w-full group`}
     >
-      <div 
-        style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}
-        className="w-full h-full rounded-xl overflow-hidden relative"
-      >
-        <img 
-          src={src} 
-          alt={alt}
-          className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-          referrerPolicy="no-referrer"
-          loading="lazy"
-          decoding="async"
-        />
+      <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }} className="w-full h-full rounded-[2rem] overflow-hidden relative">
+        <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
       </div>
     </motion.div>
+  );
+};
+
+// 푸터 모달용 고품질 콘텐츠 생성 함수
+const getFooterContent = (type: string, title: string, isDarkMode: boolean) => {
+  const baseClass = `space-y-6 leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`;
+  const titleClass = `text-2xl font-bold mb-4 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`;
+  const cardClass = `p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-100'}`;
+  const badgeClass = `inline-block px-3 py-1 rounded-full text-xs font-bold mb-4 ${isDarkMode ? 'bg-blue-900/40 text-blue-400 border border-blue-800/50' : 'bg-red-50 text-[#6D1B2A] border border-red-200'}`;
+
+  const contentMap: Record<string, React.ReactNode> = {
+    korea: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>Global HQ</span>
+          <h3 className={titleClass}>한국 (본사)</h3>
+          <p className="text-lg">에이치케이온 코리아 본사는 글로벌 소싱의 중심이자 전략적 허브입니다. 전 세계의 프리미엄 브랜드를 발굴하고, 국내 시장에 최적화된 유통 네트워크를 통해 고객에게 최상의 가치를 전달합니다.</p>
+        </div>
+      </div>
+    ),
+    usa: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>North America Hub</span>
+          <h3 className={titleClass}>미국 지사</h3>
+          <p className="text-lg">북미 시장의 최신 식품 트렌드를 가장 먼저 발굴하고, 글로벌 프리미엄 브랜드와의 긴밀한 파트너십을 유지하는 핵심 거점입니다.</p>
+        </div>
+      </div>
+    ),
+    japan: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>Asia Pacific Hub</span>
+          <h3 className={titleClass}>일본 지사</h3>
+          <p className="text-lg">아시아 태평양 지역의 엄격한 품질 기준을 만족시키는 정교한 소싱 네트워크와 트렌드 분석을 담당합니다.</p>
+        </div>
+      </div>
+    ),
+    china: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>East Asia Hub</span>
+          <h3 className={titleClass}>중국 지사</h3>
+          <p className="text-lg">거대한 아시아 시장을 연결하는 전략적 물류 허브이자, 빠르게 변화하는 소비 트렌드에 대응하는 전초기지입니다.</p>
+        </div>
+      </div>
+    ),
+    europe: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>Europe Hub</span>
+          <h3 className={titleClass}>유럽 지사</h3>
+          <p className="text-lg">유럽의 전통 깊은 프리미엄 식품과 유기농 브랜드를 발굴하여 아시아 시장에 소개하는 역할을 수행합니다.</p>
+        </div>
+      </div>
+    ),
+    vietnam: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>Southeast Asia Hub</span>
+          <h3 className={titleClass}>베트남 지사</h3>
+          <p className="text-lg">빠르게 성장하는 동남아시아 신흥 시장의 핵심 파트너십 거점으로, 현지화된 유통 전략을 전개합니다.</p>
+        </div>
+      </div>
+    ),
+    thailand: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>Southeast Asia Hub</span>
+          <h3 className={titleClass}>태국 지사</h3>
+          <p className="text-lg">동남아시아 식품 허브로서, 다양한 글로벌 브랜드의 현지 진출과 마케팅을 지원하는 전략적 요충지입니다.</p>
+        </div>
+      </div>
+    ),
+    indonesia: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <span className={badgeClass}>Southeast Asia Hub</span>
+          <h3 className={titleClass}>인도네시아 지사</h3>
+          <p className="text-lg">세계 최대 할랄 시장이자 역동적인 소비 시장인 인도네시아에서 프리미엄 브랜드의 입지를 다집니다.</p>
+        </div>
+      </div>
+    ),
+    privacy: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>개인정보처리방침</h3>
+          <p className="text-lg">에이치케이온 코리아는 정보통신망 이용촉진 및 정보보호 등에 관한 법률 등 관련 법령상의 개인정보보호 규정을 준수하며, 고객의 개인정보를 안전하게 보호하기 위해 최선을 다하고 있습니다.</p>
+          <ul className="list-disc pl-5 space-y-2 mt-4 opacity-80">
+            <li>수집하는 개인정보 항목: 이름, 연락처, 이메일 등</li>
+            <li>개인정보의 수집 및 이용 목적: 고객 상담 및 서비스 제공</li>
+            <li>개인정보의 보유 및 이용 기간: 원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다.</li>
+          </ul>
+        </div>
+      </div>
+    ),
+    terms: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>이용약관</h3>
+          <p className="text-lg">본 약관은 에이치케이온 코리아가 제공하는 제반 서비스의 이용과 관련하여 회사와 회원과의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
+        </div>
+      </div>
+    ),
+    sitemap: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>사이트맵</h3>
+          <p className="text-lg">에이치케이온 코리아 웹사이트의 전체 구조를 한눈에 파악할 수 있는 사이트맵입니다. 원하시는 메뉴로 빠르게 이동하실 수 있습니다.</p>
+        </div>
+      </div>
+    ),
+    location: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>오시는길</h3>
+          <p className="text-lg">에이치케이온 코리아 본사 및 글로벌 지사의 위치를 안내해 드립니다. 방문 전 미리 연락 주시면 더욱 원활한 안내가 가능합니다.</p>
+          <div className="mt-4 p-4 bg-black/5 rounded-lg">
+            <strong>본사 주소:</strong> 경기도 부천시 삼작로 164번길
+          </div>
+        </div>
+      </div>
+    ),
+    company: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>회사소개</h3>
+          <p className="text-lg">글로벌 소싱 역량을 기반으로 프리미엄 식품을 수입·유통하는 전문 기업입니다. 전 세계의 우수한 제품을 발굴하여 고객의 식탁에 건강하고 맛있는 경험을 선사합니다.</p>
+        </div>
+      </div>
+    ),
+    products: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>제품소개</h3>
+          <p className="text-lg">그린자이언트, 하겐다즈, 네이처밸리 등 세계적으로 사랑받는 프리미엄 브랜드 라인업을 만나보세요.</p>
+        </div>
+      </div>
+    ),
+    support: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>고객지원</h3>
+          <p className="text-lg">고객님의 성공적인 비즈니스를 위해 최선을 다해 지원합니다. 제품 문의, 제휴 제안 등 언제든 환영합니다.</p>
+        </div>
+      </div>
+    ),
+    careers: (
+      <div className={baseClass}>
+        <div className={cardClass}>
+          <h3 className={titleClass}>채용정보</h3>
+          <p className="text-lg">에이치케이온 코리아와 함께 글로벌 식품 시장을 선도할 열정적인 인재를 기다립니다.</p>
+        </div>
+      </div>
+    )
+  };
+
+  const isGlobalNetwork = ['korea', 'usa', 'japan', 'china', 'europe', 'vietnam', 'thailand', 'indonesia'].includes(type);
+
+  return (
+    <div className="space-y-6">
+      {contentMap[type]}
+      {isGlobalNetwork && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-800/80' : 'bg-white'} border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm`}>
+            <div className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>주요 업무</div>
+            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>글로벌 소싱, 현지 시장 조사, 파트너십 관리</div>
+          </div>
+          <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-800/80' : 'bg-white'} border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm`}>
+            <div className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>연락처</div>
+            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>global@hkonkorea.com</div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -960,9 +1114,9 @@ export default function App() {
               ].map((stat, idx) => (
                 <motion.div 
                   key={idx} 
-                  initial={{ opacity: 0, scale: 0.8, y: 40, filter: "blur(10px)" }} 
-                  whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }} 
-                  viewport={{ once: false, amount: 0.2 }} 
+                  initial={{ opacity: 0, scale: 0.9, y: 50, rotate: -2, filter: "blur(10px)" }} 
+                  whileInView={{ opacity: 1, scale: 1, y: 0, rotate: 0, filter: "blur(0px)" }} 
+                  viewport={{ once: true, amount: 0.2 }} 
                   transition={{ delay: idx * 0.1, duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                   className={`p-6 md:p-8 ${idx !== 0 && idx !== 2 ? 'border-t md:border-t-0' : ''} ${idx > 1 ? 'border-t md:border-t-0' : ''} ${isDarkMode ? 'border-gray-800' : 'border-gray-100'} group`}
                 >
@@ -993,24 +1147,19 @@ export default function App() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeDetailSlide}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.6, type: "spring", stiffness: 90, damping: 20 }}
+                initial={{ opacity: 0, y: 50, scale: 0.95, rotate: 2, filter: "blur(10px)" }}
+                whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -50, scale: 0.95, rotate: -2, filter: "blur(10px)" }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                 className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center"
               >
                 <div className="w-full lg:w-1/2">
-                  <motion.div 
-                    initial={{ scale: 0.9, opacity: 0, rotate: -2 }}
-                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                    transition={{ delay: 0.2, duration: 0.7, type: "spring" }}
-                    className={`relative aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-800 border-gray-700 shadow-blue-900/10' : 'bg-white border-gray-100 shadow-red-900/10'} border-4 p-2 transition-all duration-500 group`}
-                  >
-                    <div className="w-full h-full rounded-[2rem] overflow-hidden relative">
-                      <img src={heroSlides[activeDetailSlide].image} alt={heroSlides[activeDetailSlide].detailTitle} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
-                      <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
-                    </div>
-                  </motion.div>
+                  <TiltImage 
+                    src={heroSlides[activeDetailSlide].image} 
+                    alt={heroSlides[activeDetailSlide].detailTitle} 
+                    isDarkMode={isDarkMode} 
+                  />
                 </div>
                 <div className="w-full lg:w-1/2 space-y-8">
                   <motion.div
@@ -1073,11 +1222,17 @@ export default function App() {
         {/* Products Section */}
         <section id="products-section" className={`py-32 px-6 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col items-center text-center mb-24">
+            <motion.div 
+              initial={{ opacity: 0, y: 50, scale: 0.95, rotate: -2, filter: "blur(10px)" }}
+              whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
+              className="flex flex-col items-center text-center mb-24"
+            >
               <span className={`text-sm font-black tracking-[0.2em] ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'} uppercase mb-4`}>Our Brands</span>
               <h2 className={`text-5xl md:text-6xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-6 transition-colors duration-300`}>{t.products}</h2>
               <div className={`w-24 h-1.5 ${isDarkMode ? 'bg-blue-500' : 'bg-[#6D1B2A]'} rounded-full`} />
-            </div>
+            </motion.div>
 
             <div className="space-y-40">
               {PRODUCTS.map((product, index) => {
@@ -1085,9 +1240,9 @@ export default function App() {
                 return (
                   <motion.div 
                     key={product.id}
-                    initial={{ opacity: 0, y: 100, scale: 0.95, filter: "blur(10px)" }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                    viewport={{ once: false, amount: 0.2 }}
+                    initial={{ opacity: 0, y: 100, scale: 0.9, rotate: -2, filter: "blur(10px)" }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+                    viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                     className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 lg:gap-24 items-center`}
                   >
@@ -1097,8 +1252,8 @@ export default function App() {
                         <div className={`absolute inset-0 rounded-[2.5rem] ${isDarkMode ? 'bg-blue-500/10' : 'bg-red-500/10'} blur-2xl transform group-hover:scale-105 transition-transform duration-500`} />
                         <TiltImage 
                           src={product.image} 
-                          alt={product.name[currentLang as keyof typeof product.name] || product.name.en}
-                          isDarkMode={isDarkMode}
+                          alt={product.name[currentLang as keyof typeof product.name] || product.name.en} 
+                          isDarkMode={isDarkMode} 
                         />
                       </div>
                     </div>
@@ -1156,9 +1311,9 @@ export default function App() {
               {quickLinks.map((link, idx) => (
                 <motion.button 
                   key={idx} 
-                  initial={{ opacity: 0, y: 30, scale: 0.9, filter: "blur(10px)" }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                  viewport={{ once: false, amount: 0.2 }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9, rotate: -2, filter: "blur(10px)" }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+                  viewport={{ once: true, amount: 0.2 }}
                   transition={{ delay: idx * 0.1, duration: 0.6, type: "spring", stiffness: 120, damping: 15 }}
                   whileHover={{ scale: 1.03, y: -5 }}
                   whileTap={{ scale: 0.97 }}
@@ -1179,7 +1334,13 @@ export default function App() {
         {/* Footer */}
         <footer className="bg-[#1a1a1a] text-gray-400 py-16 px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+            <motion.div 
+              initial={{ opacity: 0, y: 30, rotate: -2, filter: "blur(10px)" }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0, filter: "blur(0px)" }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.8 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12"
+            >
               <div>
                 <div className="text-3xl font-bold tracking-tighter text-white mb-6">
                   {t.hkon}
@@ -1192,10 +1353,10 @@ export default function App() {
               <div>
                 <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">{t.quickLinks}</h4>
                 <ul className="space-y-3 text-sm">
-                  <li><button onClick={() => openModal(t.company, "Company info.")} className="hover:text-white transition-colors">{t.company}</button></li>
-                  <li><button onClick={() => openModal(t.products, "Products info.")} className="hover:text-white transition-colors">{t.products}</button></li>
-                  <li><button onClick={() => openModal(t.support, "Support info.")} className="hover:text-white transition-colors">{t.support}</button></li>
-                  <li><button onClick={() => openModal(t.careers, "Careers info.")} className="hover:text-white transition-colors">{t.careers}</button></li>
+                  <li><button onClick={() => openModal(t.company, getFooterContent('company', t.company, isDarkMode))} className="hover:text-white transition-colors">{t.company}</button></li>
+                  <li><button onClick={() => openModal(t.products, getFooterContent('products', t.products, isDarkMode))} className="hover:text-white transition-colors">{t.products}</button></li>
+                  <li><button onClick={() => openModal(t.support, getFooterContent('support', t.support, isDarkMode))} className="hover:text-white transition-colors">{t.support}</button></li>
+                  <li><button onClick={() => openModal(t.careers, getFooterContent('careers', t.careers, isDarkMode))} className="hover:text-white transition-colors">{t.careers}</button></li>
                 </ul>
               </div>
 
@@ -1210,24 +1371,33 @@ export default function App() {
               <div>
                 <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">{t.globalNetwork}</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <button onClick={() => openModal(t.globalNetwork, `${t.korea} info.`)} className="hover:text-white transition-colors text-left">{t.korea}</button>
-                  <button onClick={() => openModal(t.globalNetwork, `${t.usa} info.`)} className="hover:text-white transition-colors text-left">{t.usa}</button>
-                  <button onClick={() => openModal(t.globalNetwork, `${t.japan} info.`)} className="hover:text-white transition-colors text-left">{t.japan}</button>
-                  <button onClick={() => openModal(t.globalNetwork, `${t.china} info.`)} className="hover:text-white transition-colors text-left">{t.china}</button>
-                  <button onClick={() => openModal(t.globalNetwork, `${t.europe} info.`)} className="hover:text-white transition-colors text-left">{t.europe}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('korea', t.korea, isDarkMode))} className="hover:text-white transition-colors text-left">{t.korea}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('usa', t.usa, isDarkMode))} className="hover:text-white transition-colors text-left">{t.usa}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('japan', t.japan, isDarkMode))} className="hover:text-white transition-colors text-left">{t.japan}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('china', t.china, isDarkMode))} className="hover:text-white transition-colors text-left">{t.china}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('europe', t.europe, isDarkMode))} className="hover:text-white transition-colors text-left">{t.europe}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('vietnam', t.vietnam, isDarkMode))} className="hover:text-white transition-colors text-left">{t.vietnam}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('thailand', t.thailand, isDarkMode))} className="hover:text-white transition-colors text-left">{t.thailand}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('indonesia', t.indonesia, isDarkMode))} className="hover:text-white transition-colors text-left">{t.indonesia}</button>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+            <motion.div 
+              initial={{ opacity: 0, y: 20, rotate: -2 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm"
+            >
               <div className="flex gap-6">
-                <button onClick={() => openModal(t.privacyPolicy, "Privacy Policy content.")} className={`text-white font-medium transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-red-400'}`}>{t.privacyPolicy}</button>
-                <button onClick={() => openModal(t.termsOfService, "Terms of Service content.")} className="hover:text-white transition-colors">{t.termsOfService}</button>
-                <button onClick={() => openModal(t.sitemap, "Sitemap content.")} className="hover:text-white transition-colors">{t.sitemap}</button>
-                <button onClick={() => openModal(t.location, "Location content.")} className="hover:text-white transition-colors">{t.location}</button>
+                <button onClick={() => openModal(t.privacyPolicy, getFooterContent('privacy', t.privacyPolicy, isDarkMode))} className={`text-white font-medium transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-red-400'}`}>{t.privacyPolicy}</button>
+                <button onClick={() => openModal(t.termsOfService, getFooterContent('terms', t.termsOfService, isDarkMode))} className="hover:text-white transition-colors">{t.termsOfService}</button>
+                <button onClick={() => openModal(t.sitemap, getFooterContent('sitemap', t.sitemap, isDarkMode))} className="hover:text-white transition-colors">{t.sitemap}</button>
+                <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode))} className="hover:text-white transition-colors">{t.location}</button>
               </div>
               <p>{t.footerText}</p>
-            </div>
+            </motion.div>
           </div>
         </footer>
       </div>

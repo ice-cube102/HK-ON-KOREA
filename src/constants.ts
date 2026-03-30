@@ -237,11 +237,9 @@ export const PRODUCTS: Product[] = [
     },
     image: '/images/green_giant.jpg',
     detailImages: [
-      '/images/green_giant_1.jpg',
-      '/images/green_giant_2.jpg',
-      '/images/green_giant_3.jpg',
-      '/images/green_giant_4.jpg',
-      '/images/green_giant_5.jpg'
+      '/images/green_giant_buy_4_get_4.jpg',
+      '/images/green_giant_huge.jpg',
+      '/images/green_giant_original.jpg'
     ],
     color: '#34d399'
   },
@@ -308,11 +306,7 @@ export const PRODUCTS: Product[] = [
       zh: '1米长的卷型果冻！解开吃很有趣。含有12%的水果泥（浆果和草莓）。非常适合儿童零食、游戏时间、幼儿园/学校活动和特殊礼物。'
     },
     image: '/images/fruit_by_the_foot.jpg',
-    detailImages: [
-      '/images/fruit_by_the_foot.jpg',
-      '/images/fruit_by_the_foot.jpg',
-      '/images/fruit_by_the_foot.jpg'
-    ],
+    detailImages: [],
     color: '#8A9A5B'
   }
 ];
