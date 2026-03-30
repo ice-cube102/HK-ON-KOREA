@@ -16,17 +16,18 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
     {isOpen && (
       <motion.div 
         initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-        animate={{ opacity: 1, backdropFilter: "blur(12px)" }}
+        animate={{ opacity: 1, backdropFilter: "blur(16px)" }}
         exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50"
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60"
         onClick={onClose}
       >
         <motion.div 
-          initial={{ scale: 0.95, opacity: 0, y: 40 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0, y: 20 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ scale: 0.85, opacity: 0, y: 60, rotateX: 10 }}
+          animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 30, rotateX: -10 }}
+          transition={{ type: "spring", stiffness: 250, damping: 25 }}
+          style={{ perspective: 1000 }}
           className={`${isDarkMode ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'} border rounded-[2rem] w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -95,20 +96,26 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
   </AnimatePresence>
 );
 
+// 마우스 움직임에 따라 이미지가 기울어지는 3D 틸트 효과 컴포넌트
 const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkMode: boolean }) => {
+  // 마우스 X, Y 위치를 추적하는 motion value
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
+  // 마우스 움직임을 부드럽게 만들어주는 스프링 애니메이션 설정
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
   const mouseYSpring = useSpring(y, { stiffness: 150, damping: 15 });
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+  // 마우스 위치에 따라 X축, Y축 회전 각도 계산 (-15도 ~ 15도)
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
 
+  // 마우스가 이미지 위에서 움직일 때 호출되는 함수
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
+    // 마우스 위치를 -0.5 ~ 0.5 사이의 정규화된 값으로 변환
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
     const xPct = mouseX / width - 0.5;
@@ -117,6 +124,7 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
     y.set(yPct);
   };
 
+  // 마우스가 이미지를 벗어날 때 원래 위치로 복귀
   const handleMouseLeave = () => {
     x.set(0);
     y.set(0);
@@ -131,16 +139,18 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
         rotateY,
         transformStyle: "preserve-3d",
       }}
-      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl ${isDarkMode ? 'bg-[#1a1a1a]/50 border-gray-700' : 'bg-white border-gray-200'} p-2 border`}
+      whileHover={{ scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl ${isDarkMode ? 'bg-[#1a1a1a]/50 border-gray-700' : 'bg-white border-gray-200'} p-2 border cursor-pointer`}
     >
       <div 
         style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}
-        className="w-full h-full rounded-xl overflow-hidden"
+        className="w-full h-full rounded-xl overflow-hidden relative"
       >
         <img 
           src={src} 
           alt={alt}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
           referrerPolicy="no-referrer"
           loading="lazy"
           decoding="async"
@@ -151,34 +161,59 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
 };
 
 export default function App() {
+  // 현재 선택된 언어 상태 (기본값: 한국어)
   const [currentLang, setCurrentLang] = useState('ko');
+  // 언어 선택 메뉴 열림/닫힘 상태
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  // 모바일 메뉴 열림/닫힘 상태
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // 데스크톱 사이드바 열림/닫힘 상태
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // 모바일 아코디언 메뉴 열림 상태
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+  // 메인 히어로 슬라이더의 현재 슬라이드 인덱스
   const [activeSlide, setActiveSlide] = useState(0);
+  // 제품 상세 모달 내 이미지 슬라이더의 현재 슬라이드 인덱스
   const [activeDetailSlide, setActiveDetailSlide] = useState(0);
-  // 모달 상태 관리 (제목, 내용, 이미지 배열)
+  // 모달 창 상태 관리 (열림 여부, 제목, 내용, 이미지 배열)
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: React.ReactNode; images?: string[] }>({ isOpen: false, title: '', content: '' });
   
-  // 마우스 위치 (현재는 안쓰지만 나중에 파티클 효과 넣을 때 쓸 예정)
+  // 마우스 위치 (사이드바의 스포트라이트 효과 등에 사용)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   
+  // 다크모드 상태 관리
   const [isDarkMode, setIsDarkMode] = useState(false);
+  // 현재 마우스가 올라가 있는 메뉴 항목 (드롭다운 표시에 사용)
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
 
-  // 다크모드 토글 시 html 태그에 클래스 추가/제거
+  // 다크모드 토글 시 html 태그에 클래스 추가/제거하여 전역 스타일 적용
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
-      // localStorage.setItem('theme', 'dark'); // TODO: 로컬 스토리지 저장 기능 추가
     } else {
       document.documentElement.classList.remove('dark');
-      // localStorage.setItem('theme', 'light');
     }
   }, [isDarkMode]);
 
   const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
+
+  // 이미지 프리로딩: 첫 로딩 시 모든 제품 이미지를 불러와서 클릭 시 바로 볼 수 있게 최적화
+  useEffect(() => {
+    const imagesToPreload: string[] = [];
+    PRODUCTS.forEach(product => {
+      if (product.image) imagesToPreload.push(product.image);
+      if (product.detailImages) {
+        imagesToPreload.push(...product.detailImages);
+      }
+    });
+    
+    // 중복 제거 후 프리로드
+    const uniqueImages = Array.from(new Set(imagesToPreload));
+    uniqueImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   const openModal = (title: string, content: React.ReactNode, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
@@ -472,49 +507,56 @@ export default function App() {
       subtitle: t.heroSubtitle,
       image: "/images/company.png",
       detailTitle: t.hkonKorea,
-      detailDesc: t.hkonDesc
+      detailDesc: t.hkonDesc,
+      productId: 'company'
     },
     {
       title: t.haagendazs,
       subtitle: t.haagendazsSub,
       image: "/images/mini_cup.jpg",
       detailTitle: t.haagendazs,
-      detailDesc: t.haagendazsDesc
+      detailDesc: t.haagendazsDesc,
+      productId: 'haagen-dazs'
     },
     {
       title: t.natureValley,
       subtitle: t.natureValleySub,
       image: "/images/grnaola_thumbnail.jpg",
       detailTitle: t.natureValley,
-      detailDesc: t.natureValleyDesc
+      detailDesc: t.natureValleyDesc,
+      productId: 'nature-valley'
     },
     {
       title: t.lantico,
       subtitle: t.lanticoSub,
       image: "/images/lantico.jpg",
       detailTitle: t.lantico,
-      detailDesc: t.lanticoDesc
+      detailDesc: t.lanticoDesc,
+      productId: 'lantico'
     },
     {
       title: t.caraci,
       subtitle: t.caraciSub,
       image: "/images/kadaif_thumbnail.png",
       detailTitle: t.caraci,
-      detailDesc: t.caraciDesc
+      detailDesc: t.caraciDesc,
+      productId: 'caraci'
     },
     {
       title: t.fruitByTheFoot,
       subtitle: t.fruitByTheFootSub,
       image: "/images/fruit_by_the_foot.jpg",
       detailTitle: t.fruitByTheFoot,
-      detailDesc: t.fruitByTheFootDesc
+      detailDesc: t.fruitByTheFootDesc,
+      productId: 'fruit-by-the-foot'
     },
     {
       title: t.greenGiant,
       subtitle: t.greenGiantSub,
       image: "/images/green_giant.jpg",
       detailTitle: t.greenGiant,
-      detailDesc: t.greenGiantDesc
+      detailDesc: t.greenGiantDesc,
+      productId: 'green-giant'
     }
   ], [t]);
 
@@ -630,9 +672,18 @@ export default function App() {
                             if (hoveredMenu === t.notice) {
                               openModal(subItem.name, subItem.content);
                             } else if (hoveredMenu === t.products) {
-                              const product = heroSlides.find(s => s.title === subItem.name);
-                              if (product) {
-                                openModal(product.detailTitle, product.detailDesc, [product.image]);
+                              const productSlide = heroSlides.find(s => s.title === subItem.name);
+                              if (productSlide) {
+                                const product = PRODUCTS.find(p => p.id === productSlide.productId);
+                                if (product) {
+                                  openModal(
+                                    product.name[currentLang as keyof typeof product.name] || product.name.en, 
+                                    product.description[currentLang as keyof typeof product.description] || product.description.en, 
+                                    product.detailImages
+                                  );
+                                } else {
+                                  openModal(productSlide.detailTitle, productSlide.detailDesc, [productSlide.image]);
+                                }
                               } else {
                                 openModal(subItem.name, `${subItem.name} content`);
                               }
@@ -788,34 +839,55 @@ export default function App() {
                 >
                   <motion.h1 
                     variants={{
-                      hidden: { opacity: 0, y: 40 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
-                      exit: { opacity: 0, y: -20, transition: { duration: 0.4 } }
+                      hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
+                      visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
+                      exit: { opacity: 0, y: -20, filter: "blur(10px)", transition: { duration: 0.4 } }
                     }}
-                    className="text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight drop-shadow-2xl"
+                    className="text-4xl md:text-5xl lg:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-2xl"
                   >
                     {heroSlides[activeSlide].title}
                   </motion.h1>
                   <motion.p 
                     variants={{
-                      hidden: { opacity: 0, y: 30 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
-                      exit: { opacity: 0, y: -15, transition: { duration: 0.4 } }
+                      hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+                      visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
+                      exit: { opacity: 0, y: -15, filter: "blur(10px)", transition: { duration: 0.4 } }
                     }}
-                    className="text-lg md:text-xl lg:text-2xl font-light text-gray-200 mb-8 md:mb-10 drop-shadow-lg"
+                    className="text-lg md:text-xl lg:text-2xl font-light text-gray-200 mb-8 md:mb-10 drop-shadow-lg tracking-wide"
                   >
                     {heroSlides[activeSlide].subtitle}
                   </motion.p>
                   <motion.div
                     variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
-                      exit: { opacity: 0, y: -10, transition: { duration: 0.4 } }
+                      hidden: { opacity: 0, y: 20, filter: "blur(10px)" },
+                      visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
+                      exit: { opacity: 0, y: -10, filter: "blur(10px)", transition: { duration: 0.4 } }
                     }}
                   >
-                    <button onClick={() => openModal(t.products, "Explore our premium food lineup.")} className={`px-6 py-3 md:px-8 md:py-4 text-white font-semibold rounded-full transition-all hover:shadow-lg flex items-center gap-2 text-sm md:text-base ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700 hover:shadow-blue-900/20' : 'bg-[#6D1B2A] hover:bg-[#5A1622] hover:shadow-red-900/20'}`}>
-                      {t.exploreProducts} <ArrowRight size={20} />
-                    </button>
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        const slide = heroSlides[activeSlide];
+                        if (slide.productId === 'company') {
+                          openModal(t.company, getCompanyIntro(currentLang, isDarkMode));
+                        } else {
+                          const product = PRODUCTS.find(p => p.id === slide.productId);
+                          if (product) {
+                            openModal(
+                              product.name[currentLang as keyof typeof product.name] || product.name.en, 
+                              product.description[currentLang as keyof typeof product.description] || product.description.en, 
+                              [product.image, ...product.detailImages]
+                            );
+                          } else {
+                            openModal(slide.detailTitle, slide.detailDesc, [slide.image]);
+                          }
+                        }
+                      }} 
+                      className={`px-6 py-3 md:px-8 md:py-4 text-white font-semibold rounded-full transition-colors flex items-center gap-2 text-sm md:text-base ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-900/20' : 'bg-[#6D1B2A] hover:bg-[#5A1622] shadow-lg shadow-red-900/20'}`}
+                    >
+                      자세히 보기 <ArrowRight size={20} />
+                    </motion.button>
                   </motion.div>
                 </motion.div>
               </div>
@@ -847,8 +919,10 @@ export default function App() {
               <div className="flex-1 w-full overflow-hidden">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                   {NOTICES.slice(0, 3).map((notice) => (
-                    <button 
+                    <motion.button 
                       key={notice.id} 
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => openModal(notice.title[currentLang as keyof typeof notice.title] || notice.title.en, notice.content[currentLang as keyof typeof notice.content] || notice.content.en)} 
                       className="flex justify-between items-center group text-left w-full py-1"
                     >
@@ -856,7 +930,7 @@ export default function App() {
                         {notice.title[currentLang as keyof typeof notice.title] || notice.title.en}
                       </span>
                       <span className="text-xs text-gray-400 ml-3 shrink-0 font-medium">{notice.date}</span>
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -886,13 +960,13 @@ export default function App() {
               ].map((stat, idx) => (
                 <motion.div 
                   key={idx} 
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }} 
-                  whileInView={{ opacity: 1, scale: 1, y: 0 }} 
-                  viewport={{ once: true, margin: "-50px" }} 
-                  transition={{ delay: idx * 0.1, duration: 0.6, type: "spring" }}
-                  className={`p-6 md:p-8 ${idx !== 0 && idx !== 2 ? 'border-t md:border-t-0' : ''} ${idx > 1 ? 'border-t md:border-t-0' : ''} ${isDarkMode ? 'border-gray-800' : 'border-gray-100'}`}
+                  initial={{ opacity: 0, scale: 0.8, y: 40, filter: "blur(10px)" }} 
+                  whileInView={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }} 
+                  viewport={{ once: false, amount: 0.2 }} 
+                  transition={{ delay: idx * 0.1, duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
+                  className={`p-6 md:p-8 ${idx !== 0 && idx !== 2 ? 'border-t md:border-t-0' : ''} ${idx > 1 ? 'border-t md:border-t-0' : ''} ${isDarkMode ? 'border-gray-800' : 'border-gray-100'} group`}
                 >
-                  <div className="flex items-baseline justify-center mb-3">
+                  <div className="flex items-baseline justify-center mb-3 group-hover:scale-110 transition-transform duration-500">
                     <span className={`text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter ${isDarkMode ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400' : 'text-transparent bg-clip-text bg-gradient-to-r from-[#6D1B2A] to-red-600'}`}>
                       {stat.value}
                     </span>
@@ -977,7 +1051,7 @@ export default function App() {
                             openModal(
                               product.name[currentLang as keyof typeof product.name] || product.name.en,
                               product.description[currentLang as keyof typeof product.description] || product.description.en,
-                              product.detailImages
+                              [product.image, ...product.detailImages]
                             );
                           } else {
                             openModal(heroSlides[activeDetailSlide].detailTitle, heroSlides[activeDetailSlide].detailDesc);
@@ -1011,10 +1085,10 @@ export default function App() {
                 return (
                   <motion.div 
                     key={product.id}
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.8, type: "spring", stiffness: 90, damping: 20 }}
+                    initial={{ opacity: 0, y: 100, scale: 0.95, filter: "blur(10px)" }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                    viewport={{ once: false, amount: 0.2 }}
+                    transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                     className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 lg:gap-24 items-center`}
                   >
                     {/* Image Side */}
@@ -1057,13 +1131,15 @@ export default function App() {
                       </ul>
 
                       <div className="pt-8">
-                        <button 
-                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, product.description[currentLang as keyof typeof product.description] || product.description.en, product.detailImages)}
-                          className={`group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20' : 'bg-[#6D1B2A] hover:bg-[#5A1622] text-white shadow-lg shadow-red-900/20'} hover:-translate-y-1`}
+                        <motion.button 
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, product.description[currentLang as keyof typeof product.description] || product.description.en, [product.image, ...product.detailImages])}
+                          className={`group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-colors duration-300 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20' : 'bg-[#6D1B2A] hover:bg-[#5A1622] text-white shadow-lg shadow-red-900/20'}`}
                         >
                           {t.exploreProducts}
                           <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   </motion.div>
@@ -1078,17 +1154,23 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {quickLinks.map((link, idx) => (
-                <button 
+                <motion.button 
                   key={idx} 
+                  initial={{ opacity: 0, y: 30, scale: 0.9, filter: "blur(10px)" }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ delay: idx * 0.1, duration: 0.6, type: "spring", stiffness: 120, damping: 15 }}
+                  whileHover={{ scale: 1.03, y: -5 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => handleMenuClick(link.title)} 
-                  className={`flex flex-col items-center text-center p-8 ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 border-gray-700' : 'bg-gray-50 hover:bg-white border-gray-100'} transition-all duration-300 group w-full border hover:shadow-xl rounded-3xl hover:-translate-y-1`}
+                  className={`flex flex-col items-center text-center p-8 ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700 border-gray-700' : 'bg-gray-50 hover:bg-white border-gray-100'} transition-colors duration-300 group w-full border hover:shadow-xl rounded-3xl`}
                 >
-                  <div className={`p-4 rounded-2xl ${isDarkMode ? 'bg-[#1a1a1a] text-blue-400 group-hover:text-blue-300' : 'bg-white text-[#6D1B2A] group-hover:text-[#5A1622] shadow-sm'} mb-6 group-hover:scale-110 transition-all duration-300`}>
+                  <div className={`p-4 rounded-2xl ${isDarkMode ? 'bg-[#1a1a1a] text-blue-400 group-hover:text-blue-300' : 'bg-white text-[#6D1B2A] group-hover:text-[#5A1622] shadow-sm'} mb-6 group-hover:scale-110 transition-transform duration-300`}>
                     {link.icon}
                   </div>
                   <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>{link.title}</h3>
                   <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium`}>{link.desc}</p>
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>

@@ -231,12 +231,18 @@ export const PRODUCTS: Product[] = [
     id: 'green-giant',
     name: { en: 'Green Giant', ko: '그린자이언트', zh: '绿巨人' },
     description: { 
-      en: 'High quality canned vegetables for your healthy diet.',
-      ko: '건강한 식단을 위한 고품질 캔 채소입니다.',
-      zh: '为您的健康饮食提供优质罐装蔬菜。'
+      en: 'Premium quality canned vegetables harvested at the peak of freshness. Green Giant brings the natural goodness and crisp texture of farm-fresh vegetables straight to your table. Perfect for healthy, balanced meals.',
+      ko: '최상의 신선도를 자랑할 때 수확한 프리미엄 품질의 채소. 그린자이언트는 농장에서 갓 수확한 채소의 자연스러운 풍미와 아삭한 식감을 식탁까지 그대로 전달합니다. 건강하고 균형 잡힌 식단에 완벽한 선택입니다.',
+      zh: '在最新鲜的时候收获的优质罐装蔬菜。绿巨人将农场新鲜蔬菜的自然美味和清脆口感直接带到您的餐桌上。健康均衡膳食的完美选择。'
     },
     image: '/images/green_giant.jpg',
-    detailImages: [],
+    detailImages: [
+      '/images/green_giant_1.jpg',
+      '/images/green_giant_2.jpg',
+      '/images/green_giant_3.jpg',
+      '/images/green_giant_4.jpg',
+      '/images/green_giant_5.jpg'
+    ],
     color: '#34d399'
   },
   {
@@ -302,7 +308,11 @@ export const PRODUCTS: Product[] = [
       zh: '1米长的卷型果冻！解开吃很有趣。含有12%的水果泥（浆果和草莓）。非常适合儿童零食、游戏时间、幼儿园/学校活动和特殊礼物。'
     },
     image: '/images/fruit_by_the_foot.jpg',
-    detailImages: [],
+    detailImages: [
+      '/images/fruit_by_the_foot.jpg',
+      '/images/fruit_by_the_foot.jpg',
+      '/images/fruit_by_the_foot.jpg'
+    ],
     color: '#8A9A5B'
   }
 ];
