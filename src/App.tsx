@@ -261,33 +261,139 @@ const getFooterContent = (type: string, title: string, isDarkMode: boolean) => {
     ),
     company: (
       <div className={baseClass}>
+        <div className="text-xl font-medium mb-6">
+          HK ON은 글로벌 소싱 역량을 기반으로 프리미엄 식품을 수입·유통하는 전문 기업입니다.
+        </div>
         <div className={cardClass}>
-          <h3 className={titleClass}>회사소개</h3>
-          <p className="text-lg">글로벌 소싱 역량을 기반으로 프리미엄 식품을 수입·유통하는 전문 기업입니다. 전 세계의 우수한 제품을 발굴하여 고객의 식탁에 건강하고 맛있는 경험을 선사합니다.</p>
+          <div className="flex items-center gap-2 mb-4">
+            <Globe className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
+            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>핵심 경쟁력</h3>
+          </div>
+          <ul className="space-y-3">
+            <li className="flex items-center gap-3">
+              <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-[#6D1B2A]'}`} />
+              <span>글로벌 프리미엄 브랜드(하겐다즈, 카라치, 제너럴밀즈, 란티코 등) 공식 유통 파트너</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-[#6D1B2A]'}`} />
+              <span>철저한 품질 관리 및 안정적인 유통 시스템</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <div className={`w-1.5 h-1.5 rounded-full ${isDarkMode ? 'bg-blue-500' : 'bg-[#6D1B2A]'}`} />
+              <span>온라인 채널 중심의 높은 고객 만족도 실현</span>
+            </li>
+          </ul>
+        </div>
+        <div className={`p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800/30' : 'bg-gray-50/50'}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <Eye className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
+            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>비전</h3>
+          </div>
+          <p className="leading-relaxed">
+            프리미엄 디저트 및 간편식 시장을 선도하며, 오프라인 확장(백화점 등)을 통해 고객과 파트너 모두에게 새로운 가치를 제공하는 프리미엄 F&B 기업으로 도약합니다.
+          </p>
         </div>
       </div>
     ),
     products: (
       <div className={baseClass}>
-        <div className={cardClass}>
-          <h3 className={titleClass}>제품소개</h3>
-          <p className="text-lg">그린자이언트, 하겐다즈, 네이처밸리 등 세계적으로 사랑받는 프리미엄 브랜드 라인업을 만나보세요.</p>
+        <div className="text-xl font-medium mb-6">
+          세계적으로 사랑받는 프리미엄 브랜드 라인업을 만나보세요.
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={cardClass}>
+            <h3 className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>그린자이언트</h3>
+            <p className="text-sm opacity-80">자연의 신선함을 그대로 담은 프리미엄 스위트콘 브랜드</p>
+          </div>
+          <div className={cardClass}>
+            <h3 className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>하겐다즈</h3>
+            <p className="text-sm opacity-80">최상의 원료로 만든 프리미엄 아이스크림의 대명사</p>
+          </div>
+          <div className={cardClass}>
+            <h3 className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>네이처밸리</h3>
+            <p className="text-sm opacity-80">건강하고 맛있는 리얼 통귀리 그래놀라 바</p>
+          </div>
+          <div className={cardClass}>
+            <h3 className={`text-lg font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>푸룻바이더풋</h3>
+            <p className="text-sm opacity-80">아이들이 좋아하는 재미있고 맛있는 과일 젤리</p>
+          </div>
         </div>
       </div>
     ),
     support: (
       <div className={baseClass}>
+        <div className="text-xl font-medium mb-6">
+          고객님의 성공적인 비즈니스를 위해 최선을 다해 지원합니다.
+        </div>
         <div className={cardClass}>
-          <h3 className={titleClass}>고객지원</h3>
-          <p className="text-lg">고객님의 성공적인 비즈니스를 위해 최선을 다해 지원합니다. 제품 문의, 제휴 제안 등 언제든 환영합니다.</p>
+          <div className="flex items-center gap-2 mb-4">
+            <Headset className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
+            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>고객 상담 센터</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
+              <span className="opacity-80">대표 번호</span>
+              <span className="font-bold text-lg">1588-1285</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2">
+              <span className="opacity-80">운영 시간</span>
+              <span className="text-right">평일 09:30 - 18:30<br/><span className="text-sm opacity-70">(주말 및 공휴일 휴무)</span></span>
+            </div>
+            <div className="flex justify-between items-center pb-2">
+              <span className="opacity-80">이메일 문의</span>
+              <span>hkonkorea@gmail.com</span>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button className={`p-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-colors ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-[#6D1B2A] hover:bg-[#5A1622] text-white'}`}>
+            <MessageSquare className="w-5 h-5" /> 1:1 문의하기
+          </button>
+          <button className={`p-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-colors ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`}>
+            <HelpCircle className="w-5 h-5" /> 자주 묻는 질문
+          </button>
         </div>
       </div>
     ),
     careers: (
       <div className={baseClass}>
+        <div className="text-xl font-medium mb-6">
+          에이치케이온 코리아와 함께 글로벌 식품 시장을 선도할<br/>열정적인 인재를 기다립니다.
+        </div>
         <div className={cardClass}>
-          <h3 className={titleClass}>채용정보</h3>
-          <p className="text-lg">에이치케이온 코리아와 함께 글로벌 식품 시장을 선도할 열정적인 인재를 기다립니다.</p>
+          <div className="flex items-center gap-2 mb-4">
+            <Briefcase className={`w-5 h-5 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
+            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>인재상</h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4">
+              <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${isDarkMode ? 'bg-blue-900/50 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                <Globe className="w-6 h-6" />
+              </div>
+              <div className="font-bold mb-1">Global Mind</div>
+              <div className="text-sm opacity-80">글로벌 감각과 열린 사고</div>
+            </div>
+            <div className="text-center p-4">
+              <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${isDarkMode ? 'bg-blue-900/50 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                <Users className="w-6 h-6" />
+              </div>
+              <div className="font-bold mb-1">Teamwork</div>
+              <div className="text-sm opacity-80">소통과 협력을 통한 시너지</div>
+            </div>
+            <div className="text-center p-4">
+              <div className={`w-12 h-12 mx-auto rounded-full flex items-center justify-center mb-3 ${isDarkMode ? 'bg-blue-900/50 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                <MonitorPlay className="w-6 h-6" />
+              </div>
+              <div className="font-bold mb-1">Challenge</div>
+              <div className="text-sm opacity-80">변화를 두려워하지 않는 도전</div>
+            </div>
+          </div>
+        </div>
+        <div className="text-center mt-6">
+          <p className="mb-4 opacity-80">현재 진행 중인 채용 공고가 없습니다.<br/>인재풀에 등록해주시면 적합한 포지션 오픈 시 연락드리겠습니다.</p>
+          <button className={`px-6 py-3 rounded-full font-bold transition-colors ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`}>
+            인재풀 등록하기
+          </button>
         </div>
       </div>
     )
