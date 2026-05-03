@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon, Eye, Download, Briefcase, Headset, MessageSquare, HelpCircle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon, Eye, Download, Briefcase, Headset, MessageSquare, HelpCircle, Sparkles, Instagram, Youtube, BookOpen } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES } from './constants';
 import { AccordionMenu } from './components/AccordionMenu';
 import companyLogo from '/images/company.png';
@@ -421,8 +421,11 @@ const getFooterContent = (type: string, title: string, isDarkMode: boolean) => {
 };
 
 export default function App() {
-  // 현재 선택된 언어 상태 (기본값: 한국어)
-  const [currentLang, setCurrentLang] = useState('ko');
+  // 현재 선택된 언어 상태 (기본값: 사용자 브라우저 언어)
+  const [currentLang, setCurrentLang] = useState(() => {
+    const lang = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko';
+    return ['ko', 'en', 'zh'].includes(lang) ? lang : 'en';
+  });
   // 언어 선택 메뉴 열림/닫힘 상태
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   // 모바일 메뉴 열림/닫힘 상태
@@ -441,8 +444,13 @@ export default function App() {
   // 마우스 위치 (사이드바의 스포트라이트 효과 등에 사용)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   
-  // 다크모드 상태 관리
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // 다크모드 상태 관리 (시스템 환경 설정 기준)
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
   // 현재 마우스가 올라가 있는 메뉴 항목 (드롭다운 표시에 사용)
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
 
@@ -475,25 +483,225 @@ export default function App() {
     });
   }, []);
 
+  const getAboutUsContent = (lang: string, dark: boolean) => {
+    return (
+      <motion.div 
+        initial="hidden" animate="visible" 
+        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15 } } }}
+        className={`space-y-6 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+      >
+        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-xl font-bold leading-relaxed ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+          {lang === 'ko' 
+            ? "글로벌 미식 문화의 새로운 기준, 에이치케이온(HKON)" 
+            : lang === 'zh' 
+            ? "全球美食文化的新标杆，HKON" 
+            : "The new standard of global gastronomy, HKON."}
+        </motion.p>
+        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="leading-relaxed text-lg">
+          {lang === 'ko'
+            ? "에이치케이온(HKON)은 단순히 해외 식품을 소개하는 유통사를 넘어, 전 세계에 숨겨진 보석 같은 브랜드들을 발굴하고, 국내 소비자들의 까다로운 입맛을 만족시키는 '글로벌 미식 큐레이터'입니다. 엄격한 품질 관리부터 최적의 유통 솔루션까지, 프리미엄 다이닝의 가치를 고객의 일상으로 전달합니다."
+            : lang === 'zh'
+            ? "HKON 不仅仅是一家引进海外食品的分销商，更是一位“全球美食策展人”。我们发掘世界各地隐藏的宝石品牌，并通过严格的质量控制和优化的物流方案，将高端餐饮的价值传递给每位消费者的日常生活中。"
+            : "HKON is more than just a distributor introducing overseas foods; we are 'Global Gastronomy Curators' discovering hidden gem brands worldwide and satisfying sophisticated tastes. From strict quality control to optimal distribution solutions, we deliver the value of premium dining to your everyday life."}
+        </motion.p>
+        <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } }} className={`${dark ? 'bg-gray-800 border-gray-700 shadow-xl shadow-black/20' : 'bg-gray-50 border-gray-100 shadow-xl shadow-gray-200/50'} p-8 rounded-3xl border grid grid-cols-1 md:grid-cols-3 gap-6`}>
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className={`p-4 rounded-full ${dark ? 'bg-blue-900/30 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
+              <Globe size={32} />
+            </div>
+            <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{lang === 'ko' ? '글로벌 네트워크' : lang === 'zh' ? '全球网络' : 'Global Network'}</h4>
+            <p className="text-sm opacity-80">{lang === 'ko' ? '초일류 브랜드 독점 공급' : lang === 'zh' ? '顶尖品牌独家供应' : 'Exclusive top-tier supply'}</p>
+          </div>
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className={`p-4 rounded-full ${dark ? 'bg-blue-900/30 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
+              <Building2 size={32} />
+            </div>
+            <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{lang === 'ko' ? '철저한 물류/유통' : lang === 'zh' ? '严格的物流系统' : 'Robust Cold-Chain'}</h4>
+            <p className="text-sm opacity-80">{lang === 'ko' ? '품질을 지키는 콜드체인' : lang === 'zh' ? '保证品质的冷链' : 'Quality-preserving transit'}</p>
+          </div>
+          <div className="flex flex-col items-center text-center gap-3">
+            <div className={`p-4 rounded-full ${dark ? 'bg-blue-900/30 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
+              <Users size={32} />
+            </div>
+            <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{lang === 'ko' ? '고객 지향 파트너십' : lang === 'zh' ? '客户导向的合作' : 'Client-Oriented'}</h4>
+            <p className="text-sm opacity-80">{lang === 'ko' ? 'B2B/B2C 토탈 커머스' : lang === 'zh' ? 'B2B/B2C 全面商业' : 'B2B/B2C Total Commerce'}</p>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  };
+
+  const getWhatsNewContent = (lang: string, dark: boolean) => {
+    return (
+      <motion.div 
+        initial="hidden" animate="visible" 
+        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+        className={`space-y-6 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+      >
+        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-xl font-medium ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+          {lang === 'ko' ? "HKON의 새로운 소식 & 신제품" : lang === 'zh' ? "HKON的新闻与新产品" : "HKON News & New Products"}
+        </motion.p>
+        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          {lang === 'ko' 
+            ? "에이치케이온이 새롭게 선보이는 신제품 라인업과 핫한 팝업 스토어, 특별한 브랜드 프로모션 소식을 가장 빠르게 확인하세요."
+            : lang === 'zh'
+            ? "第一时间获取 HKON 全新引进的海外品牌、火爆的快闪店活动以及限时特别优惠等最新资讯。"
+            : "Stay updated with HKON's newest product launches, brand partnerships, and exciting events."}
+        </motion.p>
+
+        <div className="space-y-4 mt-6">
+          <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-6 rounded-3xl border flex items-start gap-5 transition-all hover:shadow-xl duration-300`}>
+            <div className={`mt-1 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${dark ? 'bg-blue-800/50 text-blue-300 shadow-lg shadow-blue-900/20' : 'bg-white text-[#6D1B2A] shadow-md shadow-red-200/50'}`}>
+              <Sparkles size={24} />
+            </div>
+            <div>
+              <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase mb-2 ${dark ? 'bg-blue-500 text-white' : 'bg-[#6D1B2A] text-white'}`}>New Product</div>
+              <h5 className={`font-bold text-lg mb-1.5 ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+                {lang === 'ko' ? "이탈리아 No.1 디저트 '티라미수 클라시코' 단독 런칭" : lang === 'zh' ? "意大利第一甜点“经典提拉米苏”独家推出" : "Exclusive Launch: Italy's #1 Dessert 'Tiramisu Classico'"}
+              </h5>
+              <p className={`text-sm font-medium ${dark ? 'text-blue-200/70' : 'text-[#6D1B2A]/70'}`}>
+                {lang === 'ko' ? "본고장의 마스카포네 치즈로 완성된 프리미엄 신제품을 만나보세요" : lang === 'zh' ? "品尝正宗马斯卡彭奶酪制成的高端新产品" : "Experience the premium new product made with authentic Mascarpone cheese"}
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-6 rounded-3xl border flex items-start gap-5 transition-all hover:shadow-xl duration-300`}>
+            <div className={`mt-1 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${dark ? 'bg-blue-800/50 text-blue-300 shadow-lg shadow-blue-900/20' : 'bg-white text-[#6D1B2A] shadow-md shadow-red-200/50'}`}>
+              <span className="font-bold text-xl">🔥</span>
+            </div>
+            <div>
+              <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase mb-2 ${dark ? 'bg-gray-700 text-white' : 'bg-gray-800 text-white'}`}>Notice</div>
+              <h5 className={`font-bold text-lg mb-1.5 ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+                {lang === 'ko' ? "네이쳐밸리 리뉴얼 패키지 런칭 팝업" : lang === 'zh' ? "天然谷全新包装快闪店盛大启幕" : "Nature Valley Revamped Packaging Launch"}
+              </h5>
+              <p className={`text-sm font-medium ${dark ? 'text-blue-200/70' : 'text-[#6D1B2A]/70'}`}>
+                {lang === 'ko' ? "여의도 더현대 서울 지하 1층 팝업존" : lang === 'zh' ? "汝矣岛 The Hyundai Seoul 地下一层" : "The Hyundai Seoul, B1 Pop-up Zone"}
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-6 rounded-3xl border flex items-start gap-5 transition-all hover:shadow-xl duration-300`}>
+            <div className={`mt-1 flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${dark ? 'bg-blue-800/50 text-blue-300 shadow-lg shadow-blue-900/20' : 'bg-white text-[#6D1B2A] shadow-md shadow-red-200/50'}`}>
+              <Building2 size={24} />
+            </div>
+            <div>
+              <div className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase mb-2 ${dark ? 'bg-gray-700 text-white' : 'bg-gray-800 text-white'}`}>Notice</div>
+              <h5 className={`font-bold text-lg mb-1.5 ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+                {lang === 'ko' ? "이탈리아 정통 커피 '란티코' B2B 납품" : lang === 'zh' ? "兰蒂科(L'Antico)成功入驻多家国内顶级高端酒店" : "L'Antico Secures B2B Partnerships"}
+              </h5>
+              <p className={`text-sm font-medium ${dark ? 'text-blue-200/70' : 'text-[#6D1B2A]/70'}`}>
+                {lang === 'ko' ? "국내 프리미엄 호텔 5곳 브루잉 센터 계약 체결 완료" : lang === 'zh' ? "与国内5家高端酒店正式签署入驻协议" : "Brewing center contracts confirmed with 5 premium domestic hotels"}
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const getProductContent = (product: Product, lang: string, dark: boolean) => {
+    return (
+      <motion.div 
+        initial="hidden" animate="visible" 
+        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+        className={`space-y-8 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+      >
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-4 ${dark ? 'bg-blue-900/40 text-blue-400 border border-blue-800/50' : 'bg-red-50 text-[#6D1B2A] border border-red-200'}`}>
+            <Sparkles size={14} />
+            Premium Collection
+          </div>
+          <p className="text-xl font-medium leading-relaxed whitespace-pre-line">
+            {product.description[lang as keyof typeof product.description] || product.description.en}
+          </p>
+        </motion.div>
+
+        {product.website && (
+          <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+            <a 
+              href={product.website} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className={`block w-full p-6 rounded-2xl border transition-all duration-300 group ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700 hover:border-blue-500/50' : 'bg-gray-50 border-gray-200 hover:bg-white hover:shadow-xl hover:border-red-200'} cursor-pointer`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${dark ? 'bg-blue-900/50 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
+                    <Globe size={24} className="group-hover:scale-110 transition-transform" />
+                  </div>
+                  <div>
+                    <h5 className={`font-bold text-lg mb-0.5 ${dark ? 'text-white' : 'text-gray-900'}`}>
+                      {lang === 'ko' ? '공식 브랜드 웹사이트' : lang === 'zh' ? '品牌官方网站' : 'Official Brand Website'}
+                    </h5>
+                    <p className="text-sm opacity-70">
+                      {product.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight size={24} className={`${dark ? 'text-gray-600 group-hover:text-white' : 'text-gray-400 group-hover:text-[#6D1B2A]'} transition-colors group-hover:translate-x-1`} />
+              </div>
+            </a>
+          </motion.div>
+        )}
+      </motion.div>
+    );
+  };
+
   const openModal = (title: string, content: React.ReactNode, images?: string[]) => setModal({ isOpen: true, title, content, images });
+
+  const getResourcesContent = (lang: string, dark: boolean) => {
+    return (
+      <div className="space-y-8">
+        <div className={`p-8 rounded-3xl border ${dark ? 'border-gray-800 bg-gray-900/50' : 'border-gray-100 bg-gray-50'} text-center`}>
+          <Download size={48} className={`mx-auto mb-6 ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
+          <h3 className="text-2xl font-bold mb-4">{lang === 'ko' ? '미디어 자료실' : lang === 'zh' ? '媒体库' : 'Media Center'}</h3>
+          <p className={`text-lg ${dark ? 'text-gray-400' : 'text-gray-700'}`}>
+            {lang === 'ko' ? '제품 카탈로그, 제안서, 홍보 영상 등 다양한 자료를 열람하실 수 있습니다.' : 'You can browse catalogs, proposals, and promotional videos.'}
+          </p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          {[
+            { title: lang === 'ko' ? '제품 카탈로그' : 'Catalog', desc: lang === 'ko' ? '최신 제품 정보' : 'Product Info' },
+            { title: lang === 'ko' ? '브랜드 브로슈어' : 'Brochure', desc: lang === 'ko' ? '브랜드 스토리 및 소개' : 'Brand Story' },
+            { title: lang === 'ko' ? '품질 인증서' : 'Certificates', desc: lang === 'ko' ? 'HACCP 및 품질 보증' : 'HACCP & QA' },
+            { title: lang === 'ko' ? '입점 제안서' : 'Proposals', desc: lang === 'ko' ? 'B2B 파트너십 안내' : 'B2B Guide' },
+            { title: lang === 'ko' ? '홍보 영상' : 'Videos', desc: lang === 'ko' ? '기업 및 제품 영상' : 'Promo Videos' },
+            { title: lang === 'ko' ? '기타 자료' : 'Others', desc: lang === 'ko' ? '이벤트 및 프로모션' : 'Events & Promos' }
+          ].map((res, idx) => (
+            <div key={idx} className={`p-6 rounded-3xl border ${dark ? 'border-gray-800 bg-gray-800/50 hover:bg-gray-800 hover:border-blue-500/50' : 'border-gray-200 bg-white hover:shadow-xl hover:border-red-200'} flex flex-col items-center justify-center text-center cursor-pointer transition-all group`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${dark ? 'bg-gray-700 text-gray-300 group-hover:bg-blue-900/50 group-hover:text-blue-400' : 'bg-gray-100 text-gray-500 group-hover:bg-red-50 group-hover:text-[#6D1B2A]'} transition-colors`}>
+                <FileText size={24} />
+              </div>
+              <span className={`font-bold text-base mb-1 ${dark ? 'text-gray-200' : 'text-gray-800'}`}>{res.title}</span>
+              <span className={`text-xs ${dark ? 'text-gray-500' : 'text-gray-500'}`}>{res.desc}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   const getCompanyIntro = (lang: string, dark: boolean) => {
     return (
-      <div className={`space-y-6 ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-        <p className={`text-xl font-medium ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>{t.introDesc}</p>
-        <div className={`${dark ? 'bg-blue-900/20 border-blue-800/50' : 'bg-red-50 border-red-100'} p-6 rounded-2xl border`}>
-          <h4 className={`font-bold ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'} mb-3 flex items-center gap-2`}><Globe size={20}/> {t.coreCompetency}</h4>
-          <ul className={`list-disc pl-5 space-y-2 ${dark ? 'text-blue-200/80' : 'text-[#6D1B2A]/80'}`}>
+      <motion.div 
+        initial="hidden" animate="visible" 
+        variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
+        className={`space-y-6 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+      >
+        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-xl font-medium ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>{t.introDesc}</motion.p>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-8 rounded-3xl border transition-colors`}>
+          <h4 className={`font-bold text-xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'} mb-4 flex items-center gap-3`}><Globe size={24}/> {t.coreCompetency}</h4>
+          <ul className={`list-disc pl-5 space-y-3 ${dark ? 'text-blue-200/80' : 'text-[#6D1B2A]/80'} font-medium`}>
             <li>{t.core1}</li>
             <li>{t.core2}</li>
             <li>{t.core3}</li>
           </ul>
-        </div>
+        </motion.div>
         <div className={`${dark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100'} p-6 rounded-2xl border`}>
           <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'} mb-3 flex items-center gap-2`}><Eye size={20}/> {t.vision}</h4>
           <p className={`${dark ? 'text-gray-400' : 'text-gray-700'} leading-relaxed`}>{t.visionDesc}</p>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
@@ -617,34 +825,7 @@ export default function App() {
     } 
     // 6. 자료실 메뉴 클릭 시: 제품 카탈로그 등 자료 다운로드 모달을 엽니다.
     else if (item === t.resources) {
-      const resourcesContent = (
-        <div className="space-y-8">
-          <div className={`p-8 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-900/50' : 'border-gray-100 bg-gray-50'} text-center`}>
-            <Download size={48} className={`mx-auto mb-6 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
-            <h3 className="text-2xl font-bold mb-4">자료실</h3>
-            <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>제품 카탈로그, 제안서, 인증서 등 다양한 자료를 다운로드하실 수 있습니다.</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {[
-              { title: '제품 카탈로그', desc: '최신 제품 정보' },
-              { title: '브랜드 브로슈어', desc: '브랜드 스토리 및 소개' },
-              { title: '품질 인증서', desc: 'HACCP 및 품질 보증' },
-              { title: '입점 제안서', desc: 'B2B 파트너십 안내' },
-              { title: '홍보 영상', desc: '기업 및 제품 영상' },
-              { title: '기타 자료', desc: '이벤트 및 프로모션' }
-            ].map((res, idx) => (
-              <div key={idx} className={`p-6 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-800/50 hover:bg-gray-800 hover:border-blue-500/50' : 'border-gray-200 bg-white hover:shadow-xl hover:border-red-200'} flex flex-col items-center justify-center text-center cursor-pointer transition-all group`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${isDarkMode ? 'bg-gray-700 text-gray-300 group-hover:bg-blue-900/50 group-hover:text-blue-400' : 'bg-gray-100 text-gray-500 group-hover:bg-red-50 group-hover:text-[#6D1B2A]'} transition-colors`}>
-                  <FileText size={24} />
-                </div>
-                <span className={`font-bold text-base mb-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{res.title}</span>
-                <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>{res.desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-      openModal(item, resourcesContent);
+      openModal(item, getResourcesContent(currentLang, isDarkMode));
     } 
     // 7. 제품 문의 메뉴 클릭 시: 문의 폼 모달을 엽니다.
     else if (item === t.inquiry) {
@@ -771,20 +952,28 @@ export default function App() {
       productId: 'company'
     },
     {
+      title: t.aboutUs,
+      subtitle: t.aboutUsTitle,
+      image: "/images/green_giant_original.jpg",
+      detailTitle: t.aboutUs,
+      detailDesc: t.aboutUsDesc,
+      productId: 'about-us'
+    },
+    {
+      title: t.whatsNew,
+      subtitle: t.whatsNewTitle,
+      image: "/images/lantico_2.jpg",
+      detailTitle: t.whatsNew,
+      detailDesc: t.whatsNewDesc,
+      productId: 'whats-new'
+    },
+    {
       title: t.haagendazs,
       subtitle: t.haagendazsSub,
       image: "/images/mini_cup.jpg",
       detailTitle: t.haagendazs,
       detailDesc: t.haagendazsDesc,
       productId: 'haagen-dazs'
-    },
-    {
-      title: t.natureValley,
-      subtitle: t.natureValleySub,
-      image: "/images/grnaola_thumbnail.jpg",
-      detailTitle: t.natureValley,
-      detailDesc: t.natureValleyDesc,
-      productId: 'nature-valley'
     },
     {
       title: t.lantico,
@@ -803,20 +992,12 @@ export default function App() {
       productId: 'caraci'
     },
     {
-      title: t.fruitByTheFoot,
-      subtitle: t.fruitByTheFootSub,
-      image: "/images/fruit_by_the_foot.jpg",
-      detailTitle: t.fruitByTheFoot,
-      detailDesc: t.fruitByTheFootDesc,
-      productId: 'fruit-by-the-foot'
-    },
-    {
-      title: t.greenGiant,
-      subtitle: t.greenGiantSub,
-      image: "/images/green_giant.jpg",
-      detailTitle: t.greenGiant,
-      detailDesc: t.greenGiantDesc,
-      productId: 'green-giant'
+      title: t.generalMills,
+      subtitle: t.generalMillsSub,
+      image: "/images/grnaola_thumbnail.jpg",
+      detailTitle: t.generalMills,
+      detailDesc: t.generalMillsDesc,
+      productId: 'general-mills'
     }
   ], [t]);
 
@@ -938,8 +1119,8 @@ export default function App() {
                                 if (product) {
                                   openModal(
                                     product.name[currentLang as keyof typeof product.name] || product.name.en, 
-                                    product.description[currentLang as keyof typeof product.description] || product.description.en, 
-                                    product.detailImages
+                                    getProductContent(product, currentLang, isDarkMode), 
+                                    product.detailImages ? [product.image, ...product.detailImages] : [product.image]
                                   );
                                 } else {
                                   openModal(productSlide.detailTitle, productSlide.detailDesc, [productSlide.image]);
@@ -964,12 +1145,30 @@ export default function App() {
             )}
           </AnimatePresence>
         </div>
+
+        <div className={`mt-auto w-full px-6 pb-6 pt-4 relative z-10 transition-opacity duration-300 ${!isSidebarOpen && 'opacity-0 hidden'}`}>
+           <div className="flex gap-4 items-center justify-center pt-6 border-t border-white/20">
+             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="Instagram"><Instagram size={20} /></a>
+             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="YouTube"><Youtube size={22} /></a>
+             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="Naver Blog"><BookOpen size={20} /></a>
+             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="KakaoTalk"><MessageSquare size={20} /></a>
+           </div>
+        </div>
       </motion.div>
 
       {/* Main Content Area for First Screen */}
       <div className="flex-1 flex flex-col min-w-0 relative h-full">
         {/* Top Right Floating Controls */}
-        <div className={`fixed top-6 right-6 z-50 flex items-center gap-4 p-3 px-6 rounded-full shadow-2xl border backdrop-blur-xl transition-all duration-300 ${isDarkMode ? 'bg-[#1a1a1a]/95 border-gray-700 shadow-black/50' : 'bg-white/95 border-gray-300 shadow-gray-200/50'}`}>
+        <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-2 px-4 rounded-full shadow-2xl border backdrop-blur-xl transition-all duration-300 ${isDarkMode ? 'bg-[#1a1a1a]/95 border-gray-700 shadow-black/50' : 'bg-white/95 border-gray-300 shadow-gray-200/50'}`}>
+          <button 
+            className={`lg:hidden p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-blue-400 hover:bg-gray-800' : 'text-[#6D1B2A] hover:bg-gray-100'}`}
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Open Menu"
+          >
+            <Menu size={20} />
+          </button>
+          <div className={`lg:hidden w-px h-5 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
+
           <button 
             onClick={() => setIsDarkMode(!isDarkMode)}
             className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-blue-400 hover:text-blue-300 hover:bg-gray-800' : 'text-[#6D1B2A] hover:text-[#5A1622] hover:bg-gray-100'}`}
@@ -977,16 +1176,17 @@ export default function App() {
           >
             {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
           </button>
-          <div className={`w-px h-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-          <div className="flex items-center gap-3 text-sm font-black">
-            <Globe size={18} className={isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'} />
+          <div className={`w-px h-5 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
+          
+          <div className="flex items-center gap-2 text-xs md:text-sm font-black">
+            <Globe size={16} className={isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'} />
             {LANGUAGES.map((lang, idx) => (
               <React.Fragment key={lang.code}>
                 <button 
                   onClick={() => setCurrentLang(lang.code)} 
                   className={`transition-colors tracking-widest uppercase ${currentLang === lang.code ? (isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]') : (isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-900')}`}
                 >
-                  {lang.name}
+                  {lang.name.slice(0, 3)}
                 </button>
                 {idx < LANGUAGES.length - 1 && <span className={isDarkMode ? 'text-gray-700' : 'text-gray-300'}>|</span>}
               </React.Fragment>
@@ -1047,14 +1247,12 @@ export default function App() {
                   );
                 })}
 
-                {/* Mobile Dark Mode Toggle */}
-                <button 
-                  onClick={() => setIsDarkMode(!isDarkMode)}
-                  className={`mt-4 p-4 rounded-xl flex items-center justify-center gap-3 font-medium transition-colors ${isDarkMode ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}`}
-                >
-                  {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                  {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-                </button>
+                <div className="mt-8 flex gap-6 items-center justify-center pt-8 border-t border-gray-200 dark:border-gray-800">
+                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram"><Instagram size={24} /></a>
+                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube"><Youtube size={26} /></a>
+                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog"><BookOpen size={24} /></a>
+                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk"><MessageSquare size={24} /></a>
+                </div>
               </div>
             </motion.div>
           )}
@@ -1073,11 +1271,22 @@ export default function App() {
                 transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                 src={heroSlides[activeSlide].image}
                 alt="Hero Background"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover cursor-grab active:cursor-grabbing"
                 style={{ objectPosition: 'center top' }}
                 referrerPolicy="no-referrer"
                 fetchPriority="high"
                 loading="eager"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(e, { offset }) => {
+                  const threshold = 50;
+                  if (offset.x > threshold) {
+                    setActiveSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+                  } else if (offset.x < -threshold) {
+                    setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+                  }
+                }}
               />
             </AnimatePresence>
             
@@ -1131,12 +1340,16 @@ export default function App() {
                         const slide = heroSlides[activeSlide];
                         if (slide.productId === 'company') {
                           openModal(t.company, getCompanyIntro(currentLang, isDarkMode));
+                        } else if (slide.productId === 'about-us') {
+                          openModal(t.aboutUs, getAboutUsContent(currentLang, isDarkMode), [slide.image]);
+                        } else if (slide.productId === 'whats-new') {
+                          openModal(t.whatsNew, getWhatsNewContent(currentLang, isDarkMode), [slide.image]);
                         } else {
                           const product = PRODUCTS.find(p => p.id === slide.productId);
                           if (product) {
                             openModal(
                               product.name[currentLang as keyof typeof product.name] || product.name.en, 
-                              product.description[currentLang as keyof typeof product.description] || product.description.en, 
+                              getProductContent(product, currentLang, isDarkMode), 
                               [product.image, ...product.detailImages]
                             );
                           } else {
@@ -1297,19 +1510,24 @@ export default function App() {
                   >
                     <button 
                       onClick={() => {
-                        if (activeDetailSlide === 0) {
+                        const slide = heroSlides[activeDetailSlide];
+                        if (slide.productId === 'company') {
                           openModal(t.company, getCompanyIntro(currentLang, isDarkMode));
+                        } else if (slide.productId === 'about-us') {
+                          openModal(t.aboutUs, getAboutUsContent(currentLang, isDarkMode), [slide.image]);
+                        } else if (slide.productId === 'whats-new') {
+                          openModal(t.whatsNew, getWhatsNewContent(currentLang, isDarkMode), [slide.image]);
                         } else {
-                          const currentTitle = heroSlides[activeDetailSlide].detailTitle;
-                          const product = PRODUCTS.find(p => p.name[currentLang as keyof typeof p.name] === currentTitle || p.name.en === currentTitle);
+                          const currentTitle = slide.detailTitle;
+                          const product = PRODUCTS.find(p => p.name[currentLang as keyof typeof p.name] === currentTitle || p.name.en === currentTitle || p.id === slide.productId);
                           if (product) {
                             openModal(
                               product.name[currentLang as keyof typeof product.name] || product.name.en,
-                              product.description[currentLang as keyof typeof product.description] || product.description.en,
+                              getProductContent(product, currentLang, isDarkMode),
                               [product.image, ...product.detailImages]
                             );
                           } else {
-                            openModal(heroSlides[activeDetailSlide].detailTitle, heroSlides[activeDetailSlide].detailDesc);
+                            openModal(slide.detailTitle, slide.detailDesc, [slide.image]);
                           }
                         }
                       }} 
@@ -1377,7 +1595,7 @@ export default function App() {
                         {product.name[currentLang as keyof typeof product.name] || product.name.en}
                       </h3>
                       <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed whitespace-pre-line font-medium`}>
-                        {product.description[currentLang as keyof typeof product.description] || product.description.en}
+                        {product.shortDescription?.[currentLang as keyof typeof product.shortDescription] || product.description[currentLang as keyof typeof product.description] || product.description.en}
                       </p>
                       
                       <ul className={`space-y-5 mt-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-medium text-lg`}>
@@ -1395,7 +1613,7 @@ export default function App() {
                         <motion.button 
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, product.description[currentLang as keyof typeof product.description] || product.description.en, [product.image, ...product.detailImages])}
+                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, getProductContent(product, currentLang, isDarkMode), [product.image, ...product.detailImages])}
                           className={`group inline-flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-colors duration-300 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20' : 'bg-[#6D1B2A] hover:bg-[#5A1622] text-white shadow-lg shadow-red-900/20'}`}
                         >
                           {t.exploreProducts}
@@ -1496,13 +1714,26 @@ export default function App() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm"
             >
-              <div className="flex gap-6">
+              <div className="flex gap-6 items-center flex-wrap">
                 <button onClick={() => openModal(t.privacyPolicy, getFooterContent('privacy', t.privacyPolicy, isDarkMode))} className={`text-white font-medium transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-red-400'}`}>{t.privacyPolicy}</button>
                 <button onClick={() => openModal(t.termsOfService, getFooterContent('terms', t.termsOfService, isDarkMode))} className="hover:text-white transition-colors">{t.termsOfService}</button>
                 <button onClick={() => openModal(t.sitemap, getFooterContent('sitemap', t.sitemap, isDarkMode))} className="hover:text-white transition-colors">{t.sitemap}</button>
                 <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode))} className="hover:text-white transition-colors">{t.location}</button>
+                <button onClick={() => openModal(t.resources, getResourcesContent(currentLang, isDarkMode))} className="flex items-center gap-2 hover:text-white transition-colors font-bold text-white"><MonitorPlay size={16} />{t.resources}</button>
+                <div className="hidden md:flex ml-2 gap-4 border-l border-gray-700 pl-4">
+                  <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={16} /></a>
+                  <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={17} /></a>
+                  <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={16} /></a>
+                </div>
               </div>
-              <p>{t.footerText}</p>
+              <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
+                <div className="flex md:hidden gap-3 mb-2">
+                  <a href="#" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={18} /></a>
+                  <a href="#" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={19} /></a>
+                  <a href="#" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={18} /></a>
+                </div>
+                <p>{t.footerText}</p>
+              </div>
             </motion.div>
           </div>
         </footer>
