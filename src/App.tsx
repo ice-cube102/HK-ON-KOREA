@@ -954,7 +954,7 @@ export default function App() {
     {
       title: t.aboutUs,
       subtitle: t.aboutUsTitle,
-      image: "/images/green_giant_original.jpg",
+      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=2000",
       detailTitle: t.aboutUs,
       detailDesc: t.aboutUsDesc,
       productId: 'about-us'
@@ -962,7 +962,7 @@ export default function App() {
     {
       title: t.whatsNew,
       subtitle: t.whatsNewTitle,
-      image: "/images/lantico_2.jpg",
+      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=80&w=2000",
       detailTitle: t.whatsNew,
       detailDesc: t.whatsNewDesc,
       productId: 'whats-new'
@@ -1051,126 +1051,30 @@ export default function App() {
   return (
     <div className={`flex flex-col min-h-screen ${isDarkMode ? 'bg-[#1a1a1a] text-white selection:bg-blue-500' : 'bg-white text-gray-900 selection:bg-[#6D1B2A]'} font-sans selection:text-white transition-colors duration-300`}>
       
-      {/* First Screen Wrapper (Sidebar + Hero) */}
+      {/* First Screen Wrapper */}
       <div className="flex w-full h-[100dvh] relative">
-        {/* Left Sidebar (Ends on first screen) */}
-        <motion.div 
-          animate={{ width: isSidebarOpen ? 224 : 64 }}
-          onMouseMove={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-          }}
-          className="border-r border-[#5A1622] py-4 hidden lg:flex flex-col items-center overflow-hidden flex-shrink-0 bg-[#6D1B2A] relative group h-full z-40"
-        >
-        {/* Spotlight effect */}
-        <div 
-          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle 50px at ${mousePos.x}px ${mousePos.y}px, rgba(255,255,255,0.15), transparent)`
-          }}
-        />
-
-        <div className={`flex w-full px-4 mb-6 flex-col items-start relative z-10 mt-4`}>
-          <div className="flex items-center justify-between w-full">
-            <div className={`text-xl font-bold text-white transition-opacity duration-300 ${!isSidebarOpen && 'opacity-0 hidden'}`}>{t.hkon}</div>
-            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/10 rounded-md transition-colors text-white ml-auto">
-              <Menu size={24} />
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex flex-col w-full relative z-10 flex-grow" onMouseLeave={() => setHoveredMenu(null)}>
-          {navItems.map((item, idx) => (
-            <div key={idx} className="w-full" onMouseEnter={() => setHoveredMenu(item)}>
-              <button 
-                onClick={() => handleMenuClick(item)} 
-                className={`flex justify-between items-center w-full text-lg font-medium text-white/80 text-left py-4 px-4 hover:text-white transition-colors whitespace-nowrap border-b border-white/10 ${idx === 0 ? 'border-t border-white/10' : ''} ${!isSidebarOpen && 'hidden'}`}
-              >
-                <span>{item}</span>
-                {menuData[item] && isSidebarOpen && <ChevronRight size={16} className="opacity-50" />}
-              </button>
+        {/* Main Content Area for First Screen */}
+        <div className="flex-1 flex flex-col min-w-0 relative h-full">
+          {/* Top Left Floating Logo */}
+          <div className="fixed top-6 left-6 z-50">
+            <div className="text-2xl font-black text-white mix-blend-difference tracking-widest drop-shadow-md">
+              {t.hkon}
             </div>
-          ))}
+          </div>
 
-          {/* Flyout Panel */}
-          <AnimatePresence>
-            {hoveredMenu && menuData[hoveredMenu] && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className={`absolute left-full top-0 h-full w-[280px] ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-2xl border-l z-50 flex flex-col`}
-              >
-                <div className="bg-[#6D1B2A] py-8 px-6">
-                  <h2 className="text-white text-2xl font-bold">{hoveredMenu}</h2>
-                </div>
-                <div className="flex-1 overflow-y-auto py-4 px-4">
-                  <ul className="space-y-1">
-                    {menuData[hoveredMenu].map((subItem, subIdx) => (
-                      <li key={subIdx}>
-                        <button
-                          onClick={() => {
-                            if (hoveredMenu === t.notice) {
-                              openModal(subItem.name, subItem.content);
-                            } else if (hoveredMenu === t.products) {
-                              const productSlide = heroSlides.find(s => s.title === subItem.name);
-                              if (productSlide) {
-                                const product = PRODUCTS.find(p => p.id === productSlide.productId);
-                                if (product) {
-                                  openModal(
-                                    product.name[currentLang as keyof typeof product.name] || product.name.en, 
-                                    getProductContent(product, currentLang, isDarkMode), 
-                                    product.detailImages ? [product.image, ...product.detailImages] : [product.image]
-                                  );
-                                } else {
-                                  openModal(productSlide.detailTitle, productSlide.detailDesc, [productSlide.image]);
-                                }
-                              } else {
-                                openModal(subItem.name, `${subItem.name} content`);
-                              }
-                            } else {
-                              openModal(subItem.name, `${subItem.name} content`);
-                            }
-                          }}
-                          className={`flex justify-between items-center w-full py-3 px-4 ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50'} hover:text-[#6D1B2A] rounded-lg transition-all text-sm`}
-                        >
-                          <span>{subItem.name}</span>
-                          {subItem.hasSub && <ChevronDown size={14} className="rotate-[-90deg] opacity-40" />}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+          {/* Top Right Floating Controls */}
+          <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-2 px-4 rounded-full shadow-2xl border backdrop-blur-xl transition-all duration-300 ${isDarkMode ? 'bg-[#1a1a1a]/95 border-gray-700 shadow-black/50' : 'bg-white/95 border-gray-300 shadow-gray-200/50'}`}>
+            <button 
+              className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-blue-400 hover:bg-gray-800' : 'text-[#6D1B2A] hover:bg-gray-100'}`}
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open Menu"
+            >
+              <Menu size={20} />
+            </button>
+            <div className={`w-px h-5 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
 
-        <div className={`mt-auto w-full px-6 pb-6 pt-4 relative z-10 transition-opacity duration-300 ${!isSidebarOpen && 'opacity-0 hidden'}`}>
-           <div className="flex gap-4 items-center justify-center pt-6 border-t border-white/20">
-             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="Instagram"><Instagram size={20} /></a>
-             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="YouTube"><Youtube size={22} /></a>
-             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="Naver Blog"><BookOpen size={20} /></a>
-             <a href="#" className="text-white/70 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10" title="KakaoTalk"><MessageSquare size={20} /></a>
-           </div>
-        </div>
-      </motion.div>
-
-      {/* Main Content Area for First Screen */}
-      <div className="flex-1 flex flex-col min-w-0 relative h-full">
-        {/* Top Right Floating Controls */}
-        <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-2 px-4 rounded-full shadow-2xl border backdrop-blur-xl transition-all duration-300 ${isDarkMode ? 'bg-[#1a1a1a]/95 border-gray-700 shadow-black/50' : 'bg-white/95 border-gray-300 shadow-gray-200/50'}`}>
-          <button 
-            className={`lg:hidden p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-blue-400 hover:bg-gray-800' : 'text-[#6D1B2A] hover:bg-gray-100'}`}
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Open Menu"
-          >
-            <Menu size={20} />
-          </button>
-          <div className={`lg:hidden w-px h-5 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-
-          <button 
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            <button 
+              onClick={() => setIsDarkMode(!isDarkMode)}
             className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-blue-400 hover:text-blue-300 hover:bg-gray-800' : 'text-[#6D1B2A] hover:text-[#5A1622] hover:bg-gray-100'}`}
             aria-label="Toggle Dark Mode"
           >
@@ -1261,51 +1165,51 @@ export default function App() {
         {/* First Screen: Hero + Notice */}
         <div className="h-full flex flex-col">
           {/* Hero Slider */}
-          <div className="flex-1 relative overflow-hidden bg-gray-900">
-            <AnimatePresence mode="wait">
+          <motion.div 
+            className="flex-1 relative overflow-hidden bg-black cursor-grab active:cursor-grabbing touch-pan-y"
+            onPanEnd={(e, info) => {
+              const threshold = 50;
+              if (info.offset.x > threshold) {
+                setActiveSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+              } else if (info.offset.x < -threshold) {
+                setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+              }
+            }}
+          >
+            <AnimatePresence initial={false}>
               <motion.img
                 key={`bg-${activeSlide}`}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 0.6, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.8 }}
                 src={heroSlides[activeSlide].image}
                 alt="Hero Background"
-                className="absolute inset-0 w-full h-full object-cover cursor-grab active:cursor-grabbing"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                 style={{ objectPosition: 'center top' }}
                 referrerPolicy="no-referrer"
                 fetchPriority="high"
                 loading="eager"
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
-                onDragEnd={(e, { offset }) => {
-                  const threshold = 50;
-                  if (offset.x > threshold) {
-                    setActiveSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
-                  } else if (offset.x < -threshold) {
-                    setActiveSlide((prev) => (prev + 1) % heroSlides.length);
-                  }
-                }}
               />
             </AnimatePresence>
             
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none" />
             
-            <div className="absolute inset-0 flex items-center">
-              <div className="max-w-7xl mx-auto px-6 w-full mt-16 md:mt-0">
-                <motion.div
-                  key={`text-${activeSlide}`}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
-                    exit: { opacity: 0, transition: { duration: 0.4 } }
-                  }}
-                  className="max-w-2xl text-white"
-                >
+            <div className="absolute inset-0 flex items-center pointer-events-none">
+              <div className="max-w-7xl mx-auto px-6 w-full mt-16 md:mt-0 pointer-events-auto">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`text-${activeSlide}`}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
+                      exit: { opacity: 0, transition: { duration: 0.3 } }
+                    }}
+                    className="max-w-2xl text-white"
+                  >
                   <motion.h1 
                     variants={{
                       hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
@@ -1362,7 +1266,8 @@ export default function App() {
                       자세히 보기 <ArrowRight size={20} />
                     </motion.button>
                   </motion.div>
-                </motion.div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
 
@@ -1381,7 +1286,7 @@ export default function App() {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Recent Notices Section (Bottom of First Screen) */}
           <section className={`shrink-0 ${isDarkMode ? 'bg-gray-800/80 border-t border-gray-700' : 'bg-white/90 border-t border-gray-200'} backdrop-blur-md py-4 px-6 z-30 relative transition-colors duration-300 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]`}>
