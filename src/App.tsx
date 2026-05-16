@@ -140,7 +140,162 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
 };
 
 // 푸터 모달용 고품질 콘텐츠 생성 함수
-const getFooterContent = (type: string, title: string, isDarkMode: boolean) => {
+const InquiryForm = ({ isDarkMode, onClose, t }: { isDarkMode: boolean, onClose: () => void, t: any }) => {
+  const [formData, setFormData] = useState({ name: '', email: '', contact: '', type: t.formCategoryProduct, content: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const { sendInquiryEmail, saveInquiryToLocal } = await import('./services/emailService');
+      const data = { ...formData, id: Date.now().toString(), date: new Date().toISOString() };
+      
+      // Save locally first
+      saveInquiryToLocal(data);
+      
+      // Attempt to send email
+      await sendInquiryEmail(data);
+      
+      setSubmitted(true);
+      setTimeout(() => {
+        onClose();
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      alert(t.formError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className={`p-8 text-center ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+        <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 ${isDarkMode ? 'bg-blue-900/50 text-blue-400' : 'bg-green-100 text-green-600'}`}>
+          <Sparkles className="w-8 h-8" />
+        </div>
+        <h3 className="text-2xl font-bold mb-2">{t.formSuccessTitle}</h3>
+        <p className="opacity-80">{t.formSuccessDesc}</p>
+      </div>
+    );
+  }
+
+  const inputClass = `w-full p-4 border rounded-xl outline-none transition-all ${
+    isDarkMode 
+      ? 'bg-gray-800/50 border-gray-700 text-white focus:border-blue-500 focus:bg-gray-800' 
+      : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#6D1B2A] focus:bg-white'
+  }`;
+
+  const options = [t.formCategoryProduct, t.formCategoryPartnership, t.formCategoryOther];
+
+  return (
+    <div className={`leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="relative">
+          <label className="block text-sm font-bold mb-2">{t.formCategory}</label>
+          <div 
+            className={`${inputClass} flex justify-between items-center cursor-pointer`}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <span>{formData.type}</span>
+            <ChevronDown size={20} className={`transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+          </div>
+          <AnimatePresence>
+            {dropdownOpen && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={`absolute z-10 w-full mt-2 rounded-xl shadow-xl overflow-hidden border ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}
+              >
+                {options.map((option) => (
+                  <div 
+                    key={option}
+                    className={`p-4 cursor-pointer transition-colors ${
+                      formData.type === option 
+                        ? (isDarkMode ? 'bg-blue-900/40 text-blue-400' : 'bg-[#6D1B2A]/10 text-[#6D1B2A] font-bold') 
+                        : (isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50')
+                    }`}
+                    onClick={() => {
+                      setFormData({ ...formData, type: option });
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {option}
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-bold mb-2">{t.formName}</label>
+            <input 
+              type="text" 
+              placeholder={t.formNamePlaceholder}
+              className={inputClass}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required 
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold mb-2">{t.formContact}</label>
+            <input 
+              type="tel" 
+              placeholder={t.formContactPlaceholder}
+              className={inputClass}
+              value={formData.contact}
+              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+              required 
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold mb-2">{t.formEmail}</label>
+          <input 
+            type="email" 
+            placeholder={t.formEmailPlaceholder}
+            className={inputClass}
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required 
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-bold mb-2">{t.formContent}</label>
+          <textarea 
+            rows={6}
+            placeholder={t.formContentPlaceholder}
+            className={inputClass}
+            value={formData.content}
+            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            required 
+          />
+        </div>
+        
+        <button 
+          type="submit" 
+          disabled={isSubmitting}
+          className={`w-full py-4 rounded-xl font-bold text-white transition-all ${
+            isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+          } ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-[#6D1B2A] hover:bg-[#5A1622]'}`}
+        >
+          {isSubmitting ? t.formSubmitting : t.formSubmit}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+const getFooterContent = (type: string, title: string, isDarkMode: boolean, t: any, onClose?: () => void) => {
   const baseClass = `space-y-6 leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`;
   const titleClass = `text-2xl font-bold mb-4 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`;
   const cardClass = `p-6 rounded-2xl ${isDarkMode ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-100'}`;
@@ -345,16 +500,9 @@ const getFooterContent = (type: string, title: string, isDarkMode: boolean) => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button className={`p-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-colors ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-[#6D1B2A] hover:bg-[#5A1622] text-white'}`}>
-            <MessageSquare className="w-5 h-5" /> 1:1 문의하기
-          </button>
-          <button className={`p-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-colors ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`}>
-            <HelpCircle className="w-5 h-5" /> 자주 묻는 질문
-          </button>
-        </div>
       </div>
     ),
+    inquiry: <InquiryForm isDarkMode={isDarkMode} onClose={onClose || (() => {})} t={t} />,
     careers: (
       <div className={baseClass}>
         <div className="text-xl font-medium mb-6">
@@ -829,63 +977,41 @@ export default function App() {
     } 
     // 7. 제품 문의 메뉴 클릭 시: 문의 폼 모달을 엽니다.
     else if (item === t.inquiry) {
-      const inquiryContent = (
-        <div className="space-y-8">
-          <div className={`p-8 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-900/50' : 'border-gray-100 bg-gray-50'} text-center`}>
-            <MessageSquare size={48} className={`mx-auto mb-6 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
-            <h3 className="text-2xl font-bold mb-4">제품 문의</h3>
-            <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>에이치케이온 코리아의 제품에 대한 궁금한 점을 남겨주세요.</p>
-          </div>
-          <div className={`p-8 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-800/80' : 'border-gray-200 bg-white'} shadow-sm`}>
-            <form className="space-y-4">
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>이름 / 회사명</label>
-                <input type="text" className={`w-full p-3 rounded-xl border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#6D1B2A]/50`} placeholder="이름 또는 회사명을 입력해주세요" />
-              </div>
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>이메일</label>
-                <input type="email" className={`w-full p-3 rounded-xl border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#6D1B2A]/50`} placeholder="답변 받으실 이메일을 입력해주세요" />
-              </div>
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>문의 내용</label>
-                <textarea rows={4} className={`w-full p-3 rounded-xl border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#6D1B2A]/50`} placeholder="문의하실 내용을 상세히 적어주세요"></textarea>
-              </div>
-              <button type="button" className={`w-full py-4 rounded-xl font-bold text-white transition-colors ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-[#6D1B2A] hover:bg-[#5A1622]'}`}>문의 접수하기</button>
-            </form>
-          </div>
-        </div>
-      );
-      openModal(item, inquiryContent);
+      openModal(item, <InquiryForm isDarkMode={isDarkMode} onClose={() => setModal(m => ({ ...m, isOpen: false }))} t={t} />);
     } 
-    // 8. 입점/제휴 문의 메뉴 클릭 시: 제휴 제안 폼 모달을 엽니다.
-    else if (item === t.remoteSupport) {
-      const partnershipContent = (
-        <div className="space-y-8">
-          <div className={`p-8 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-900/50' : 'border-gray-100 bg-gray-50'} text-center`}>
-            <Building2 size={48} className={`mx-auto mb-6 ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'}`} />
-            <h3 className="text-2xl font-bold mb-4">입점 / 제휴 문의</h3>
-            <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>에이치케이온 코리아와 함께 비즈니스 파트너가 되어보세요.</p>
-          </div>
-          <div className={`p-8 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-800/80' : 'border-gray-200 bg-white'} shadow-sm`}>
-            <form className="space-y-4">
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>회사명</label>
-                <input type="text" className={`w-full p-3 rounded-xl border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#6D1B2A]/50`} placeholder="회사명을 입력해주세요" />
-              </div>
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>담당자 연락처</label>
-                <input type="text" className={`w-full p-3 rounded-xl border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#6D1B2A]/50`} placeholder="연락 가능한 번호를 입력해주세요" />
-              </div>
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>제안 내용</label>
-                <textarea rows={4} className={`w-full p-3 rounded-xl border ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-200'} focus:outline-none focus:ring-2 focus:ring-[#6D1B2A]/50`} placeholder="제안하실 내용을 상세히 적어주세요"></textarea>
-              </div>
-              <button type="button" className={`w-full py-4 rounded-xl font-bold text-white transition-colors ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500' : 'bg-[#6D1B2A] hover:bg-[#5A1622]'}`}>제안서 제출하기</button>
-            </form>
-          </div>
+    // 8. 문의 관리 (Admin) 메뉴 클릭 시:
+    else if (item === t.inquiryManagement) {
+      const getInquiries = () => {
+        try {
+          const items = localStorage.getItem('hkon_inquiries');
+          return items ? JSON.parse(items) : [];
+        } catch { return []; }
+      };
+      
+      const items = getInquiries();
+      
+      const content = (
+        <div className="space-y-6">
+          <div className="text-xl font-bold mb-4">접수된 문의 내역</div>
+          {items.length === 0 ? (
+            <p className="opacity-80">저장된 문의가 없습니다.</p>
+          ) : (
+            <ul className="space-y-4">
+              {items.reverse().map((inq: any, idx: number) => (
+                <li key={idx} className={`p-4 rounded-xl border ${isDarkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+                  <div className="font-bold flex justify-between">
+                    <span>{inq.type} - {inq.name}</span>
+                    <span className="text-sm opacity-70">{new Date(inq.date).toLocaleString()}</span>
+                  </div>
+                  <div className="text-xs opacity-80 mt-1 mb-2">연락처: {inq.contact} | 이메일: {inq.email}</div>
+                  <div className="p-3 bg-black/5 rounded-lg text-sm whitespace-pre-wrap">{inq.content}</div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       );
-      openModal(item, partnershipContent);
+      openModal(item, content);
     } 
     // 9. 그 외의 경우: 기본 모달을 엽니다.
     else {
@@ -936,10 +1062,10 @@ export default function App() {
 
   const quickLinks = [
     { icon: <MessageSquare size={32} />, title: t.inquiry, desc: t.expertConsultation },
-    { icon: <Building2 size={32} />, title: t.remoteSupport, desc: t.remoteHelp },
     { icon: <Download size={32} />, title: t.resources, desc: t.smartMonitoring },
     { icon: <Headset size={32} />, title: t.customerSupport, desc: "1588-1285" },
     { icon: <Briefcase size={32} />, title: t.training, desc: t.customizedTraining },
+    { icon: <Users size={32} />, title: t.inquiryManagement, desc: t.adminsOnly },
   ];
 
   const heroSlides = React.useMemo(() => [
@@ -954,7 +1080,7 @@ export default function App() {
     {
       title: t.aboutUs,
       subtitle: t.aboutUsTitle,
-      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=70&w=1200",
+      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=60&w=800",
       detailTitle: t.aboutUs,
       detailDesc: t.aboutUsDesc,
       productId: 'about-us'
@@ -962,7 +1088,7 @@ export default function App() {
     {
       title: t.whatsNew,
       subtitle: t.whatsNewTitle,
-      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=70&w=1200",
+      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=60&w=800",
       detailTitle: t.whatsNew,
       detailDesc: t.whatsNewDesc,
       productId: 'whats-new'
@@ -970,7 +1096,7 @@ export default function App() {
     {
       title: t.haagendazs,
       subtitle: t.haagendazsSub,
-      image: "/images/mini_cup.jpg",
+      image: "/images/mini_cup.png",
       detailTitle: t.haagendazs,
       detailDesc: t.haagendazsDesc,
       productId: 'haagen-dazs'
@@ -978,7 +1104,7 @@ export default function App() {
     {
       title: t.lantico,
       subtitle: t.lanticoSub,
-      image: "/images/lantico.jpg",
+      image: "/images/lantico.png",
       detailTitle: t.lantico,
       detailDesc: t.lanticoDesc,
       productId: 'lantico'
@@ -994,7 +1120,7 @@ export default function App() {
     {
       title: t.generalMills,
       subtitle: t.generalMillsSub,
-      image: "/images/grnaola_thumbnail.jpg",
+      image: "/images/grnaola_thumbnail.png",
       detailTitle: t.generalMills,
       detailDesc: t.generalMillsDesc,
       productId: 'general-mills'
@@ -1186,7 +1312,7 @@ export default function App() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
                 src={heroSlides[activeSlide].image}
-                alt="Hero Background"
+                alt={heroSlides[activeSlide].title}
                 className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                 style={{ objectPosition: 'center top' }}
                 referrerPolicy="no-referrer"
@@ -1265,7 +1391,7 @@ export default function App() {
                       }} 
                       className={`px-6 py-3 md:px-8 md:py-4 text-white font-semibold rounded-full transition-colors flex items-center gap-2 text-sm md:text-base ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-900/20' : 'bg-[#6D1B2A] hover:bg-[#5A1622] shadow-lg shadow-red-900/20'}`}
                     >
-                      자세히 보기 <ArrowRight size={20} />
+                      {t.readMore} <ArrowRight size={20} />
                     </motion.button>
                   </motion.div>
                   </motion.div>
@@ -1584,10 +1710,10 @@ export default function App() {
               <div>
                 <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">{t.quickLinks}</h4>
                 <ul className="space-y-3 text-sm">
-                  <li><button onClick={() => openModal(t.company, getFooterContent('company', t.company, isDarkMode))} className="hover:text-white transition-colors">{t.company}</button></li>
-                  <li><button onClick={() => openModal(t.products, getFooterContent('products', t.products, isDarkMode))} className="hover:text-white transition-colors">{t.products}</button></li>
-                  <li><button onClick={() => openModal(t.support, getFooterContent('support', t.support, isDarkMode))} className="hover:text-white transition-colors">{t.support}</button></li>
-                  <li><button onClick={() => openModal(t.careers, getFooterContent('careers', t.careers, isDarkMode))} className="hover:text-white transition-colors">{t.careers}</button></li>
+                  <li><button onClick={() => openModal(t.company, getFooterContent('company', t.company, isDarkMode, t))} className="hover:text-white transition-colors">{t.company}</button></li>
+                  <li><button onClick={() => openModal(t.products, getFooterContent('products', t.products, isDarkMode, t))} className="hover:text-white transition-colors">{t.products}</button></li>
+                  <li><button onClick={() => openModal(t.support, getFooterContent('support', t.support, isDarkMode, t))} className="hover:text-white transition-colors">{t.support}</button></li>
+                  <li><button onClick={() => openModal(t.careers, getFooterContent('careers', t.careers, isDarkMode, t))} className="hover:text-white transition-colors">{t.careers}</button></li>
                 </ul>
               </div>
 
@@ -1602,14 +1728,14 @@ export default function App() {
               <div>
                 <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">{t.globalNetwork}</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('korea', t.korea, isDarkMode))} className="hover:text-white transition-colors text-left">{t.korea}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('usa', t.usa, isDarkMode))} className="hover:text-white transition-colors text-left">{t.usa}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('japan', t.japan, isDarkMode))} className="hover:text-white transition-colors text-left">{t.japan}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('china', t.china, isDarkMode))} className="hover:text-white transition-colors text-left">{t.china}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('europe', t.europe, isDarkMode))} className="hover:text-white transition-colors text-left">{t.europe}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('vietnam', t.vietnam, isDarkMode))} className="hover:text-white transition-colors text-left">{t.vietnam}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('thailand', t.thailand, isDarkMode))} className="hover:text-white transition-colors text-left">{t.thailand}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('indonesia', t.indonesia, isDarkMode))} className="hover:text-white transition-colors text-left">{t.indonesia}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('korea', t.korea, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.korea}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('usa', t.usa, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.usa}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('japan', t.japan, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.japan}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('china', t.china, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.china}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('europe', t.europe, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.europe}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('vietnam', t.vietnam, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.vietnam}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('thailand', t.thailand, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.thailand}</button>
+                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('indonesia', t.indonesia, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.indonesia}</button>
                 </div>
               </div>
             </motion.div>
@@ -1622,10 +1748,10 @@ export default function App() {
               className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm"
             >
               <div className="flex gap-6 items-center flex-wrap">
-                <button onClick={() => openModal(t.privacyPolicy, getFooterContent('privacy', t.privacyPolicy, isDarkMode))} className={`text-white font-medium transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-red-400'}`}>{t.privacyPolicy}</button>
-                <button onClick={() => openModal(t.termsOfService, getFooterContent('terms', t.termsOfService, isDarkMode))} className="hover:text-white transition-colors">{t.termsOfService}</button>
-                <button onClick={() => openModal(t.sitemap, getFooterContent('sitemap', t.sitemap, isDarkMode))} className="hover:text-white transition-colors">{t.sitemap}</button>
-                <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode))} className="hover:text-white transition-colors">{t.location}</button>
+                <button onClick={() => openModal(t.privacyPolicy, getFooterContent('privacy', t.privacyPolicy, isDarkMode, t))} className={`text-white font-medium transition-colors ${isDarkMode ? 'hover:text-blue-400' : 'hover:text-red-400'}`}>{t.privacyPolicy}</button>
+                <button onClick={() => openModal(t.termsOfService, getFooterContent('terms', t.termsOfService, isDarkMode, t))} className="hover:text-white transition-colors">{t.termsOfService}</button>
+                <button onClick={() => openModal(t.sitemap, getFooterContent('sitemap', t.sitemap, isDarkMode, t))} className="hover:text-white transition-colors">{t.sitemap}</button>
+                <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode, t))} className="hover:text-white transition-colors">{t.location}</button>
                 <button onClick={() => openModal(t.resources, getResourcesContent(currentLang, isDarkMode))} className="flex items-center gap-2 hover:text-white transition-colors font-bold text-white"><MonitorPlay size={16} />{t.resources}</button>
                 <div className="hidden md:flex ml-2 gap-4 border-l border-gray-700 pl-4">
                   <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={16} /></a>
@@ -1645,6 +1771,18 @@ export default function App() {
           </div>
         </footer>
       </div>
+
+      {/* Floating Inquiry Button */}
+      <button
+        onClick={() => openModal(t.inquiry, <InquiryForm isDarkMode={isDarkMode} onClose={() => setModal(m => ({ ...m, isOpen: false }))} t={t} />)}
+        className="fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-2xl bg-[#6D1B2A] hover:bg-[#5A1622] text-white transition-transform hover:scale-110 flex items-center justify-center group"
+        aria-label="문의하기"
+      >
+        <MessageSquare className="w-6 h-6" />
+        <span className="absolute right-full mr-4 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          {t.inquiry}
+        </span>
+      </button>
     </div>
   );
 }
