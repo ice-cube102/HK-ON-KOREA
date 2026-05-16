@@ -954,7 +954,7 @@ export default function App() {
     {
       title: t.aboutUs,
       subtitle: t.aboutUsTitle,
-      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=80&w=2000",
+      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=70&w=1200",
       detailTitle: t.aboutUs,
       detailDesc: t.aboutUsDesc,
       productId: 'about-us'
@@ -962,7 +962,7 @@ export default function App() {
     {
       title: t.whatsNew,
       subtitle: t.whatsNewTitle,
-      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=80&w=2000",
+      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=70&w=1200",
       detailTitle: t.whatsNew,
       detailDesc: t.whatsNewDesc,
       productId: 'whats-new'
@@ -1001,20 +1001,22 @@ export default function App() {
     }
   ], [t]);
 
-  // Preload images for faster loading
+  // Preload next image and some important thumbnails after initial render
   useEffect(() => {
-    const imagesToPreload = [
-      ...heroSlides.map(slide => slide.image),
-      ...PRODUCTS.flatMap(product => [product.image, ...product.detailImages])
-    ];
-    
-    imagesToPreload.forEach(src => {
-      if (src) {
-        const img = new Image();
-        img.src = src;
-      }
-    });
-  }, [heroSlides]);
+    // delay preloading logic until after the main load
+    const timer = setTimeout(() => {
+      const nextSlideImage = heroSlides[(activeSlide + 1) % heroSlides.length].image;
+      const imagesToPreload = [nextSlideImage];
+      
+      imagesToPreload.forEach(src => {
+        if (src && src.trim() !== '') {
+          const img = new Image();
+          img.src = src;
+        }
+      });
+    }, 2000); // 2 seconds delay
+    return () => clearTimeout(timer);
+  }, [activeSlide, heroSlides]);
 
   // 메인 슬라이더 자동 넘김 (7.5초)
   // FIXME: 가끔 슬라이드가 두 번 넘어가는 버그 있음. 나중에 확인 필요
@@ -1212,9 +1214,9 @@ export default function App() {
                   >
                   <motion.h1 
                     variants={{
-                      hidden: { opacity: 0, y: 40, filter: "blur(10px)" },
-                      visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
-                      exit: { opacity: 0, y: -20, filter: "blur(10px)", transition: { duration: 0.4 } }
+                      hidden: { opacity: 0, y: 40 },
+                      visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
+                      exit: { opacity: 0, y: -20, transition: { duration: 0.4 } }
                     }}
                     className="text-4xl md:text-5xl lg:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-2xl"
                   >
@@ -1222,9 +1224,9 @@ export default function App() {
                   </motion.h1>
                   <motion.p 
                     variants={{
-                      hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
-                      visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
-                      exit: { opacity: 0, y: -15, filter: "blur(10px)", transition: { duration: 0.4 } }
+                      hidden: { opacity: 0, y: 30 },
+                      visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
+                      exit: { opacity: 0, y: -15, transition: { duration: 0.4 } }
                     }}
                     className="text-lg md:text-xl lg:text-2xl font-light text-gray-200 mb-8 md:mb-10 drop-shadow-lg tracking-wide"
                   >
@@ -1232,9 +1234,9 @@ export default function App() {
                   </motion.p>
                   <motion.div
                     variants={{
-                      hidden: { opacity: 0, y: 20, filter: "blur(10px)" },
-                      visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
-                      exit: { opacity: 0, y: -10, filter: "blur(10px)", transition: { duration: 0.4 } }
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
+                      exit: { opacity: 0, y: -10, transition: { duration: 0.4 } }
                     }}
                   >
                     <motion.button 
@@ -1338,8 +1340,8 @@ export default function App() {
               ].map((stat, idx) => (
                 <motion.div 
                   key={idx} 
-                  initial={{ opacity: 0, scale: 0.9, y: 50, rotate: -2, filter: "blur(10px)" }} 
-                  whileInView={{ opacity: 1, scale: 1, y: 0, rotate: 0, filter: "blur(0px)" }} 
+                  initial={{ opacity: 0, scale: 0.9, y: 50, rotate: -2 }} 
+                  whileInView={{ opacity: 1, scale: 1, y: 0, rotate: 0 }} 
                   viewport={{ once: true, amount: 0.2 }} 
                   transition={{ delay: idx * 0.1, duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                   className={`p-6 md:p-8 ${idx !== 0 && idx !== 2 ? 'border-t md:border-t-0' : ''} ${idx > 1 ? 'border-t md:border-t-0' : ''} ${isDarkMode ? 'border-gray-800' : 'border-gray-100'} group`}
@@ -1371,9 +1373,9 @@ export default function App() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeDetailSlide}
-                initial={{ opacity: 0, y: 50, scale: 0.95, rotate: 2, filter: "blur(10px)" }}
-                whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -50, scale: 0.95, rotate: -2, filter: "blur(10px)" }}
+                initial={{ opacity: 0, y: 50, scale: 0.95, rotate: 2 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, y: -50, scale: 0.95, rotate: -2 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                 className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center"
@@ -1452,8 +1454,8 @@ export default function App() {
         <section id="products-section" className={`py-32 px-6 transition-colors duration-300 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
           <div className="max-w-7xl mx-auto">
             <motion.div 
-              initial={{ opacity: 0, y: 50, scale: 0.95, rotate: -2, filter: "blur(10px)" }}
-              whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, y: 50, scale: 0.95, rotate: -2 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
               className="flex flex-col items-center text-center mb-24"
@@ -1469,8 +1471,8 @@ export default function App() {
                 return (
                   <motion.div 
                     key={product.id}
-                    initial={{ opacity: 0, y: 100, scale: 0.9, rotate: -2, filter: "blur(10px)" }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+                    initial={{ opacity: 0, y: 100, scale: 0.9, rotate: -2 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 20 }}
                     className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-16 lg:gap-24 items-center`}
@@ -1540,8 +1542,8 @@ export default function App() {
               {quickLinks.map((link, idx) => (
                 <motion.button 
                   key={idx} 
-                  initial={{ opacity: 0, y: 30, scale: 0.9, rotate: -2, filter: "blur(10px)" }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0, filter: "blur(0px)" }}
+                  initial={{ opacity: 0, y: 30, scale: 0.9, rotate: -2 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ delay: idx * 0.1, duration: 0.6, type: "spring", stiffness: 120, damping: 15 }}
                   whileHover={{ scale: 1.03, y: -5 }}
@@ -1564,8 +1566,8 @@ export default function App() {
         <footer className="bg-[#1a1a1a] text-gray-400 py-16 px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div 
-              initial={{ opacity: 0, y: 30, rotate: -2, filter: "blur(10px)" }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, y: 30, rotate: -2 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.8 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12"
