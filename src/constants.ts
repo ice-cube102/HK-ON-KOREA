@@ -326,7 +326,7 @@ export const PRODUCTS: Product[] = [
     image: '/images/mini_cup.png',
     detailImages: ['/images/stick_bar.png', '/images/paint.png'],
     color: '#D4AF37',
-    website: 'https://www.haagen-dazs.co.kr/'
+    website: 'https://www.haagendazs.co.kr/'
   },
   {
     id: 'lantico',
@@ -344,7 +344,7 @@ export const PRODUCTS: Product[] = [
     image: '/images/lantico.png',
     detailImages: ['/images/lantico_2.png'],
     color: '#3B2F2F',
-    website: 'https://www.lanticocaffe.it/'
+    website: 'https://www.caffelantico.it/'
   },
   {
     id: 'caraci',
@@ -362,7 +362,7 @@ export const PRODUCTS: Product[] = [
     image: '/images/kadaif_thumbnail.png',
     detailImages: ['/images/kadaif.png', '/images/dark_choco_thumbnail.png'],
     color: '#AAB85C',
-    website: 'https://www.caracisicilyfood.it/'
+    website: 'https://www.caraci.it/'
   },
   {
     id: 'general-mills',

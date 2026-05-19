@@ -11,7 +11,14 @@ import { AccordionMenu } from './components/AccordionMenu';
 import companyLogo from '/images/company.png';
 import NOTICES from './announcement/notices.json';
 
-const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen: boolean; onClose: () => void; title: string; content: React.ReactNode; images?: string[]; isDarkMode?: boolean }) => (
+const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen: boolean; onClose: () => void; title: string; content: React.ReactNode; images?: string[]; isDarkMode?: boolean }) => {
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  useEffect(() => {
+    setActiveImageIdx(0);
+  }, [isOpen, images]);
+
+  return (
   <AnimatePresence>
     {isOpen && (
       <motion.div 
@@ -48,23 +55,42 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.1, duration: 0.5 }}
-                    className="rounded-3xl overflow-hidden shadow-xl border border-gray-100 dark:border-gray-800"
+                    className="rounded-3xl overflow-hidden shadow-xl border border-gray-100 dark:border-gray-800 relative group"
                   >
-                    <img src={images[0]} alt={`${title} main`} className="w-full h-auto object-cover aspect-[4/3] hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+                    <AnimatePresence mode="wait">
+                      <motion.img 
+                        key={activeImageIdx}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        src={images[activeImageIdx]} 
+                        alt={`${title} main`} 
+                        className="w-full h-auto object-cover aspect-[4/3] group-hover:scale-105 transition-transform duration-700" 
+                        referrerPolicy="no-referrer" 
+                        loading="lazy" 
+                        decoding="async" 
+                      />
+                    </AnimatePresence>
                   </motion.div>
                   {images.length > 1 && (
                     <div className="grid grid-cols-3 gap-4">
-                      {images.slice(1).map((img, idx) => (
-                        <motion.div 
-                          key={idx}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 + (idx * 0.1), duration: 0.4 }}
-                          className="rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 aspect-square cursor-pointer group"
-                        >
-                          <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
-                        </motion.div>
-                      ))}
+                      {images.map((img, idx) => {
+                        if (idx === activeImageIdx) return null;
+                        return (
+                          <motion.div 
+                            key={idx}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 + (idx * 0.1), duration: 0.4 }}
+                            onClick={() => setActiveImageIdx(idx)}
+                            className="rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 aspect-square cursor-pointer group relative"
+                          >
+                            <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                          </motion.div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -94,7 +120,8 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
       </motion.div>
     )}
   </AnimatePresence>
-);
+  );
+};
 
 // 마우스 움직임에 따라 이미지가 기울어지는 3D 틸트 효과 컴포넌트
 const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkMode: boolean }) => {
@@ -1280,10 +1307,10 @@ export default function App() {
                 })}
 
                 <div className="mt-8 flex gap-6 items-center justify-center pt-8 border-t border-gray-200 dark:border-gray-800">
-                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram"><Instagram size={24} /></a>
-                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube"><Youtube size={26} /></a>
-                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog"><BookOpen size={24} /></a>
-                  <a href="#" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk"><MessageSquare size={24} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram"><Instagram size={24} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube"><Youtube size={26} /></a>
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog"><BookOpen size={24} /></a>
+                  <a href="https://pf.kakao.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk"><MessageSquare size={24} /></a>
                 </div>
               </div>
             </motion.div>
@@ -1721,7 +1748,7 @@ export default function App() {
                 <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">{t.customerCenter}</h4>
                 <div className={`text-2xl font-bold ${isDarkMode ? 'text-blue-400' : 'text-[#6D1B2A]'} mb-2`}>1588-1285</div>
                 <p className="text-sm mb-4">{t.weekdays}<br/>{t.closedWeekends}</p>
-                <a href="mailto:hkonkorea@gmail.com" className="text-sm hover:text-white transition-colors block mb-2">hkonkorea@gmail.com</a>
+                <a href="mailto:hkonkorea@gmail.com" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-white transition-colors block mb-2">hkonkorea@gmail.com</a>
                 <p className="text-sm text-gray-400">{t.address}</p>
               </div>
 
@@ -1754,16 +1781,16 @@ export default function App() {
                 <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode, t))} className="hover:text-white transition-colors">{t.location}</button>
                 <button onClick={() => openModal(t.resources, getResourcesContent(currentLang, isDarkMode))} className="flex items-center gap-2 hover:text-white transition-colors font-bold text-white"><MonitorPlay size={16} />{t.resources}</button>
                 <div className="hidden md:flex ml-2 gap-4 border-l border-gray-700 pl-4">
-                  <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={16} /></a>
-                  <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={17} /></a>
-                  <a href="#" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={16} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={16} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={17} /></a>
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={16} /></a>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
                 <div className="flex md:hidden gap-3 mb-2">
-                  <a href="#" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={18} /></a>
-                  <a href="#" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={19} /></a>
-                  <a href="#" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={18} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={18} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={19} /></a>
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={18} /></a>
                 </div>
                 <p>{t.footerText}</p>
               </div>
@@ -1775,7 +1802,7 @@ export default function App() {
       {/* Floating Inquiry Button */}
       <button
         onClick={() => openModal(t.inquiry, <InquiryForm isDarkMode={isDarkMode} onClose={() => setModal(m => ({ ...m, isOpen: false }))} t={t} />)}
-        className="fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-2xl bg-[#6D1B2A] hover:bg-[#5A1622] text-white transition-transform hover:scale-110 flex items-center justify-center group"
+        className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-2xl transition-transform hover:scale-110 flex items-center justify-center group ${isDarkMode ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-[#6D1B2A] hover:bg-[#5A1622] text-white'}`}
         aria-label="문의하기"
       >
         <MessageSquare className="w-6 h-6" />
