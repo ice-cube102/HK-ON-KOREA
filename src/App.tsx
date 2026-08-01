@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon, Eye, Download, Briefcase, Headset, MessageSquare, HelpCircle, Sparkles, Instagram, Youtube, BookOpen } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon, Eye, Download, Briefcase, Headset, MessageSquare, HelpCircle, Sparkles, Instagram, Youtube, BookOpen, ShoppingCart, Truck, Store, Package } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES } from './constants';
 import { AccordionMenu } from './components/AccordionMenu';
 import companyLogo from '/images/company.png';
@@ -43,6 +43,7 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
             <button 
               onClick={onClose} 
               className={`p-2.5 rounded-full transition-all duration-300 ${isDarkMode ? 'hover:bg-gray-800 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-500 hover:text-gray-900'}`}
+              aria-label="Close Modal"
             >
               <X size={24} />
             </button>
@@ -66,7 +67,7 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
                         transition={{ duration: 0.3 }}
                         src={images[activeImageIdx]} 
                         alt={`${title} main`} 
-                        className={`w-full h-auto object-contain aspect-[4/3] group-hover:scale-[1.02] transition-transform duration-700 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} 
+                        className={`w-full h-auto block group-hover:scale-[1.02] transition-transform duration-700 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} 
                         referrerPolicy="no-referrer" 
                         loading="lazy" 
                         decoding="async" 
@@ -84,9 +85,9 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 + (idx * 0.1), duration: 0.4 }}
                             onClick={() => setActiveImageIdx(idx)}
-                            className={`rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 aspect-square cursor-pointer group relative ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}
+                            className={`rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 cursor-pointer group relative flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}
                           >
-                            <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-500 p-2" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+                            <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-auto block group-hover:scale-[1.05] transition-transform duration-500" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                           </motion.div>
                         );
@@ -155,13 +156,13 @@ const TiltImage = ({ src, alt, isDarkMode, onClick }: { src: string, alt: string
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-[2.5rem] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-800 border-gray-700 shadow-blue-900/10' : 'bg-white border-gray-100 shadow-red-900/10'} border-4 p-2 ${onClick ? 'cursor-pointer' : ''} w-full group`}
+      className={`relative inline-block rounded-[2.5rem] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-800 border-gray-700 shadow-blue-900/10' : 'bg-white border-gray-100 shadow-red-900/10'} border-4 p-2 ${onClick ? 'cursor-pointer' : ''} group`}
     >
-      <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }} className="w-full h-full rounded-[2rem] overflow-hidden relative">
-        <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
-        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
+      <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }} className="w-full h-full rounded-[2rem] overflow-hidden relative flex items-center justify-center">
+        <img src={src} alt={alt} className="w-full h-auto max-h-[500px] object-contain transition-transform duration-700" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
       </div>
     </motion.div>
   );
@@ -583,12 +584,12 @@ const getFooterContent = (type: string, title: string, isDarkMode: boolean, t: a
       {isGlobalNetwork && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-800/80' : 'bg-white'} border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm`}>
-            <div className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>주요 업무</div>
-            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>글로벌 소싱, 현지 시장 조사, 파트너십 관리</div>
+            <div className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Contact</div>
+            <div className="text-sm opacity-80">hkonkorea@gmail.com</div>
           </div>
           <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-800/80' : 'bg-white'} border ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} shadow-sm`}>
-            <div className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>연락처</div>
-            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>global@hkonkorea.com</div>
+            <div className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Address</div>
+            <div className="text-sm opacity-80">경기 부천시 원미구 삼작로164번길</div>
           </div>
         </div>
       )}
@@ -596,111 +597,97 @@ const getFooterContent = (type: string, title: string, isDarkMode: boolean, t: a
   );
 };
 
-export default function App() {
-  // 현재 선택된 언어 상태 (기본값: 사용자 브라우저 언어)
-  const [currentLang, setCurrentLang] = useState(() => {
-    const lang = typeof navigator !== 'undefined' ? navigator.language.slice(0, 2) : 'ko';
-    return ['ko', 'en', 'zh'].includes(lang) ? lang : 'en';
-  });
-  // 언어 선택 메뉴 열림/닫힘 상태
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  // 모바일 메뉴 열림/닫힘 상태
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // 데스크톱 사이드바 열림/닫힘 상태
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  // 모바일 아코디언 메뉴 열림 상태
-  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
-  // 메인 히어로 슬라이더의 현재 슬라이드 인덱스
-  const [activeSlide, setActiveSlide] = useState(0);
-  // 제품 상세 모달 내 이미지 슬라이더의 현재 슬라이드 인덱스
-  const [activeDetailSlide, setActiveDetailSlide] = useState(0);
-  // 모달 창 상태 관리 (열림 여부, 제목, 내용, 이미지 배열)
-  const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: React.ReactNode; images?: string[] }>({ isOpen: false, title: '', content: '' });
-  
-  // 마우스 위치 (사이드바의 스포트라이트 효과 등에 사용)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  
-  // 다크모드 상태 관리 (시스템 환경 설정 기준)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-  // 현재 마우스가 올라가 있는 메뉴 항목 (드롭다운 표시에 사용)
-  const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
-
-  // 다크모드 토글 시 html 태그에 클래스 추가/제거하여 전역 스타일 적용
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  const t = TRANSLATIONS[currentLang] || TRANSLATIONS.ko;
-
-  // 이미지 프리로딩: 첫 로딩 시 모든 제품 이미지를 불러와서 클릭 시 바로 볼 수 있게 최적화
-  useEffect(() => {
-    const imagesToPreload: string[] = [];
-    PRODUCTS.forEach(product => {
-      if (product.image) imagesToPreload.push(product.image);
-      if (product.detailImages) {
-        imagesToPreload.push(...product.detailImages);
-      }
-    });
-    
-    // 중복 제거 후 프리로드
-    const uniqueImages = Array.from(new Set(imagesToPreload));
-    uniqueImages.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, []);
-
-  const getAboutUsContent = (lang: string, dark: boolean) => {
+const getAboutUsContent = (lang: string, dark: boolean) => {
     return (
       <motion.div 
         initial="hidden" animate="visible" 
         variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15 } } }}
-        className={`space-y-6 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+        className={`space-y-8 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
       >
-        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-xl font-bold leading-relaxed ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
-          {lang === 'ko' 
-            ? "글로벌 미식 문화의 새로운 기준, 에이치케이온(HKON)" 
-            : lang === 'zh' 
-            ? "全球美食文化的新标杆，HKON" 
-            : "The new standard of global gastronomy, HKON."}
-        </motion.p>
-        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="leading-relaxed text-lg">
-          {lang === 'ko'
-            ? "에이치케이온(HKON)은 단순히 해외 식품을 소개하는 유통사를 넘어, 전 세계에 숨겨진 보석 같은 브랜드들을 발굴하고, 국내 소비자들의 까다로운 입맛을 만족시키는 '글로벌 미식 큐레이터'입니다. 엄격한 품질 관리부터 최적의 유통 솔루션까지, 프리미엄 다이닝의 가치를 고객의 일상으로 전달합니다."
-            : lang === 'zh'
-            ? "HKON 不仅仅是一家引进海外食品的分销商，更是一位“全球美食策展人”。我们发掘世界各地隐藏的宝石品牌，并通过严格的质量控制和优化的物流方案，将高端餐饮的价值传递给每位消费者的日常生活中。"
-            : "HKON is more than just a distributor introducing overseas foods; we are 'Global Gastronomy Curators' discovering hidden gem brands worldwide and satisfying sophisticated tastes. From strict quality control to optimal distribution solutions, we deliver the value of premium dining to your everyday life."}
-        </motion.p>
-        <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } }} className={`${dark ? 'bg-gray-800 border-gray-700 shadow-xl shadow-black/20' : 'bg-gray-50 border-gray-100 shadow-xl shadow-gray-200/50'} p-8 rounded-3xl border grid grid-cols-1 md:grid-cols-3 gap-6`}>
-          <div className="flex flex-col items-center text-center gap-3">
-            <div className={`p-4 rounded-full ${dark ? 'bg-blue-900/30 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
-              <Globe size={32} />
+        <div className="space-y-4">
+          <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-2xl font-black leading-relaxed ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+            {lang === 'ko' 
+              ? "글로벌 미식 문화의 새로운 기준, 에이치케이온(HKON)" 
+              : lang === 'zh' 
+              ? "全球美食文化的新标杆，HKON" 
+              : "The new standard of global gastronomy, HKON."}
+          </motion.p>
+          <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="leading-relaxed text-lg font-medium">
+            {lang === 'ko'
+              ? "에이치케이온(HKON)은 세계 각국의 프리미엄 F&B 브랜드를 발굴하여 국내 소비자에게 최상의 미식 경험을 제공하는 종합 식품 유통 기업입니다. 우리는 단순한 수입을 넘어 다변화하는 이커머스 생태계를 주도하고, 체계적인 물류 인프라를 바탕으로 B2B와 B2C를 아우르는 혁신적인 비즈니스 모델을 전개하고 있습니다."
+              : lang === 'zh'
+              ? "HKON 是一家综合性食品分销企业，致力于发掘世界各地的高端餐饮品牌，为国内消费者提供顶级的味蕾体验。我们超越了传统的进口业务，正在引领不断演变的电子商务生态系统，并依托系统化的物流基础设施，开展涵盖 B2B 和 B2C 的创新商业模式。"
+              : "HKON is a comprehensive food distribution enterprise that discovers premium F&B brands from around the world to provide domestic consumers with the ultimate gastronomic experience. Going beyond simple importation, we are leading the diversifying e-commerce ecosystem and unfolding an innovative business model encompassing both B2B and B2C based on a systematic logistics infrastructure."}
+          </motion.p>
+        </div>
+        
+        <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } }} className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+          {/* 1. 식품 수입 유통 */}
+          <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50' : 'bg-gray-50 border-gray-100 hover:bg-white'} shadow-lg transition-colors flex flex-col gap-4 group`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${dark ? 'bg-blue-900/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white' : 'bg-red-50 text-[#6D1B2A] group-hover:bg-[#6D1B2A] group-hover:text-white'}`}>
+              <Globe size={28} />
             </div>
-            <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{lang === 'ko' ? '글로벌 네트워크' : lang === 'zh' ? '全球网络' : 'Global Network'}</h4>
-            <p className="text-sm opacity-80">{lang === 'ko' ? '초일류 브랜드 독점 공급' : lang === 'zh' ? '顶尖品牌独家供应' : 'Exclusive top-tier supply'}</p>
+            <h4 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+              {lang === 'ko' ? '식품 수입 유통' : lang === 'zh' ? '食品进口与分销' : 'Food Import & Distribution'}
+            </h4>
+            <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {lang === 'ko' 
+                ? '글로벌 소싱 네트워크를 통해 전 세계의 프리미엄 식품 브랜드를 발굴하고 국내 시장에 안정적으로 공급합니다.' 
+                : lang === 'zh' 
+                ? '通过我们的全球采购网络，发掘世界各地的高端食品品牌，并向国内市场提供稳定的供应。' 
+                : 'Discovering premium food brands worldwide through our global sourcing network and providing a stable supply to the domestic market.'}
+            </p>
           </div>
-          <div className="flex flex-col items-center text-center gap-3">
-            <div className={`p-4 rounded-full ${dark ? 'bg-blue-900/30 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
-              <Building2 size={32} />
+
+          {/* 2. 이커머스 */}
+          <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50' : 'bg-gray-50 border-gray-100 hover:bg-white'} shadow-lg transition-colors flex flex-col gap-4 group`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${dark ? 'bg-blue-900/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white' : 'bg-red-50 text-[#6D1B2A] group-hover:bg-[#6D1B2A] group-hover:text-white'}`}>
+              <ShoppingCart size={28} />
             </div>
-            <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{lang === 'ko' ? '철저한 물류/유통' : lang === 'zh' ? '严格的物流系统' : 'Robust Cold-Chain'}</h4>
-            <p className="text-sm opacity-80">{lang === 'ko' ? '품질을 지키는 콜드체인' : lang === 'zh' ? '保证品质的冷链' : 'Quality-preserving transit'}</p>
+            <h4 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+              {lang === 'ko' ? '이커머스 운영' : lang === 'zh' ? '电子商务运营' : 'E-commerce Operations'}
+            </h4>
+            <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {lang === 'ko' 
+                ? '국내 메인 온라인 플랫폼의 유통을 전면 주도하며, 전략적인 마케팅과 최적화된 세일즈로 폭발적인 성장을 이끌어냅니다.' 
+                : lang === 'zh' 
+                ? '全面主导国内主要在线平台的销售，通过战略营销和优化的销售策略推动爆发式增长。' 
+                : 'Leading distribution across major online platforms with strategic marketing and optimized sales for explosive growth.'}
+            </p>
           </div>
-          <div className="flex flex-col items-center text-center gap-3">
-            <div className={`p-4 rounded-full ${dark ? 'bg-blue-900/30 text-blue-400' : 'bg-red-100 text-[#6D1B2A]'}`}>
-              <Users size={32} />
+
+          {/* 3. 하겐다즈 대리점 */}
+          <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50' : 'bg-gray-50 border-gray-100 hover:bg-white'} shadow-lg transition-colors flex flex-col gap-4 group`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${dark ? 'bg-blue-900/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white' : 'bg-red-50 text-[#6D1B2A] group-hover:bg-[#6D1B2A] group-hover:text-white'}`}>
+              <Store size={28} />
             </div>
-            <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>{lang === 'ko' ? '고객 지향 파트너십' : lang === 'zh' ? '客户导向的合作' : 'Client-Oriented'}</h4>
-            <p className="text-sm opacity-80">{lang === 'ko' ? 'B2B/B2C 토탈 커머스' : lang === 'zh' ? 'B2B/B2C 全面商业' : 'B2B/B2C Total Commerce'}</p>
+            <h4 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+              {lang === 'ko' ? '하겐다즈 공식 대리점' : lang === 'zh' ? '哈根达斯官方代理商' : 'Häagen-Dazs Agency'}
+            </h4>
+            <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {lang === 'ko' 
+                ? '글로벌 프리미엄 아이스크림 브랜드 \'하겐다즈\'의 핵심 대리점으로서 주요 온라인 채널의 유통과 판매를 전담하며 성장을 견인합니다.' 
+                : lang === 'zh' 
+                ? '作为全球高端冰淇淋品牌“哈根达斯”的核心代理商，我们全权负责主要在线渠道的分销与销售，稳固地推动其业务增长。' 
+                : 'As a core agency for the global premium ice cream brand \'Häagen-Dazs\', we exclusively manage distribution and sales across major online channels, firmly driving growth.'}
+            </p>
+          </div>
+
+          {/* 4. 3PL */}
+          <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50' : 'bg-gray-50 border-gray-100 hover:bg-white'} shadow-lg transition-colors flex flex-col gap-4 group`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${dark ? 'bg-blue-900/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white' : 'bg-red-50 text-[#6D1B2A] group-hover:bg-[#6D1B2A] group-hover:text-white'}`}>
+              <Truck size={28} />
+            </div>
+            <h4 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+              {lang === 'ko' ? '올인원 3PL 풀필먼트' : lang === 'zh' ? '多合一 3PL 履行' : 'All-in-One 3PL Fulfillment'}
+            </h4>
+            <p className={`text-sm leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {lang === 'ko' 
+                ? '대규모 냉동창고와 자체 작업 라인을 구축하여, 배송비 절감을 통한 대량 포장 및 전문적인 택배 대행 등 최적화된 콜드체인 물류 솔루션을 제공합니다.' 
+                : lang === 'zh' 
+                ? '通过建立大型冷库和自有作业线，提供降低配送成本的批量包装以及专业快递代理等优化冷链物流解决方案。' 
+                : 'By establishing large-scale cold storage and in-house operation lines, we provide optimized cold-chain logistics solutions, including bulk packaging to reduce shipping costs and professional courier agency services.'}
+            </p>
           </div>
         </motion.div>
       </motion.div>
@@ -823,6 +810,18 @@ export default function App() {
     );
   };
 
+
+export default function App() {
+  const [currentLang, setCurrentLang] = useState('ko');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [modal, setModal] = useState<{ isOpen: boolean; title: string; content: React.ReactNode; images?: string[] }>({ isOpen: false, title: '', content: null });
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeDetailSlide, setActiveDetailSlide] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+  const t = TRANSLATIONS[currentLang as keyof typeof TRANSLATIONS] || TRANSLATIONS.en;
+
   const openModal = (title: string, content: React.ReactNode, images?: string[]) => setModal({ isOpen: true, title, content, images });
 
   const getResourcesContent = (lang: string, dark: boolean) => {
@@ -862,20 +861,78 @@ export default function App() {
       <motion.div 
         initial="hidden" animate="visible" 
         variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
-        className={`space-y-6 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
+        className={`space-y-8 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
       >
-        <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-xl font-medium ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>{t.introDesc}</motion.p>
-        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-8 rounded-3xl border transition-colors`}>
-          <h4 className={`font-bold text-xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'} mb-4 flex items-center gap-3`}><Globe size={24}/> {t.coreCompetency}</h4>
-          <ul className={`list-disc pl-5 space-y-3 ${dark ? 'text-blue-200/80' : 'text-[#6D1B2A]/80'} font-medium`}>
-            <li>{t.core1}</li>
-            <li>{t.core2}</li>
-            <li>{t.core3}</li>
-          </ul>
+        {/* CEO Message Section */}
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="mb-10">
+          <h3 className={`text-3xl font-black mb-6 ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+            {lang === 'ko' ? 'CEO 인사말' : lang === 'zh' ? 'CEO致辞' : 'CEO Greeting'}
+          </h3>
+          <div className={`p-8 md:p-10 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700 shadow-xl shadow-black/20' : 'bg-gray-50/80 border-gray-100 shadow-xl shadow-gray-200/50'} relative overflow-hidden`}>
+            {/* Quote Icon Background */}
+            <div className={`absolute top-4 left-6 text-6xl opacity-10 ${dark ? 'text-blue-300' : 'text-[#6D1B2A]'} font-serif`}>"</div>
+            <div className="relative z-10 space-y-6 text-lg leading-loose font-medium">
+              <p>
+                {lang === 'ko' ? '안녕하십니까, 에이치케이온 코리아(HKON Korea) 대표이사입니다.' : lang === 'zh' ? '您好，我是 HKON Korea 的代表理事。' : 'Greetings, I am the CEO of HKON Korea.'}
+              </p>
+              <p>
+                {lang === 'ko' 
+                  ? 'HKON은 전 세계의 다채로운 미식 문화를 국내에 소개하며, 고객의 식탁에 즐거움과 가치를 더하는 글로벌 종합 식품 유통 기업입니다. 우리는 단순히 해외 유명 브랜드를 수입하는 것에 그치지 않고, 고객이 원하고 필요로 하는 최상의 품질과 트렌드를 선제적으로 발굴하여 제안합니다.'
+                  : lang === 'zh'
+                  ? 'HKON 是一家全球综合食品分销企业，致力于将世界各地丰富多彩的美食文化引入国内，为客户的餐桌增添欢乐与价值。我们不仅限于进口海外知名品牌，更主动发掘并提供客户所需的最优质产品与前沿趋势。'
+                  : 'HKON is a global comprehensive food distribution company that introduces diverse gastronomic cultures from around the world to the domestic market, adding joy and value to our customers\' dining tables. We go beyond simply importing famous overseas brands by proactively discovering and offering the highest quality and trends our customers want and need.'
+                }
+              </p>
+              <p>
+                {lang === 'ko' 
+                  ? '특히 당사는 국내 주요 메인 이커머스 플랫폼에서의 확고한 리더십과 글로벌 프리미엄 브랜드 \'하겐다즈\'의 온라인 전담 유통 주체로서 압도적인 역량을 증명해 왔습니다. 또한 선진화된 3PL 콜드체인 풀필먼트 센터를 자체적으로 구축하여, 안전하고 신선한 먹거리를 가장 빠르게 전달하는 완벽한 유통 인프라를 완성했습니다.'
+                  : lang === 'zh'
+                  ? '特别值得一提的是，我们在国内主要电子商务平台上确立了坚实的领导地位，并作为全球高端品牌“哈根达斯”的独家在线分销主体，展现了压倒性的实力。此外，我们自主建立了先进的 3PL 冷链物流履行中心，完善了最快、最安全的新鲜食品分销基础设施。'
+                  : 'In particular, we have proven our overwhelming capabilities through our firm leadership on major domestic e-commerce platforms and as the exclusive online distributor for the global premium brand \'Häagen-Dazs\'. Furthermore, by independently establishing an advanced 3PL cold chain fulfillment center, we have completed a flawless distribution infrastructure that delivers safe and fresh food the fastest.'
+                }
+              </p>
+              <p>
+                {lang === 'ko' 
+                  ? '앞으로도 HKON은 정직과 신뢰를 바탕으로 파트너사와 동반 성장하며, 끊임없는 혁신을 통해 대한민국 식문화의 새로운 기준을 제시하는 1등 푸드 라이프스타일 파트너가 되겠습니다. 감사합니다.'
+                  : lang === 'zh'
+                  ? '未来，HKON 将继续以诚信和互信为基础，与合作伙伴共同成长，并通过不断的创新，成为引领韩国饮食文化新标准的顶级食品生活方式合作伙伴。谢谢。'
+                  : 'Going forward, based on honesty and trust, HKON will continue to grow together with our partners and become the #1 food lifestyle partner setting new standards for Korea\'s dining culture through constant innovation. Thank you.'
+                }
+              </p>
+              <p className={`pt-6 border-t ${dark ? 'border-gray-700' : 'border-gray-200'} text-right font-black tracking-widest text-xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+                {lang === 'ko' ? '에이치케이온(주) 대표이사' : lang === 'zh' ? 'HKON株式会社 代表理事' : 'CEO of HKON Co., Ltd.'}
+              </p>
+            </div>
+          </div>
         </motion.div>
-        <div className={`${dark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100'} p-6 rounded-2xl border`}>
-          <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'} mb-3 flex items-center gap-2`}><Eye size={20}/> {t.vision}</h4>
-          <p className={`${dark ? 'text-gray-400' : 'text-gray-700'} leading-relaxed`}>{t.visionDesc}</p>
+
+        {/* Company Overview */}
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-8 md:p-10 rounded-3xl border transition-colors`}>
+          <h4 className={`font-bold text-2xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'} mb-6 flex items-center gap-3`}><Building2 size={28}/> {lang === 'ko' ? '회사 개요' : lang === 'zh' ? '公司简介' : 'Company Overview'}</h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+            <div className={`flex flex-col gap-1 pb-4 border-b ${dark ? 'border-blue-800/50' : 'border-red-200/60'}`}>
+              <span className={`text-sm font-bold uppercase tracking-wider ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{lang === 'ko' ? '회사명' : lang === 'zh' ? '公司名称' : 'Company Name'}</span>
+              <span className={`text-lg font-medium ${dark ? 'text-gray-200' : 'text-gray-900'}`}>{lang === 'ko' ? '에이치케이온 주식회사 (HKON)' : lang === 'zh' ? 'HKON 株式会社' : 'HKON Co., Ltd.'}</span>
+            </div>
+            <div className={`flex flex-col gap-1 pb-4 border-b ${dark ? 'border-blue-800/50' : 'border-red-200/60'}`}>
+              <span className={`text-sm font-bold uppercase tracking-wider ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{lang === 'ko' ? '설립일' : lang === 'zh' ? '成立日期' : 'Established'}</span>
+              <span className={`text-lg font-medium ${dark ? 'text-gray-200' : 'text-gray-900'}`}>2020. 03. 15</span>
+            </div>
+            <div className={`flex flex-col gap-1 pb-4 border-b ${dark ? 'border-blue-800/50' : 'border-red-200/60'}`}>
+              <span className={`text-sm font-bold uppercase tracking-wider ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{lang === 'ko' ? '주요 사업' : lang === 'zh' ? '主要业务' : 'Main Business'}</span>
+              <span className={`text-lg font-medium ${dark ? 'text-gray-200' : 'text-gray-900'}`}>{lang === 'ko' ? '프리미엄 식품 수입 유통, E-Commerce, 3PL 풀필먼트' : lang === 'zh' ? '高端食品进口分销, 电子商务, 3PL 履行' : 'Premium Food Distribution, E-Commerce, 3PL Fulfillment'}</span>
+            </div>
+            <div className={`flex flex-col gap-1 pb-4 border-b ${dark ? 'border-blue-800/50' : 'border-red-200/60'}`}>
+              <span className={`text-sm font-bold uppercase tracking-wider ${dark ? 'text-gray-400' : 'text-gray-500'}`}>{lang === 'ko' ? '본사 소재지' : lang === 'zh' ? '总部地址' : 'Headquarters'}</span>
+              <span className={`text-lg font-medium ${dark ? 'text-gray-200' : 'text-gray-900'}`}>{lang === 'ko' ? '경기도 부천시 원미구 삼작로 164번길' : lang === 'zh' ? '京畿道富川市远美区三作路164号街' : '164 Samjak-ro, Wonmi-gu, Bucheon-si, Gyeonggi-do'}</span>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className={`${dark ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-100'} p-8 rounded-2xl border`}>
+          <h4 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'} mb-4 flex items-center gap-2 text-xl`}><Eye size={24}/> {t.vision}</h4>
+          <p className={`${dark ? 'text-gray-400' : 'text-gray-700'} leading-relaxed text-lg`}>{t.visionDesc}</p>
         </div>
       </motion.div>
     );
@@ -1044,33 +1101,43 @@ export default function App() {
     // 9. 그 외의 경우: 메뉴 아이템별 상세 콘텐츠를 제공합니다.
     else {
       let detailContent = "";
+      let detailImage = "";
       switch(item) {
         case "CEO 인사말":
           detailContent = "에이치케이온 코리아를 찾아주신 여러분, 진심으로 환영합니다.\n\n우리는 전 세계의 다채로운 맛과 문화를 고객 여러분의 식탁에 전달하기 위해 끊임없이 노력하고 있습니다. 에이치케이온은 단순한 유통을 넘어, 최고 품질의 제품을 가장 신선하고 안전하게 제공하는 것을 우리의 핵심 사명으로 삼고 있습니다.\n\n앞으로도 신뢰받는 파트너로서 최선을 다하겠습니다.\n\nCEO 올림";
+          detailImage = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80";
           break;
         case "회사개요":
           detailContent = "에이치케이온(HKON)은 독보적인 글로벌 소싱 네트워크와 철저한 품질 관리를 통해 세계 최상급 F&B 브랜드를 국내 소비자에게 이어주는 프리미엄 식품 유통사입니다.\n\n설립일: 2020년\n사업 분야: 프리미엄 식품 유통, 3PL (제3자 물류) 서비스\n주요 브랜드: 하겐다즈, 제너럴밀즈, 란티코, 카라치 등";
+          detailImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80";
           break;
         case "회사연혁":
           detailContent = "2024 - 물류 센터 확장 및 3PL 서비스 고도화\n2023 - 카라치(Caraci) 공식 파트너십 체결\n2022 - 란티코(L'Antico) 공식 파트너십 체결\n2021 - 제너럴밀즈 공식 파트너십 체결\n2020 - 에이치케이온 코리아 설립 및 하겐다즈 유통 시작";
+          detailImage = "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80";
           break;
         case "CI 소개":
           detailContent = "HKON의 CI는 '글로벌을 향한 연결(Connection)'과 '무한한 가능성(ON)'을 상징합니다. 굵고 선명한 타이포그래피는 고객과 세계 최고 수준의 브랜드를 잇는 굳건한 신뢰의 다리가 되겠다는 당사의 굳은 의지를 시각적으로 담아냈습니다.";
+          detailImage = "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80";
           break;
         case "오시는 길":
           detailContent = "본사 주소: 경기도 부천시 원미구 삼작로 164번길, 에이치케이온 코리아\n\n[대중교통 이용 시]\n- 지하철 7호선 부천시청역 하차 후 버스 환승\n\n[차량 이용 시]\n- 경인고속도로 부천IC에서 10분 거리";
+          detailImage = "https://images.unsplash.com/photo-1548345680-f5475ea90f14?auto=format&fit=crop&w=800&q=80";
           break;
         case "고객 문의":
           detailContent = "제품 및 서비스에 대한 문의사항을 남겨주시면 신속하고 친절하게 답변해 드립니다.\n\n대표 번호: 1588-1285\n운영 시간: 평일 09:30 ~ 18:30 (주말 및 공휴일 휴무)\n이메일: hkonkorea@gmail.com";
+          detailImage = "https://images.unsplash.com/photo-1559523161-0fc0d8b38a7a?auto=format&fit=crop&w=800&q=80";
           break;
         case "입점/제휴 문의":
           detailContent = "에이치케이온 코리아와의 성공적인 비즈니스 파트너십을 환영합니다. 새로운 브랜드 입점 제안 및 B2B 유통 제휴와 관련된 세부적인 문의는 하단의 '제품 및 브랜드 문의' 폼을 이용해 주시거나 대표 이메일로 제안서를 송부해주시기 바랍니다.";
+          detailImage = "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=800&q=80";
           break;
         case "자주 묻는 질문(FAQ)":
           detailContent = "Q. 배송은 보통 얼마나 걸리나요?\nA. 평일 오후 2시 이전 결제 완료 건에 한하여 당일 출고되며, 보통 1~2영업일 이내에 배송이 완료됩니다.\n\nQ. B2B 대량 구매 시 할인이 적용되나요?\nA. 네, 기업 및 단체를 위한 대량 구매의 경우 별도의 파트너십 할인율이 적용됩니다. 고객 지원 센터로 상세 수량을 기재하여 문의 부탁드립니다.";
+          detailImage = "https://images.unsplash.com/photo-1556761175-5973dc0f32b7?auto=format&fit=crop&w=800&q=80";
           break;
         case "인재상":
           detailContent = "에이치케이온이 찾는 인재상은 다음과 같습니다.\n\n1. 열정 (Passion)\n식음료 트렌드를 사랑하고 자신의 업무에 대한 강한 자부심이 있는 인재\n\n2. 도전 (Challenge)\n끊임없이 변화하는 새로운 시장을 선제적으로 개척하고 혁신을 두려워하지 않는 인재\n\n3. 상생 (Cooperation)\n다양한 비즈니스 파트너 및 내부 동료들과 진정성 있게 소통하며 함께 성장하는 인재";
+          detailImage = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80";
           break;
         default:
           detailContent = `${item}와 관련된 상세 내용을 준비 중입니다. 잠시만 기다려 주시기 바랍니다.`;
@@ -1084,7 +1151,7 @@ export default function App() {
         </div>
       );
       
-      openModal(item, contentComponent);
+      openModal(item, contentComponent, detailImage ? [detailImage] : undefined);
     }
   };
 
@@ -1333,7 +1400,7 @@ export default function App() {
                         items={menuData[item].map(sub => sub.name)} 
                         isOpen={openAccordion === item}
                         onToggle={() => setOpenAccordion(openAccordion === item ? null : item)}
-                        openModal={(t, c) => { openModal(t, c); setIsMobileMenuOpen(false); }} 
+                        onItemClick={(selectedItem) => { handleMenuClick(selectedItem); setIsMobileMenuOpen(false); }} 
                         isDarkMode={isDarkMode}
                       />
                     );

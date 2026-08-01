@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-export const AccordionMenu: React.FC<{ title: string; items: string[]; openModal: (t: string, c: string) => void; isOpen: boolean; onToggle: () => void; isDarkMode?: boolean }> = ({ title, items, openModal, isOpen, onToggle, isDarkMode }) => {
+export const AccordionMenu: React.FC<{ title: string; items: string[]; onItemClick: (item: string) => void; isOpen: boolean; onToggle: () => void; isDarkMode?: boolean }> = ({ title, items, onItemClick, isOpen, onToggle, isDarkMode }) => {
   return (
     <div className="w-full">
       <button 
@@ -23,7 +23,7 @@ export const AccordionMenu: React.FC<{ title: string; items: string[]; openModal
             {items.map((item, idx) => (
               <button 
                 key={idx} 
-                onClick={() => openModal(item, `${item} details.`)}
+                onClick={() => onItemClick(item)}
                 className={`block w-full text-left py-2 pl-4 text-sm ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'} transition-colors`}
               >
                 {item}
