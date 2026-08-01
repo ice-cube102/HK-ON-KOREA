@@ -66,7 +66,7 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
                         transition={{ duration: 0.3 }}
                         src={images[activeImageIdx]} 
                         alt={`${title} main`} 
-                        className="w-full h-auto object-cover aspect-[4/3] group-hover:scale-105 transition-transform duration-700" 
+                        className={`w-full h-auto object-contain aspect-[4/3] group-hover:scale-[1.02] transition-transform duration-700 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`} 
                         referrerPolicy="no-referrer" 
                         loading="lazy" 
                         decoding="async" 
@@ -84,9 +84,9 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 + (idx * 0.1), duration: 0.4 }}
                             onClick={() => setActiveImageIdx(idx)}
-                            className="rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 aspect-square cursor-pointer group relative"
+                            className={`rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-800 aspect-square cursor-pointer group relative ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}
                           >
-                            <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+                            <img src={img} alt={`${title} detail ${idx + 1}`} className="w-full h-full object-contain group-hover:scale-[1.05] transition-transform duration-500 p-2" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                           </motion.div>
                         );
@@ -124,7 +124,7 @@ const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen
 };
 
 // 마우스 움직임에 따라 이미지가 기울어지는 3D 틸트 효과 컴포넌트
-const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkMode: boolean }) => {
+const TiltImage = ({ src, alt, isDarkMode, onClick }: { src: string, alt: string, isDarkMode: boolean, onClick?: () => void }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
@@ -153,13 +153,14 @@ const TiltImage = ({ src, alt, isDarkMode }: { src: string, alt: string, isDarkM
     <motion.div 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onClick={onClick}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      whileHover={{ scale: 1.05 }}
+      whileHover={{ scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-[2.5rem] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-800 border-gray-700 shadow-blue-900/10' : 'bg-white border-gray-100 shadow-red-900/10'} border-4 p-2 cursor-pointer w-full group`}
+      className={`relative aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[500px] rounded-[2.5rem] overflow-hidden shadow-2xl ${isDarkMode ? 'bg-gray-800 border-gray-700 shadow-blue-900/10' : 'bg-white border-gray-100 shadow-red-900/10'} border-4 p-2 ${onClick ? 'cursor-pointer' : ''} w-full group`}
     >
       <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }} className="w-full h-full rounded-[2rem] overflow-hidden relative">
-        <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
+        <img src={src} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" referrerPolicy="no-referrer" loading="lazy" decoding="async" />
         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500" />
       </div>
     </motion.div>
@@ -1040,9 +1041,50 @@ export default function App() {
       );
       openModal(item, content);
     } 
-    // 9. 그 외의 경우: 기본 모달을 엽니다.
+    // 9. 그 외의 경우: 메뉴 아이템별 상세 콘텐츠를 제공합니다.
     else {
-      openModal(item, `${item} page content.`);
+      let detailContent = "";
+      switch(item) {
+        case "CEO 인사말":
+          detailContent = "에이치케이온 코리아를 찾아주신 여러분, 진심으로 환영합니다.\n\n우리는 전 세계의 다채로운 맛과 문화를 고객 여러분의 식탁에 전달하기 위해 끊임없이 노력하고 있습니다. 에이치케이온은 단순한 유통을 넘어, 최고 품질의 제품을 가장 신선하고 안전하게 제공하는 것을 우리의 핵심 사명으로 삼고 있습니다.\n\n앞으로도 신뢰받는 파트너로서 최선을 다하겠습니다.\n\nCEO 올림";
+          break;
+        case "회사개요":
+          detailContent = "에이치케이온(HKON)은 독보적인 글로벌 소싱 네트워크와 철저한 품질 관리를 통해 세계 최상급 F&B 브랜드를 국내 소비자에게 이어주는 프리미엄 식품 유통사입니다.\n\n설립일: 2020년\n사업 분야: 프리미엄 식품 유통, 3PL (제3자 물류) 서비스\n주요 브랜드: 하겐다즈, 제너럴밀즈, 란티코, 카라치 등";
+          break;
+        case "회사연혁":
+          detailContent = "2024 - 물류 센터 확장 및 3PL 서비스 고도화\n2023 - 카라치(Caraci) 공식 파트너십 체결\n2022 - 란티코(L'Antico) 공식 파트너십 체결\n2021 - 제너럴밀즈 공식 파트너십 체결\n2020 - 에이치케이온 코리아 설립 및 하겐다즈 유통 시작";
+          break;
+        case "CI 소개":
+          detailContent = "HKON의 CI는 '글로벌을 향한 연결(Connection)'과 '무한한 가능성(ON)'을 상징합니다. 굵고 선명한 타이포그래피는 고객과 세계 최고 수준의 브랜드를 잇는 굳건한 신뢰의 다리가 되겠다는 당사의 굳은 의지를 시각적으로 담아냈습니다.";
+          break;
+        case "오시는 길":
+          detailContent = "본사 주소: 경기도 부천시 원미구 삼작로 164번길, 에이치케이온 코리아\n\n[대중교통 이용 시]\n- 지하철 7호선 부천시청역 하차 후 버스 환승\n\n[차량 이용 시]\n- 경인고속도로 부천IC에서 10분 거리";
+          break;
+        case "고객 문의":
+          detailContent = "제품 및 서비스에 대한 문의사항을 남겨주시면 신속하고 친절하게 답변해 드립니다.\n\n대표 번호: 1588-1285\n운영 시간: 평일 09:30 ~ 18:30 (주말 및 공휴일 휴무)\n이메일: hkonkorea@gmail.com";
+          break;
+        case "입점/제휴 문의":
+          detailContent = "에이치케이온 코리아와의 성공적인 비즈니스 파트너십을 환영합니다. 새로운 브랜드 입점 제안 및 B2B 유통 제휴와 관련된 세부적인 문의는 하단의 '제품 및 브랜드 문의' 폼을 이용해 주시거나 대표 이메일로 제안서를 송부해주시기 바랍니다.";
+          break;
+        case "자주 묻는 질문(FAQ)":
+          detailContent = "Q. 배송은 보통 얼마나 걸리나요?\nA. 평일 오후 2시 이전 결제 완료 건에 한하여 당일 출고되며, 보통 1~2영업일 이내에 배송이 완료됩니다.\n\nQ. B2B 대량 구매 시 할인이 적용되나요?\nA. 네, 기업 및 단체를 위한 대량 구매의 경우 별도의 파트너십 할인율이 적용됩니다. 고객 지원 센터로 상세 수량을 기재하여 문의 부탁드립니다.";
+          break;
+        case "인재상":
+          detailContent = "에이치케이온이 찾는 인재상은 다음과 같습니다.\n\n1. 열정 (Passion)\n식음료 트렌드를 사랑하고 자신의 업무에 대한 강한 자부심이 있는 인재\n\n2. 도전 (Challenge)\n끊임없이 변화하는 새로운 시장을 선제적으로 개척하고 혁신을 두려워하지 않는 인재\n\n3. 상생 (Cooperation)\n다양한 비즈니스 파트너 및 내부 동료들과 진정성 있게 소통하며 함께 성장하는 인재";
+          break;
+        default:
+          detailContent = `${item}와 관련된 상세 내용을 준비 중입니다. 잠시만 기다려 주시기 바랍니다.`;
+      }
+
+      const contentComponent = (
+        <div className="space-y-6">
+          <div className={`p-8 rounded-3xl border ${isDarkMode ? 'border-gray-800 bg-gray-900/50' : 'border-gray-100 bg-gray-50'} shadow-sm whitespace-pre-line text-lg leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            {detailContent}
+          </div>
+        </div>
+      );
+      
+      openModal(item, contentComponent);
     }
   };
 
@@ -1307,10 +1349,10 @@ export default function App() {
                 })}
 
                 <div className="mt-8 flex gap-6 items-center justify-center pt-8 border-t border-gray-200 dark:border-gray-800">
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram"><Instagram size={24} /></a>
-                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube"><Youtube size={26} /></a>
-                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog"><BookOpen size={24} /></a>
-                  <a href="https://pf.kakao.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk"><MessageSquare size={24} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram" aria-label="Instagram"><Instagram size={24} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube" aria-label="YouTube"><Youtube size={26} /></a>
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog" aria-label="Naver Blog"><BookOpen size={24} /></a>
+                  <a href="https://pf.kakao.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk" aria-label="KakaoTalk"><MessageSquare size={24} /></a>
                 </div>
               </div>
             </motion.div>
@@ -1321,7 +1363,7 @@ export default function App() {
         <div className="h-full flex flex-col">
           {/* Hero Slider */}
           <motion.div 
-            className="flex-1 relative overflow-hidden bg-black cursor-grab active:cursor-grabbing touch-pan-y"
+            className="flex-1 relative overflow-hidden bg-black cursor-grab active:cursor-grabbing touch-pan-y select-none"
             onPanEnd={(e, info) => {
               const threshold = 50;
               if (info.offset.x > threshold) {
@@ -1637,7 +1679,8 @@ export default function App() {
                         <TiltImage 
                           src={product.image} 
                           alt={product.name[currentLang as keyof typeof product.name] || product.name.en} 
-                          isDarkMode={isDarkMode} 
+                          isDarkMode={isDarkMode}
+                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, getProductContent(product, currentLang, isDarkMode), [product.image, ...product.detailImages])}
                         />
                       </div>
                     </div>
@@ -1781,16 +1824,16 @@ export default function App() {
                 <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode, t))} className="hover:text-white transition-colors">{t.location}</button>
                 <button onClick={() => openModal(t.resources, getResourcesContent(currentLang, isDarkMode))} className="flex items-center gap-2 hover:text-white transition-colors font-bold text-white"><MonitorPlay size={16} />{t.resources}</button>
                 <div className="hidden md:flex ml-2 gap-4 border-l border-gray-700 pl-4">
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={16} /></a>
-                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={17} /></a>
-                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={16} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Instagram"><Instagram size={16} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="YouTube"><Youtube size={17} /></a>
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Naver Blog"><BookOpen size={16} /></a>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
                 <div className="flex md:hidden gap-3 mb-2">
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Instagram size={18} /></a>
-                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><Youtube size={19} /></a>
-                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700"><BookOpen size={18} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Instagram"><Instagram size={18} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="YouTube"><Youtube size={19} /></a>
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Naver Blog"><BookOpen size={18} /></a>
                 </div>
                 <p>{t.footerText}</p>
               </div>
