@@ -604,6 +604,19 @@ const getAboutUsContent = (lang: string, dark: boolean) => {
         variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15 } } }}
         className={`space-y-8 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
       >
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="w-full h-64 md:h-80 rounded-3xl overflow-hidden relative shadow-xl">
+          <img 
+            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200" 
+            alt="Logistics and E-Commerce" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+            <h3 className="text-white text-3xl font-bold">
+              {lang === 'ko' ? '끊임없는 도전과 혁신' : lang === 'zh' ? '不断的挑战与创新' : 'Relentless Challenge and Innovation'}
+            </h3>
+          </div>
+        </motion.div>
+
         <div className="space-y-4">
           <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-2xl font-black leading-relaxed ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
             {lang === 'ko' 
@@ -621,39 +634,55 @@ const getAboutUsContent = (lang: string, dark: boolean) => {
           </motion.p>
         </div>
         
-        <motion.div variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1 } }} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="space-y-6 mt-8">
           {/* 1. 이커머스 */}
-          <div className={`p-5 rounded-2xl border ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50' : 'bg-gray-50 border-gray-100 hover:bg-white'} shadow-sm hover:shadow-md transition-all flex flex-col gap-3 group`}>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${dark ? 'bg-blue-900/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white' : 'bg-red-50 text-[#6D1B2A] group-hover:bg-[#6D1B2A] group-hover:text-white'}`}>
-              <ShoppingCart size={20} />
+          <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700' : 'bg-gray-50/80 border-gray-100'} shadow-sm flex flex-col gap-5`}>
+            <div className="flex items-center gap-4 mb-2">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-blue-900/40 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                <ShoppingCart size={28} />
+              </div>
+              <h4 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+                {lang === 'ko' ? '이커머스 운영' : lang === 'zh' ? '电子商务运营' : 'E-commerce Operations'}
+              </h4>
             </div>
-            <h4 className={`text-base font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-              {lang === 'ko' ? '이커머스 운영' : lang === 'zh' ? '电子商务运营' : 'E-commerce Operations'}
-            </h4>
-            <p className={`text-xs leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-base leading-relaxed font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
               {lang === 'ko' 
-                ? '국내 메인 온라인 플랫폼의 유통을 전면 주도하며, 전략적인 마케팅과 최적화된 세일즈로 폭발적인 성장을 이끌어냅니다.' 
+                ? '국내 메인 온라인 플랫폼의 유통을 전면 주도하며, 전략적인 마케팅과 최적화된 세일즈로 폭발적인 성장을 이끌어냅니다. 브랜드의 가치를 극대화하는 맞춤형 온라인 전략을 통해 타겟 고객층에 가장 효과적으로 도달합니다.' 
                 : lang === 'zh' 
-                ? '全面主导国内主要在线平台的销售，通过战略营销和优化的销售策略推动爆发式增长。' 
-                : 'Leading distribution across major online platforms with strategic marketing and optimized sales for explosive growth.'}
+                ? '全面主导国内主要在线平台的销售，通过战略营销和优化的销售策略推动爆发式增长。通过定制的在线策略，最大限度地提升品牌价值，最有效地触达目标客户群。' 
+                : 'Leading distribution across major domestic online platforms, we drive explosive growth through strategic marketing and optimized sales. We reach target audiences most effectively through customized online strategies that maximize brand value.'}
             </p>
+            <ul className={`grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '주요 플랫폼 직거래 및 벤더 운영' : lang === 'zh' ? '主要平台的直营与供应商运营' : 'Direct and vendor operations on major platforms'}</li>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '트렌드 분석 기반의 퍼포먼스 마케팅' : lang === 'zh' ? '基于趋势分析的绩效营销' : 'Performance marketing based on trend analysis'}</li>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '브랜드 자사몰(D2C) 구축 및 통합 관리' : lang === 'zh' ? '品牌D2C商城建设与综合管理' : 'D2C mall establishment and integrated management'}</li>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '실시간 데이터 수집 및 판매 예측 최적화' : lang === 'zh' ? '实时数据收集与销售预测优化' : 'Real-time data collection and sales forecast optimization'}</li>
+            </ul>
           </div>
 
           {/* 2. 3PL */}
-          <div className={`p-5 rounded-2xl border ${dark ? 'bg-gray-800 border-gray-700 hover:bg-gray-700/50' : 'bg-gray-50 border-gray-100 hover:bg-white'} shadow-sm hover:shadow-md transition-all flex flex-col gap-3 group`}>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${dark ? 'bg-blue-900/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white' : 'bg-red-50 text-[#6D1B2A] group-hover:bg-[#6D1B2A] group-hover:text-white'}`}>
-              <Truck size={20} />
+          <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700' : 'bg-gray-50/80 border-gray-100'} shadow-sm flex flex-col gap-5`}>
+            <div className="flex items-center gap-4 mb-2">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-blue-900/40 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                <Truck size={28} />
+              </div>
+              <h4 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+                {lang === 'ko' ? '올인원 3PL 풀필먼트' : lang === 'zh' ? '多合一 3PL 履行' : 'All-in-One 3PL Fulfillment'}
+              </h4>
             </div>
-            <h4 className={`text-base font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-              {lang === 'ko' ? '올인원 3PL 풀필먼트' : lang === 'zh' ? '多合一 3PL 履行' : 'All-in-One 3PL Fulfillment'}
-            </h4>
-            <p className={`text-xs leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-base leading-relaxed font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
               {lang === 'ko' 
-                ? '대규모 냉동창고와 자체 라인을 기반으로, 입출고부터 보관, 재고 관리, 배송까지 원스톱 콜드체인 물류 솔루션을 완벽하게 제공합니다.' 
+                ? '대규모 냉동창고와 자체 라인을 기반으로, 입출고부터 보관, 재고 관리, 배송까지 원스톱 콜드체인 물류 솔루션을 완벽하게 제공합니다. 최첨단 WMS(창고관리시스템)를 도입하여 오차율 0%에 도전하는 정확하고 빠른 물류를 실현합니다.' 
                 : lang === 'zh' 
-                ? '依托大型冷库和自有流水线，我们完美提供从入库出库到入库、仓储、库存管理和配送的一站式冷链物流解决方案。' 
-                : 'Based on large-scale cold storage and our own operation lines, we provide a perfect one-stop cold-chain logistics solution covering everything from inbound/outbound, storage, inventory management to delivery.'}
+                ? '依托大型冷库和自有流水线，我们完美提供从入库出库到仓储、库存管理和配送的一站式冷链物流解决方案。引入先进的WMS系统，挑战0%误差率，实现精准快速的物流。' 
+                : 'Based on large-scale cold storage and our own operation lines, we perfectly provide a one-stop cold-chain logistics solution covering inbound/outbound, storage, inventory, to delivery. Using advanced WMS, we realize accurate and fast logistics aiming for a 0% error rate.'}
             </p>
+            <ul className={`grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '최신식 스마트 콜드체인 물류 센터 완비' : lang === 'zh' ? '配备最先进的智能冷链物流中心' : 'Equipped with state-of-the-art smart cold chain center'}</li>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '실시간 재고 연동 및 자동화 WMS 시스템' : lang === 'zh' ? '实时库存同步与自动化WMS系统' : 'Real-time inventory sync & automated WMS'}</li>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '꼼꼼한 품질 검수(QC) 및 맞춤형 패키징' : lang === 'zh' ? '严格的质量检验(QC)与定制化包装' : 'Thorough QC and customized packaging'}</li>
+              <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '당일 출고 및 새벽 배송 인프라 완벽 연계' : lang === 'zh' ? '当日出库与清晨配送基础设施完美整合' : 'Same-day shipping and dawn delivery integration'}</li>
+            </ul>
           </div>
         </motion.div>
       </motion.div>
@@ -1829,19 +1858,6 @@ export default function App() {
                 <p className="text-sm text-gray-400">{t.address}</p>
               </div>
 
-              <div>
-                <h4 className="text-white font-bold mb-6 uppercase tracking-wider text-sm">{t.globalNetwork}</h4>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('korea', t.korea, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.korea}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('usa', t.usa, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.usa}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('japan', t.japan, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.japan}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('china', t.china, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.china}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('europe', t.europe, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.europe}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('vietnam', t.vietnam, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.vietnam}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('thailand', t.thailand, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.thailand}</button>
-                  <button onClick={() => openModal(t.globalNetwork, getFooterContent('indonesia', t.indonesia, isDarkMode, t))} className="hover:text-white transition-colors text-left">{t.indonesia}</button>
-                </div>
-              </div>
             </motion.div>
 
             <motion.div 
