@@ -45,11 +45,46 @@
         "email": { "type": "string", "maxLength": 150 },
         "name": { "type": "string", "maxLength": 100 },
         "role": { "type": "string", "enum": ["developer", "admin"] },
+        "permissions": { "type": "object" },
         "addedBy": { "type": "string", "maxLength": 150 },
         "createdAt": { "type": "string" },
         "updatedAt": { "type": "string" }
       },
       "required": ["email", "role"]
+    },
+    "SiteVersion": {
+      "title": "SiteVersion",
+      "description": "Snapshot of previous and current content for rollbacks and version history",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sectionKey": { "type": "string" },
+        "sectionTitle": { "type": "string" },
+        "targetType": { "type": "string", "enum": ["text", "image"] },
+        "previousValue": { "type": "string" },
+        "newValue": { "type": "string" },
+        "authorEmail": { "type": "string" },
+        "authorName": { "type": "string" },
+        "changeNote": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["sectionKey", "newValue"]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Audit trail log of admin actions such as apply, revert, delete, reject, and permission changes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "actionType": { "type": "string" },
+        "target": { "type": "string" },
+        "targetTitle": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "userName": { "type": "string" },
+        "details": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["actionType", "target"]
     }
   },
   "firestore": {
@@ -64,6 +99,14 @@
     "/admins/{adminId}": {
       "schema": { "$ref": "AdminUser" },
       "description": "List of authorized administrator emails and their roles"
+    },
+    "/site_versions/{versionId}": {
+      "schema": { "$ref": "SiteVersion" },
+      "description": "Historical snapshots of content overrides for multi-version rollbacks"
+    },
+    "/activity_logs/{logId}": {
+      "schema": { "$ref": "ActivityLog" },
+      "description": "Audit trail log records for administrator and developer actions"
     }
   }
 }

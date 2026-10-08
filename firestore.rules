@@ -41,10 +41,11 @@ service cloud.firestore {
 
     function isValidAdminUser(data) {
       return data.keys().hasAll(['email', 'role']) &&
-        data.keys().hasOnly(['id', 'email', 'name', 'role', 'addedBy', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['id', 'email', 'name', 'role', 'permissions', 'addedBy', 'createdAt', 'updatedAt']) &&
         data.email is string && data.email.size() > 0 && data.email.size() <= 150 &&
         data.role in ['developer', 'admin'] &&
         (!('name' in data) || (data.name is string && data.name.size() <= 100)) &&
+        (!('permissions' in data) || data.permissions is map) &&
         (!('addedBy' in data) || (data.addedBy is string && data.addedBy.size() <= 150)) &&
         (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
         (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 100)) &&
@@ -100,11 +101,25 @@ service cloud.firestore {
       allow delete: if isAdmin() && isValidId(overrideId);
     }
 
-    // Admin accounts collection (Managed by Developer galaxynoob102@gmail.com, viewable by signed-in admins)
+    // Admin accounts collection (Managed by Developer and Admins, viewable by signed-in users)
     match /admins/{adminId} {
       allow read: if isSignedIn();
-      allow create, update: if isDeveloper() && isValidId(adminId) && isValidAdminUser(incoming());
-      allow delete: if isDeveloper() && isValidId(adminId);
+      allow create, update: if isAdmin() && isValidId(adminId) && isValidAdminUser(incoming());
+      allow delete: if isAdmin() && isValidId(adminId) && adminId != 'galaxynoob102@gmail.com';
+    }
+
+    // Historical version snapshots for rollbacks & restore points
+    match /site_versions/{versionId} {
+      allow read: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && isAdmin() && isValidId(versionId);
+      allow delete: if isSignedIn() && isAdmin() && isValidId(versionId);
+    }
+
+    // Real-time audit activity logs
+    match /activity_logs/{logId} {
+      allow read: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && isAdmin() && isValidId(logId);
+      allow delete: if isSignedIn() && isDeveloper() && isValidId(logId);
     }
   }
 }

@@ -5,11 +5,47 @@ import {
   updateDoc, 
   deleteDoc, 
   onSnapshot, 
-  query, 
-  orderBy,
   Unsubscribe 
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
+
+export interface AdminPermissions {
+  canDirectApply: boolean;       // 즉시 라이브 승인/적용 권한
+  canReject: boolean;            // 제안 반려/거절 권한
+  canDelete: boolean;            // 내역/버전/로그 삭제 권한
+  canRevert: boolean;            // 사이트 원복(기본값 되돌리기) 권한
+  canManageBackgrounds: boolean; // 배경 사진 업로드 및 변경 권한
+  canManageAdmins: boolean;      // 관리자 추가 및 권한 설정 권한
+}
+
+export const DEFAULT_ADMIN_PERMISSIONS: AdminPermissions = {
+  canDirectApply: true,
+  canReject: true,
+  canDelete: false,
+  canRevert: true,
+  canManageBackgrounds: true,
+  canManageAdmins: false
+};
+
+export const DEVELOPER_PERMISSIONS: AdminPermissions = {
+  canDirectApply: true,
+  canReject: true,
+  canDelete: true,
+  canRevert: true,
+  canManageBackgrounds: true,
+  canManageAdmins: true
+};
+
+export interface AdminUser {
+  id?: string;
+  email: string;
+  name?: string;
+  role: 'developer' | 'admin';
+  permissions?: AdminPermissions;
+  addedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export interface FeedbackProposal {
   id: string;
@@ -38,8 +74,136 @@ export interface SiteOverride {
   updatedAt: string;
 }
 
+export interface SiteVersion {
+  id: string;
+  sectionKey: string;
+  sectionTitle: string;
+  targetType: 'text' | 'image';
+  previousValue?: string;
+  newValue: string;
+  authorEmail: string;
+  authorName: string;
+  changeNote?: string;
+  createdAt: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  actionType: 'apply' | 'revert' | 'reject' | 'delete' | 'admin_add' | 'admin_update' | 'admin_remove' | 'rollback';
+  target: string;
+  targetTitle: string;
+  userEmail: string;
+  userName: string;
+  details?: string;
+  createdAt: string;
+}
+
 /**
- * Real-time listener for site overrides (live applied text)
+ * Audit Log recorder
+ */
+export async function logActivity(
+  action: Omit<ActivityLog, 'id' | 'createdAt'>
+): Promise<void> {
+  const logId = `log_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const logRef = doc(db, 'activity_logs', logId);
+  const payload: ActivityLog = {
+    ...action,
+    id: logId,
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    await setDoc(logRef, payload);
+  } catch (error) {
+    // Non-critical, log to console
+    console.warn('Audit log write error:', error);
+  }
+}
+
+/**
+ * Real-time listener for Activity Logs
+ */
+export function subscribeActivityLogs(
+  callback: (logs: ActivityLog[]) => void
+): Unsubscribe {
+  const colRef = collection(db, 'activity_logs');
+  return onSnapshot(
+    colRef,
+    (snapshot) => {
+      const list: ActivityLog[] = [];
+      snapshot.forEach((d) => {
+        list.push(d.data() as ActivityLog);
+      });
+      list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      callback(list);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'activity_logs');
+    }
+  );
+}
+
+/**
+ * Version Snapshot recorder
+ */
+export async function createSiteVersion(
+  versionData: Omit<SiteVersion, 'id' | 'createdAt'>
+): Promise<string> {
+  const versionId = `ver_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const versionRef = doc(db, 'site_versions', versionId);
+  const payload: SiteVersion = {
+    ...versionData,
+    id: versionId,
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    await setDoc(versionRef, payload);
+    return versionId;
+  } catch (error) {
+    console.warn('Version snapshot write error:', error);
+    return versionId;
+  }
+}
+
+/**
+ * Real-time listener for Version History
+ */
+export function subscribeSiteVersions(
+  callback: (versions: SiteVersion[]) => void
+): Unsubscribe {
+  const colRef = collection(db, 'site_versions');
+  return onSnapshot(
+    colRef,
+    (snapshot) => {
+      const list: SiteVersion[] = [];
+      snapshot.forEach((d) => {
+        list.push(d.data() as SiteVersion);
+      });
+      list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      callback(list);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'site_versions');
+    }
+  );
+}
+
+/**
+ * Delete a version record
+ */
+export async function deleteSiteVersion(versionId: string): Promise<void> {
+  const versionRef = doc(db, 'site_versions', versionId);
+  try {
+    await deleteDoc(versionRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `site_versions/${versionId}`);
+    throw error;
+  }
+}
+
+/**
+ * Real-time listener for site overrides (live applied text/images)
  */
 export function subscribeSiteOverrides(
   callback: (overrides: Record<string, string>) => void
@@ -82,6 +246,14 @@ export async function submitFeedbackProposal(
 
   try {
     await setDoc(docRef, payload);
+    await logActivity({
+      actionType: 'apply',
+      target: proposalData.sectionKey,
+      targetTitle: proposalData.sectionTitle || proposalData.sectionKey,
+      userEmail: proposalData.authorEmail || 'anonymous',
+      userName: proposalData.authorName,
+      details: `새 ${proposalData.targetType === 'image' ? '이미지' : '문구'} 수정 제안 등록`
+    });
     return proposalId;
   } catch (error) {
     handleFirestoreError(error, OperationType.CREATE, `feedback_proposals/${proposalId}`);
@@ -103,7 +275,6 @@ export function subscribeProposals(
       snapshot.forEach((d) => {
         list.push(d.data() as FeedbackProposal);
       });
-      // Sort newest first
       list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
       callback(list);
     },
@@ -118,10 +289,13 @@ export function subscribeProposals(
  */
 export async function applyProposal(
   proposal: FeedbackProposal,
-  adminEmail: string
+  adminEmail: string,
+  adminName?: string,
+  currentLiveValue?: string
 ): Promise<void> {
   const overrideRef = doc(db, 'site_overrides', proposal.sectionKey);
   const proposalRef = doc(db, 'feedback_proposals', proposal.id);
+  const applyVal = proposal.proposedImage || proposal.proposedText;
 
   try {
     // 1. Write the live override
@@ -129,7 +303,7 @@ export async function applyProposal(
       sectionKey: proposal.sectionKey,
       sectionTitle: proposal.sectionTitle || '',
       targetType: proposal.targetType || 'text',
-      text: proposal.proposedText,
+      text: applyVal,
       appliedBy: adminEmail,
       updatedAt: new Date().toISOString()
     });
@@ -139,6 +313,28 @@ export async function applyProposal(
       status: 'applied',
       updatedAt: new Date().toISOString()
     });
+
+    // 3. Create version snapshot
+    await createSiteVersion({
+      sectionKey: proposal.sectionKey,
+      sectionTitle: proposal.sectionTitle || proposal.sectionKey,
+      targetType: proposal.targetType || 'text',
+      previousValue: currentLiveValue || proposal.originalImage || proposal.originalText,
+      newValue: applyVal,
+      authorEmail: adminEmail,
+      authorName: adminName || adminEmail.split('@')[0],
+      changeNote: `제안 승인 및 반영 (${proposal.authorName})`
+    });
+
+    // 4. Audit Log
+    await logActivity({
+      actionType: 'apply',
+      target: proposal.sectionKey,
+      targetTitle: proposal.sectionTitle || proposal.sectionKey,
+      userEmail: adminEmail,
+      userName: adminName || adminEmail.split('@')[0],
+      details: `'${proposal.authorName}'의 제안 승인 및 라이브 반영`
+    });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, `site_overrides/${proposal.sectionKey}`);
     throw error;
@@ -146,8 +342,7 @@ export async function applyProposal(
 }
 
 /**
- * Direct apply for galaxynoob102@gmail.com (employee & admin combined)
- * Immediately updates the site override without needing separate review steps!
+ * Direct apply (Immediate 1-click apply without review queue)
  */
 export async function directApplyOverride(
   sectionKey: string,
@@ -155,17 +350,14 @@ export async function directApplyOverride(
   value: string,
   adminEmail: string,
   targetType: 'text' | 'image' = 'text',
-  authorUid?: string,
-  authorName?: string,
-  originalValue?: string
+  adminName?: string,
+  previousValue?: string
 ): Promise<void> {
   const overrideRef = doc(db, 'site_overrides', sectionKey);
   const now = new Date().toISOString();
-  const proposalId = `prop_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-  const proposalRef = doc(db, 'feedback_proposals', proposalId);
 
   try {
-    // 1. Apply to live website immediately
+    // 1. Write the live override
     await setDoc(overrideRef, {
       sectionKey,
       sectionTitle: sectionTitle || '',
@@ -175,28 +367,64 @@ export async function directApplyOverride(
       updatedAt: now
     });
 
-    // 2. Also log to feedback_proposals as 'applied' so there is clear audit history
-    if (authorUid) {
-      await setDoc(proposalRef, {
-        id: proposalId,
-        authorName: authorName || '관리자 (galaxynoob102)',
-        authorEmail: adminEmail,
-        authorUid,
-        sectionKey,
-        sectionTitle: sectionTitle || sectionKey,
-        targetType,
-        originalText: targetType === 'text' ? (originalValue || '') : '',
-        proposedText: value,
-        originalImage: targetType === 'image' ? (originalValue || '') : '',
-        proposedImage: targetType === 'image' ? value : '',
-        reason: '직원/관리자 계정 즉시 실시간 반영',
-        status: 'applied',
-        createdAt: now,
-        updatedAt: now
-      });
-    }
+    // 2. Create version snapshot
+    await createSiteVersion({
+      sectionKey,
+      sectionTitle: sectionTitle || sectionKey,
+      targetType,
+      previousValue: previousValue || '',
+      newValue: value,
+      authorEmail: adminEmail,
+      authorName: adminName || adminEmail.split('@')[0],
+      changeNote: `즉시 실시간 변경 반영`
+    });
+
+    // 3. Audit Log
+    await logActivity({
+      actionType: 'apply',
+      target: sectionKey,
+      targetTitle: sectionTitle || sectionKey,
+      userEmail: adminEmail,
+      userName: adminName || adminEmail.split('@')[0],
+      details: `즉시 실시간 ${targetType === 'image' ? '배경 사진' : '문구'} 반영`
+    });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, `site_overrides/${sectionKey}`);
+    throw error;
+  }
+}
+
+/**
+ * Rollback to a specific historical version
+ */
+export async function rollbackToVersion(
+  version: SiteVersion,
+  adminEmail: string,
+  adminName?: string
+): Promise<void> {
+  const overrideRef = doc(db, 'site_overrides', version.sectionKey);
+  const now = new Date().toISOString();
+
+  try {
+    await setDoc(overrideRef, {
+      sectionKey: version.sectionKey,
+      sectionTitle: version.sectionTitle || '',
+      targetType: version.targetType,
+      text: version.newValue,
+      appliedBy: adminEmail,
+      updatedAt: now
+    });
+
+    await logActivity({
+      actionType: 'rollback',
+      target: version.sectionKey,
+      targetTitle: version.sectionTitle || version.sectionKey,
+      userEmail: adminEmail,
+      userName: adminName || adminEmail.split('@')[0],
+      details: `${new Date(version.createdAt).toLocaleString()} 버전으로 롤백 복원`
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `site_overrides/${version.sectionKey}`);
     throw error;
   }
 }
@@ -206,7 +434,10 @@ export async function directApplyOverride(
  */
 export async function rejectProposal(
   proposalId: string,
-  rejectionReason?: string
+  rejectionReason?: string,
+  adminEmail?: string,
+  adminName?: string,
+  sectionKey?: string
 ): Promise<void> {
   const proposalRef = doc(db, 'feedback_proposals', proposalId);
   try {
@@ -215,6 +446,17 @@ export async function rejectProposal(
       reason: rejectionReason || '관리자에 의해 반려되었습니다.',
       updatedAt: new Date().toISOString()
     });
+
+    if (adminEmail) {
+      await logActivity({
+        actionType: 'reject',
+        target: sectionKey || proposalId,
+        targetTitle: sectionKey || proposalId,
+        userEmail: adminEmail,
+        userName: adminName || adminEmail.split('@')[0],
+        details: rejectionReason || '제안 반려 처리'
+      });
+    }
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, `feedback_proposals/${proposalId}`);
     throw error;
@@ -224,10 +466,25 @@ export async function rejectProposal(
 /**
  * Admin deletes a proposal
  */
-export async function deleteProposal(proposalId: string): Promise<void> {
+export async function deleteProposal(
+  proposalId: string,
+  adminEmail?: string,
+  adminName?: string,
+  targetTitle?: string
+): Promise<void> {
   const proposalRef = doc(db, 'feedback_proposals', proposalId);
   try {
     await deleteDoc(proposalRef);
+    if (adminEmail) {
+      await logActivity({
+        actionType: 'delete',
+        target: proposalId,
+        targetTitle: targetTitle || proposalId,
+        userEmail: adminEmail,
+        userName: adminName || adminEmail.split('@')[0],
+        details: '제안 내역 영구 삭제'
+      });
+    }
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, `feedback_proposals/${proposalId}`);
     throw error;
@@ -237,24 +494,45 @@ export async function deleteProposal(proposalId: string): Promise<void> {
 /**
  * Admin reverts an applied override back to the original code default
  */
-export async function revertSiteOverride(sectionKey: string): Promise<void> {
+export async function revertSiteOverride(
+  sectionKey: string,
+  adminEmail?: string,
+  adminName?: string,
+  previousValue?: string
+): Promise<void> {
   const overrideRef = doc(db, 'site_overrides', sectionKey);
   try {
     await deleteDoc(overrideRef);
+
+    // Record audit log
+    if (adminEmail) {
+      await logActivity({
+        actionType: 'revert',
+        target: sectionKey,
+        targetTitle: sectionKey,
+        userEmail: adminEmail,
+        userName: adminName || adminEmail.split('@')[0],
+        details: '원래 코드 기본값으로 원복(되돌리기)'
+      });
+    }
+
+    // Record revert version snapshot
+    if (previousValue && adminEmail) {
+      await createSiteVersion({
+        sectionKey,
+        sectionTitle: sectionKey,
+        targetType: sectionKey.startsWith('image_') ? 'image' : 'text',
+        previousValue,
+        newValue: '(코드 기본값으로 복원됨)',
+        authorEmail: adminEmail,
+        authorName: adminName || adminEmail.split('@')[0],
+        changeNote: '기본값으로 원복 실행'
+      });
+    }
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, `site_overrides/${sectionKey}`);
     throw error;
   }
-}
-
-export interface AdminUser {
-  id?: string;
-  email: string;
-  name?: string;
-  role: 'developer' | 'admin';
-  addedBy?: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 /**
@@ -280,23 +558,27 @@ export function subscribeAdminUsers(
 }
 
 /**
- * Super Admin (Developer) adds or updates an admin user
+ * Add or update an admin user with customizable granular permissions
  */
 export async function addOrUpdateAdminUser(
   email: string,
   name: string,
   role: 'developer' | 'admin' = 'admin',
-  addedBy: string = 'galaxynoob102@gmail.com'
+  permissions?: AdminPermissions,
+  addedBy: string = 'admin'
 ): Promise<void> {
   const cleanEmail = email.trim().toLowerCase();
   const docId = cleanEmail;
   const docRef = doc(db, 'admins', docId);
+
+  const finalPermissions = permissions || (role === 'developer' ? DEVELOPER_PERMISSIONS : DEFAULT_ADMIN_PERMISSIONS);
 
   const payload: AdminUser = {
     id: docId,
     email: cleanEmail,
     name: name.trim() || cleanEmail.split('@')[0],
     role,
+    permissions: finalPermissions,
     addedBy,
     updatedAt: new Date().toISOString(),
     createdAt: new Date().toISOString()
@@ -304,6 +586,14 @@ export async function addOrUpdateAdminUser(
 
   try {
     await setDoc(docRef, payload, { merge: true });
+    await logActivity({
+      actionType: 'admin_add',
+      target: cleanEmail,
+      targetTitle: name || cleanEmail,
+      userEmail: addedBy,
+      userName: addedBy.split('@')[0],
+      details: `${role === 'developer' ? '개발자' : '일반 관리자'} 권한 등록 및 설정`
+    });
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, `admins/${docId}`);
     throw error;
@@ -311,18 +601,28 @@ export async function addOrUpdateAdminUser(
 }
 
 /**
- * Super Admin (Developer) removes an admin user
+ * Remove an admin user
  */
-export async function removeAdminUser(email: string): Promise<void> {
+export async function removeAdminUser(
+  email: string,
+  operatorEmail: string = 'admin'
+): Promise<void> {
   const cleanEmail = email.trim().toLowerCase();
   const docId = cleanEmail;
   const docRef = doc(db, 'admins', docId);
 
   try {
     await deleteDoc(docRef);
+    await logActivity({
+      actionType: 'admin_remove',
+      target: cleanEmail,
+      targetTitle: cleanEmail,
+      userEmail: operatorEmail,
+      userName: operatorEmail.split('@')[0],
+      details: '관리자 권한 목록에서 삭제'
+    });
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, `admins/${docId}`);
     throw error;
   }
 }
-
