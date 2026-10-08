@@ -1,0 +1,110 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-\\.\\@]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isDeveloper() {
+      return isSignedIn() && request.auth.token.email == 'galaxynoob102@gmail.com';
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        isDeveloper() ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (request.auth.token.email != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.email)))
+      );
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['email', 'role']) &&
+        data.keys().hasOnly(['id', 'email', 'name', 'role', 'addedBy', 'createdAt', 'updatedAt']) &&
+        data.email is string && data.email.size() > 0 && data.email.size() <= 150 &&
+        data.role in ['developer', 'admin'] &&
+        (!('name' in data) || (data.name is string && data.name.size() <= 100)) &&
+        (!('addedBy' in data) || (data.addedBy is string && data.addedBy.size() <= 150)) &&
+        (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+        (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 100)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 100));
+    }
+
+    function isValidFeedbackProposal(data) {
+      return data.keys().hasAll(['authorName', 'authorUid', 'sectionKey', 'proposedText', 'status']) &&
+        data.keys().hasOnly(['id', 'authorName', 'authorEmail', 'authorUid', 'sectionKey', 'sectionTitle', 'originalText', 'proposedText', 'reason', 'status', 'createdAt', 'updatedAt', 'targetType', 'originalImage', 'proposedImage']) &&
+        data.authorName is string && data.authorName.size() > 0 && data.authorName.size() <= 100 &&
+        data.authorUid is string && (data.authorUid == request.auth.uid || isAdmin()) &&
+        data.sectionKey is string && data.sectionKey.size() > 0 && data.sectionKey.size() <= 100 &&
+        data.proposedText is string && data.proposedText.size() > 0 && data.proposedText.size() <= 800000 &&
+        (!('targetType' in data) || (data.targetType in ['text', 'image'])) &&
+        (!('originalImage' in data) || (data.originalImage is string && data.originalImage.size() <= 800000)) &&
+        (!('proposedImage' in data) || (data.proposedImage is string && data.proposedImage.size() <= 800000)) &&
+        (!('originalText' in data) || (data.originalText is string && data.originalText.size() <= 800000)) &&
+        (!('sectionTitle' in data) || (data.sectionTitle is string && data.sectionTitle.size() <= 200)) &&
+        (!('authorEmail' in data) || (data.authorEmail is string && data.authorEmail.size() <= 150)) &&
+        (!('reason' in data) || (data.reason is string && data.reason.size() <= 1000)) &&
+        (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+        (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 100)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 100)) &&
+        data.status in ['pending', 'applied', 'rejected'];
+    }
+
+    function isValidSiteOverride(data) {
+      return data.keys().hasAll(['sectionKey', 'text']) &&
+        data.keys().hasOnly(['sectionKey', 'sectionTitle', 'text', 'appliedBy', 'updatedAt', 'targetType']) &&
+        data.sectionKey is string && data.sectionKey.size() > 0 && data.sectionKey.size() <= 100 &&
+        data.text is string && data.text.size() <= 800000 &&
+        (!('targetType' in data) || (data.targetType in ['text', 'image'])) &&
+        (!('sectionTitle' in data) || (data.sectionTitle is string && data.sectionTitle.size() <= 200)) &&
+        (!('appliedBy' in data) || (data.appliedBy is string && data.appliedBy.size() <= 150)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 100));
+    }
+
+    // Staff feedback proposals
+    match /feedback_proposals/{proposalId} {
+      allow get: if isSignedIn() && (isAdmin() || resource.data.authorUid == request.auth.uid);
+      allow list: if isSignedIn() && (isAdmin() || resource.data.authorUid == request.auth.uid);
+      allow create: if isSignedIn() && isValidId(proposalId) && isValidFeedbackProposal(incoming()) && (incoming().status == 'pending' || isAdmin());
+      allow update: if isSignedIn() && isValidId(proposalId) && isValidFeedbackProposal(incoming()) && (
+        isAdmin() || (resource.data.authorUid == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['proposedText', 'reason', 'updatedAt']))
+      );
+      allow delete: if isAdmin() && isValidId(proposalId);
+    }
+
+    // Site text & image overrides (Applied by admin, publicly viewable on website)
+    match /site_overrides/{overrideId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidId(overrideId) && isValidSiteOverride(incoming());
+      allow delete: if isAdmin() && isValidId(overrideId);
+    }
+
+    // Admin accounts collection (Managed by Developer galaxynoob102@gmail.com, viewable by signed-in admins)
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow create, update: if isDeveloper() && isValidId(adminId) && isValidAdminUser(incoming());
+      allow delete: if isDeveloper() && isValidId(adminId);
+    }
+  }
+}

@@ -5,11 +5,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon, Eye, Download, Briefcase, Headset, MessageSquare, HelpCircle, Sparkles, Instagram, Youtube, BookOpen, ShoppingCart, Truck, Store, Package, Bell } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Globe, Menu, Search, ArrowRight, Phone, FileText, MonitorPlay, Users, Building2, X, ChevronDown, ChevronUp, Volume2, VolumeX, Sun, Moon, Eye, Download, Briefcase, Headset, MessageSquare, HelpCircle, Sparkles, Instagram, Youtube, BookOpen, ShoppingCart, Truck, Store, Package, Bell, Edit3, Image as ImageIcon, ShieldCheck } from 'lucide-react';
 import { PRODUCTS, Product, TRANSLATIONS, LANGUAGES } from './constants';
 import { AccordionMenu } from './components/AccordionMenu';
 import companyLogo from '/images/company.png';
 import NOTICES from './announcement/notices.json';
+import { FeedbackSystem, TargetSectionType } from './components/FeedbackSystem';
+import { subscribeSiteOverrides } from './services/feedbackService';
 
 const Modal = ({ isOpen, onClose, title, content, images, isDarkMode }: { isOpen: boolean; onClose: () => void; title: string; content: React.ReactNode; images?: string[]; isDarkMode?: boolean }) => {
   const [activeImageIdx, setActiveImageIdx] = useState(0);
@@ -597,60 +599,137 @@ const getFooterContent = (type: string, title: string, isDarkMode: boolean, t: a
   );
 };
 
-const getAboutUsContent = (lang: string, dark: boolean) => {
+const getAboutUsContent = (
+  lang: string, 
+  dark: boolean, 
+  getText?: (key: string, def: string) => string, 
+  onEdit?: (key: string, title: string, text: string) => void, 
+  isEditMode?: boolean,
+  getImage?: (key: string, def: string) => string,
+  onEditImage?: (key: string, title: string, currentImage: string) => void
+) => {
+    const gText = getText || ((_, def) => def);
+    const gImage = getImage || ((_, def) => def);
+    const headerImg = gImage('image_aboutUs_header', 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200');
+
+    const defaultTitle = lang === 'ko' 
+      ? "글로벌 미식 문화의 새로운 기준, 에이치케이온(HKON)" 
+      : lang === 'zh' 
+      ? "全球美食文化的新标杆，HKON" 
+      : "The new standard of global gastronomy, HKON.";
+    const currentTitle = gText('aboutUsTitle', defaultTitle);
+
+    const defaultDesc = lang === 'ko'
+      ? "에이치케이온(HKON)은 세계 각국의 프리미엄 F&B 브랜드를 발굴하여 국내 소비자에게 최상의 미식 경험을 제공하는 종합 식품 유통 기업입니다. 우리는 다변화하는 이커머스 생태계를 주도하고, B2B와 B2C를 아우르는 혁신적인 비즈니스 모델을 전개하고 있습니다."
+      : lang === 'zh'
+      ? "HKON 是一家综合性食品分销企业，致力于发掘世界各地的高端餐饮品牌，为国内消费者提供顶级的味蕾体验。我们超越了传统的进口业务，正在引领不断演变的电子商务生态系统，并开展涵盖 B2B 和 B2C 的创新商业模式。"
+      : "HKON is a comprehensive food distribution enterprise that discovers premium F&B brands from around the world to provide domestic consumers with the ultimate gastronomic experience. Going beyond simple importation, we are leading the diversifying e-commerce ecosystem and unfolding an innovative business model encompassing both B2B and B2C.";
+    const currentDesc = gText('aboutUsDesc', defaultDesc);
+
+    const defaultEcom = lang === 'ko' 
+      ? '국내 메인 온라인 플랫폼의 유통을 전면 주도하며, 전략적인 마케팅과 최적화된 세일즈로 폭발적인 성장을 이끌어냅니다. 브랜드의 가치를 극대화하는 맞춤형 온라인 전략을 통해 타겟 고객층에 가장 효과적으로 도달합니다.' 
+      : lang === 'zh' 
+      ? '全面主导国内主要在线平台的销售，通过战略营销和优化的销售策略推动爆发式增长。通过定制的在线策略，最大限度地提升品牌价值，最有效地触达目标客户群。' 
+      : 'Leading distribution across major domestic online platforms, we drive explosive growth through strategic marketing and optimized sales. We reach target audiences most effectively through customized online strategies that maximize brand value.';
+    const currentEcom = gText('ecommerceDesc', defaultEcom);
+
+    const defaultFulfil = lang === 'ko' 
+      ? '대규모 냉동창고와 자체 라인을 기반으로, 입출고부터 보관, 재고 관리, 배송까지 원스톱 콜드체인 물류 솔루션을 완벽하게 제공합니다. 최첨단 WMS(창고관리시스템)를 도입하여 오차율 0%에 도전하는 정확하고 빠른 물류를 실현합니다.' 
+      : lang === 'zh' 
+      ? '依托大型冷库和自有流水线，我们完美提供从入库出库到仓储、库存管理和配送的一站式冷链物流解决方案。引入先进的WMS系统，挑战0%误差率，实现精准快速的物流。' 
+      : 'Based on large-scale cold storage and our own operation lines, we perfectly provide a one-stop cold-chain logistics solution covering inbound/outbound, storage, inventory, to delivery. Using advanced WMS, we realize accurate and fast logistics aiming for a 0% error rate.';
+    const currentFulfil = gText('fulfillmentDesc', defaultFulfil);
+
     return (
       <motion.div 
         initial="hidden" animate="visible" 
         variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15 } } }}
         className={`space-y-8 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
       >
-        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="w-full h-64 md:h-80 rounded-3xl overflow-hidden relative shadow-xl">
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="w-full h-64 md:h-80 rounded-3xl overflow-hidden relative shadow-xl group">
           <img 
-            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200" 
+            src={headerImg} 
             alt="Logistics and E-Commerce" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
             <h3 className="text-white text-3xl font-bold">
               {lang === 'ko' ? '끊임없는 도전과 혁신' : lang === 'zh' ? '不断的挑战与创新' : 'Relentless Challenge and Innovation'}
             </h3>
           </div>
+          {isEditMode && (
+            <button
+              onClick={() => onEditImage?.('image_aboutUs_header', 'About Us 대표 이미지', headerImg)}
+              className="absolute top-4 right-4 z-10 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xl cursor-pointer hover:scale-105 transition-transform"
+              title="이 이미지 변경 제안/적용하기"
+            >
+              <ImageIcon size={13} />
+              <span>이미지 변경</span>
+            </button>
+          )}
         </motion.div>
 
         <div className="space-y-4">
-          <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-2xl font-black leading-relaxed ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
-            {lang === 'ko' 
-              ? "글로벌 미식 문화의 새로운 기준, 에이치케이온(HKON)" 
-              : lang === 'zh' 
-              ? "全球美食文化的新标杆，HKON" 
-              : "The new standard of global gastronomy, HKON."}
-          </motion.p>
-          <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="leading-relaxed text-lg font-medium">
-            {lang === 'ko'
-              ? "에이치케이온(HKON)은 세계 각국의 프리미엄 F&B 브랜드를 발굴하여 국내 소비자에게 최상의 미식 경험을 제공하는 종합 식품 유통 기업입니다. 우리는 다변화하는 이커머스 생태계를 주도하고, B2B와 B2C를 아우르는 혁신적인 비즈니스 모델을 전개하고 있습니다."
-              : lang === 'zh'
-              ? "HKON 是一家综合性食品分销企业，致力于发掘世界各地的高端餐饮品牌，为国内消费者提供顶级的味蕾体验。我们超越了传统的进口业务，正在引领不断演变的电子商务生态系统，并开展涵盖 B2B 和 B2C 的创新商业模式。"
-              : "HKON is a comprehensive food distribution enterprise that discovers premium F&B brands from around the world to provide domestic consumers with the ultimate gastronomic experience. Going beyond simple importation, we are leading the diversifying e-commerce ecosystem and unfolding an innovative business model encompassing both B2B and B2C."}
-          </motion.p>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`text-2xl font-black leading-relaxed ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+              {currentTitle}
+            </motion.p>
+            {isEditMode && (
+              <button 
+                onClick={() => onEdit?.('aboutUsTitle', 'About Us 타이틀', currentTitle)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-transform hover:scale-105 cursor-pointer"
+                title="이 타이틀 문구 수정 제안하기"
+              >
+                <Edit3 size={12} />
+                <span>문구 수정</span>
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="leading-relaxed text-lg font-medium">
+              {currentDesc}
+            </motion.p>
+            {isEditMode && (
+              <div className="flex justify-end">
+                <button 
+                  onClick={() => onEdit?.('aboutUsDesc', 'About Us 소개 본문', currentDesc)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-transform hover:scale-105 cursor-pointer"
+                  title="소개 본문 문구 수정 제안하기"
+                >
+                  <Edit3 size={12} />
+                  <span>문구 수정</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         
         <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="space-y-6 mt-8">
           {/* 1. 이커머스 */}
           <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700' : 'bg-gray-50/80 border-gray-100'} shadow-sm flex flex-col gap-5`}>
-            <div className="flex items-center gap-4 mb-2">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-blue-900/40 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
-                <ShoppingCart size={28} />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-blue-900/40 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                  <ShoppingCart size={28} />
+                </div>
+                <h4 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+                  {lang === 'ko' ? '이커머스 운영' : lang === 'zh' ? '电子商务运营' : 'E-commerce Operations'}
+                </h4>
               </div>
-              <h4 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
-                {lang === 'ko' ? '이커머스 운영' : lang === 'zh' ? '电子商务运营' : 'E-commerce Operations'}
-              </h4>
+              {isEditMode && (
+                <button 
+                  onClick={() => onEdit?.('ecommerceDesc', '이커머스 운영 설명', currentEcom)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-transform hover:scale-105 cursor-pointer"
+                  title="이커머스 설명 문구 수정 제안하기"
+                >
+                  <Edit3 size={12} />
+                  <span>문구 수정</span>
+                </button>
+              )}
             </div>
             <p className={`text-base leading-relaxed font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-              {lang === 'ko' 
-                ? '국내 메인 온라인 플랫폼의 유통을 전면 주도하며, 전략적인 마케팅과 최적화된 세일즈로 폭발적인 성장을 이끌어냅니다. 브랜드의 가치를 극대화하는 맞춤형 온라인 전략을 통해 타겟 고객층에 가장 효과적으로 도달합니다.' 
-                : lang === 'zh' 
-                ? '全面主导国内主要在线平台的销售，通过战略营销和优化的销售策略推动爆发式增长。通过定制的在线策略，最大限度地提升品牌价值，最有效地触达目标客户群。' 
-                : 'Leading distribution across major domestic online platforms, we drive explosive growth through strategic marketing and optimized sales. We reach target audiences most effectively through customized online strategies that maximize brand value.'}
+              {currentEcom}
             </p>
             <ul className={`grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
               <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '주요 플랫폼 직거래 및 벤더 운영' : lang === 'zh' ? '主要平台的直营与供应商运营' : 'Direct and vendor operations on major platforms'}</li>
@@ -662,20 +741,28 @@ const getAboutUsContent = (lang: string, dark: boolean) => {
 
           {/* 2. 3PL */}
           <div className={`p-8 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700' : 'bg-gray-50/80 border-gray-100'} shadow-sm flex flex-col gap-5`}>
-            <div className="flex items-center gap-4 mb-2">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-blue-900/40 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
-                <Truck size={28} />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${dark ? 'bg-blue-900/40 text-blue-400' : 'bg-red-50 text-[#6D1B2A]'}`}>
+                  <Truck size={28} />
+                </div>
+                <h4 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+                  {lang === 'ko' ? '올인원 3PL 풀필먼트' : lang === 'zh' ? '多合一 3PL 履行' : 'All-in-One 3PL Fulfillment'}
+                </h4>
               </div>
-              <h4 className={`text-2xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
-                {lang === 'ko' ? '올인원 3PL 풀필먼트' : lang === 'zh' ? '多合一 3PL 履行' : 'All-in-One 3PL Fulfillment'}
-              </h4>
+              {isEditMode && (
+                <button 
+                  onClick={() => onEdit?.('fulfillmentDesc', '올인원 3PL 풀필먼트 설명', currentFulfil)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md transition-transform hover:scale-105 cursor-pointer"
+                  title="3PL 설명 문구 수정 제안하기"
+                >
+                  <Edit3 size={12} />
+                  <span>문구 수정</span>
+                </button>
+              )}
             </div>
             <p className={`text-base leading-relaxed font-medium ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-              {lang === 'ko' 
-                ? '대규모 냉동창고와 자체 라인을 기반으로, 입출고부터 보관, 재고 관리, 배송까지 원스톱 콜드체인 물류 솔루션을 완벽하게 제공합니다. 최첨단 WMS(창고관리시스템)를 도입하여 오차율 0%에 도전하는 정확하고 빠른 물류를 실현합니다.' 
-                : lang === 'zh' 
-                ? '依托大型冷库和自有流水线，我们完美提供从入库出库到仓储、库存管理和配送的一站式冷链物流解决方案。引入先进的WMS系统，挑战0%误差率，实现精准快速的物流。' 
-                : 'Based on large-scale cold storage and our own operation lines, we perfectly provide a one-stop cold-chain logistics solution covering inbound/outbound, storage, inventory, to delivery. Using advanced WMS, we realize accurate and fast logistics aiming for a 0% error rate.'}
+              {currentFulfil}
             </p>
             <ul className={`grid grid-cols-1 md:grid-cols-2 gap-3 mt-2 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
               <li className="flex items-center gap-2"><div className={`w-1.5 h-1.5 rounded-full ${dark ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}/> {lang === 'ko' ? '최신식 스마트 콜드체인 물류 센터 완비' : lang === 'zh' ? '配备最先进的智能冷链物流中心' : 'Equipped with state-of-the-art smart cold chain center'}</li>
@@ -815,6 +902,47 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
 
+  // Staff Feedback & Firebase site text/image overrides state
+  const [activeOverrides, setActiveOverrides] = useState<Record<string, string>>({});
+  const [isFeedbackModeActive, setIsFeedbackModeActive] = useState(false);
+  const [isAdminActive, setIsAdminActive] = useState(false);
+  const [isAdminPortalOpen, setIsAdminPortalOpen] = useState(false);
+  const [targetSection, setTargetSection] = useState<TargetSectionType | null>(null);
+
+  useEffect(() => {
+    const unsub = subscribeSiteOverrides((overrides) => {
+      setActiveOverrides(overrides);
+    });
+    return () => unsub();
+  }, []);
+
+  const getText = (key: string, defaultText: string) => {
+    return activeOverrides[key] || defaultText;
+  };
+
+  const getImage = (key: string, defaultImage: string) => {
+    return activeOverrides[key] || defaultImage;
+  };
+
+  const triggerEdit = (key: string, title: string, currentText: string) => {
+    setTargetSection({ key, title, currentText, isImage: false });
+  };
+
+  const triggerEditImage = (key: string, title: string, currentImage: string) => {
+    setTargetSection({ key, title, currentImage, isImage: true });
+  };
+
+  const handleDirectApplyOptimistic = (key: string, value: string) => {
+    setActiveOverrides(prev => {
+      if (!value) {
+        const copy = { ...prev };
+        delete copy[key];
+        return copy;
+      }
+      return { ...prev, [key]: value };
+    });
+  };
+
   const t = TRANSLATIONS[currentLang as keyof typeof TRANSLATIONS] || TRANSLATIONS.en;
 
   const openModal = (title: string, content: React.ReactNode, images?: string[]) => setModal({ isOpen: true, title, content, images });
@@ -860,9 +988,24 @@ export default function App() {
       >
         {/* CEO Message Section */}
         <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="mb-10">
-          <h3 className={`text-3xl font-black mb-6 ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
-            {lang === 'ko' ? 'CEO 인사말' : lang === 'zh' ? 'CEO致辞' : 'CEO Greeting'}
-          </h3>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className={`text-3xl font-black ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
+              {lang === 'ko' ? 'CEO 인사말' : lang === 'zh' ? 'CEO致辞' : 'CEO Greeting'}
+            </h3>
+            {isFeedbackModeActive && (
+              <button
+                onClick={() => {
+                  const defaultCeoText = "HKON은 전 세계의 다채로운 미식 문화를 국내에 소개하며, 고객의 식탁에 즐거움과 가치를 더하는 글로벌 종합 식품 유통 기업입니다. 우리는 단순히 해외 유명 브랜드를 수입하는 것에 그치지 않고, 고객이 원하고 필요로 하는 최상의 품질과 트렌드를 선제적으로 발굴하여 제안합니다.\n\n특히 당사는 국내 주요 메인 이커머스 플랫폼에서의 확고한 리더십과 글로벌 프리미엄 브랜드 '하겐다즈'의 온라인 전담 유통 주체로서 압도적인 역량을 증명해 왔습니다. 또한 선진화된 3PL 콜드체인 풀필먼트 센터를 자체적으로 구축하여, 안전하고 신선한 먹거리를 가장 빠르게 전달하는 완벽한 유통 인프라를 완성했습니다.\n\n앞으로도 HKON은 정직과 신뢰를 바탕으로 파트너사와 동반 성장하며, 끊임없는 혁신을 통해 대한민국 식문화의 새로운 기준을 제시하는 1등 푸드 라이프스타일 파트너가 되겠습니다. 감사합니다.";
+                  triggerEdit('ceoGreeting', 'CEO 인사말', getText('ceoGreeting', defaultCeoText));
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md cursor-pointer"
+                title="CEO 인사말 문구 수정 제안하기"
+              >
+                <Edit3 size={12} />
+                <span>문구 수정</span>
+              </button>
+            )}
+          </div>
           <div className={`p-8 md:p-10 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700 shadow-xl shadow-black/20' : 'bg-gray-50/80 border-gray-100 shadow-xl shadow-gray-200/50'} relative overflow-hidden`}>
             {/* Quote Icon Background */}
             <div className={`absolute top-4 left-6 text-6xl opacity-10 ${dark ? 'text-blue-300' : 'text-[#6D1B2A]'} font-serif`}>"</div>
@@ -870,30 +1013,14 @@ export default function App() {
               <p>
                 {lang === 'ko' ? '안녕하십니까, 에이치케이온 코리아(HKON Korea) 대표이사입니다.' : lang === 'zh' ? '您好，我是 HKON Korea 的代表理事。' : 'Greetings, I am the CEO of HKON Korea.'}
               </p>
-              <p>
-                {lang === 'ko' 
-                  ? 'HKON은 전 세계의 다채로운 미식 문화를 국내에 소개하며, 고객의 식탁에 즐거움과 가치를 더하는 글로벌 종합 식품 유통 기업입니다. 우리는 단순히 해외 유명 브랜드를 수입하는 것에 그치지 않고, 고객이 원하고 필요로 하는 최상의 품질과 트렌드를 선제적으로 발굴하여 제안합니다.'
+              <div className="whitespace-pre-line leading-relaxed">
+                {getText('ceoGreeting', lang === 'ko' 
+                  ? "HKON은 전 세계의 다채로운 미식 문화를 국내에 소개하며, 고객의 식탁에 즐거움과 가치를 더하는 글로벌 종합 식품 유통 기업입니다. 우리는 단순히 해외 유명 브랜드를 수입하는 것에 그치지 않고, 고객이 원하고 필요로 하는 최상의 품질과 트렌드를 선제적으로 발굴하여 제안합니다.\n\n특히 당사는 국내 주요 메인 이커머스 플랫폼에서의 확고한 리더십과 글로벌 프리미엄 브랜드 '하겐다즈'의 온라인 전담 유통 주체로서 압도적인 역량을 증명해 왔습니다. 또한 선진화된 3PL 콜드체인 풀필먼트 센터를 자체적으로 구축하여, 안전하고 신선한 먹거리를 가장 빠르게 전달하는 완벽한 유통 인프라를 완성했습니다.\n\n앞으로도 HKON은 정직과 신뢰를 바탕으로 파트너사와 동반 성장하며, 끊임없는 혁신을 통해 대한민국 식문화의 새로운 기준을 제시하는 1등 푸드 라이프스타일 파트너가 되겠습니다. 감사합니다."
                   : lang === 'zh'
-                  ? 'HKON 是一家全球综合食品分销企业，致力于将世界各地丰富多彩的美食文化引入国内，为客户的餐桌增添欢乐与价值。我们不仅限于进口海外知名品牌，更主动发掘并提供客户所需的最优质产品与前沿趋势。'
-                  : 'HKON is a global comprehensive food distribution company that introduces diverse gastronomic cultures from around the world to the domestic market, adding joy and value to our customers\' dining tables. We go beyond simply importing famous overseas brands by proactively discovering and offering the highest quality and trends our customers want and need.'
-                }
-              </p>
-              <p>
-                {lang === 'ko' 
-                  ? '특히 당사는 국내 주요 메인 이커머스 플랫폼에서의 확고한 리더십과 글로벌 프리미엄 브랜드 \'하겐다즈\'의 온라인 전담 유통 주체로서 압도적인 역량을 증명해 왔습니다. 또한 선진화된 3PL 콜드체인 풀필먼트 센터를 자체적으로 구축하여, 안전하고 신선한 먹거리를 가장 빠르게 전달하는 완벽한 유통 인프라를 완성했습니다.'
-                  : lang === 'zh'
-                  ? '特别值得一提的是，我们在国内主要电子商务平台上确立了坚实的领导地位，并作为全球高端品牌“哈根达斯”的独家在线分销主体，展现了压倒性的实力。此外，我们自主建立了先进的 3PL 冷链物流履行中心，完善了最快、最安全的新鲜食品分销基础设施。'
-                  : 'In particular, we have proven our overwhelming capabilities through our firm leadership on major domestic e-commerce platforms and as the exclusive online distributor for the global premium brand \'Häagen-Dazs\'. Furthermore, by independently establishing an advanced 3PL cold chain fulfillment center, we have completed a flawless distribution infrastructure that delivers safe and fresh food the fastest.'
-                }
-              </p>
-              <p>
-                {lang === 'ko' 
-                  ? '앞으로도 HKON은 정직과 신뢰를 바탕으로 파트너사와 동반 성장하며, 끊임없는 혁신을 통해 대한민국 식문화의 새로운 기준을 제시하는 1등 푸드 라이프스타일 파트너가 되겠습니다. 감사합니다.'
-                  : lang === 'zh'
-                  ? '未来，HKON 将继续以诚信和互信为基础，与合作伙伴共同成长，并通过不断的创新，成为引领韩国饮食文化新标准的顶级食品生活方式合作伙伴。谢谢。'
-                  : 'Going forward, based on honesty and trust, HKON will continue to grow together with our partners and become the #1 food lifestyle partner setting new standards for Korea\'s dining culture through constant innovation. Thank you.'
-                }
-              </p>
+                  ? "HKON 是一家全球综合食品分销企业，致力于将世界各地丰富多彩的美食文化引入国内，为客户的餐桌增添欢乐与价值。\n\n特别值得一提的是，我们在国内主要电子商务平台上确立了坚实的领导地位，并作为全球高端品牌“哈根达斯”的独家在线分销主体，展现了压倒性的实力。\n\n未来，HKON 将继续以诚信和互信为基础，与合作伙伴共同成长，谢谢。"
+                  : "HKON is a global comprehensive food distribution company that introduces diverse gastronomic cultures from around the world to the domestic market, adding joy and value to our customers' dining tables.\n\nIn particular, we have proven our overwhelming capabilities through our firm leadership on major domestic e-commerce platforms and as the exclusive online distributor for the global premium brand 'Häagen-Dazs'.\n\nGoing forward, based on honesty and trust, HKON will continue to grow together with our partners. Thank you."
+                )}
+              </div>
               <p className={`pt-6 border-t ${dark ? 'border-gray-700' : 'border-gray-200'} text-right font-black tracking-widest text-xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
                 {lang === 'ko' ? '에이치케이온(주) 대표이사' : lang === 'zh' ? 'HKON株式会社 代表理事' : 'CEO of HKON Co., Ltd.'}
               </p>
@@ -1201,62 +1328,62 @@ export default function App() {
 
   const heroSlides = React.useMemo(() => [
     {
-      title: t.hkonKorea,
-      subtitle: t.heroSubtitle,
-      image: "/images/company.png",
-      detailTitle: t.hkonKorea,
-      detailDesc: t.hkonDesc,
+      title: getText('heroSlide_company_title', t.hkonKorea),
+      subtitle: getText('heroSlide_company_sub', t.heroSubtitle),
+      image: getImage('image_heroSlide_company', "/images/company.png"),
+      detailTitle: getText('detail_company_title', t.hkonKorea),
+      detailDesc: getText('detail_company_desc', t.hkonDesc),
       productId: 'company'
     },
     {
-      title: t.aboutUs,
-      subtitle: t.aboutUsTitle,
-      image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=60&w=800",
-      detailTitle: t.aboutUs,
-      detailDesc: t.aboutUsDesc,
+      title: getText('heroSlide_about_title', t.aboutUs),
+      subtitle: getText('heroSlide_about_sub', t.aboutUsTitle),
+      image: getImage('image_heroSlide_about-us', "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&q=60&w=800"),
+      detailTitle: getText('detail_about_title', t.aboutUs),
+      detailDesc: getText('detail_about_desc', t.aboutUsDesc),
       productId: 'about-us'
     },
     {
-      title: t.whatsNew,
-      subtitle: t.whatsNewTitle,
-      image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=60&w=800",
-      detailTitle: t.whatsNew,
-      detailDesc: t.whatsNewDesc,
+      title: getText('heroSlide_whatsnew_title', t.whatsNew),
+      subtitle: getText('heroSlide_whatsnew_sub', t.whatsNewTitle),
+      image: getImage('image_heroSlide_whats-new', "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=60&w=800"),
+      detailTitle: getText('detail_whatsnew_title', t.whatsNew),
+      detailDesc: getText('detail_whatsnew_desc', t.whatsNewDesc),
       productId: 'whats-new'
     },
     {
-      title: t.haagendazs,
-      subtitle: t.haagendazsSub,
-      image: "/images/mini_cup.png",
-      detailTitle: t.haagendazs,
-      detailDesc: t.haagendazsDesc,
+      title: getText('heroSlide_haagendazs_title', t.haagendazs),
+      subtitle: getText('heroSlide_haagendazs_sub', t.haagendazsSub),
+      image: getImage('image_heroSlide_haagen-dazs', "/images/mini_cup.png"),
+      detailTitle: getText('detail_haagendazs_title', t.haagendazs),
+      detailDesc: getText('detail_haagendazs_desc', t.haagendazsDesc),
       productId: 'haagen-dazs'
     },
     {
-      title: t.lantico,
-      subtitle: t.lanticoSub,
-      image: "/images/lantico.png",
-      detailTitle: t.lantico,
-      detailDesc: t.lanticoDesc,
+      title: getText('heroSlide_lantico_title', t.lantico),
+      subtitle: getText('heroSlide_lantico_sub', t.lanticoSub),
+      image: getImage('image_heroSlide_lantico', "/images/lantico.png"),
+      detailTitle: getText('detail_lantico_title', t.lantico),
+      detailDesc: getText('detail_lantico_desc', t.lanticoDesc),
       productId: 'lantico'
     },
     {
-      title: t.caraci,
-      subtitle: t.caraciSub,
-      image: "/images/kadaif_thumbnail.png",
-      detailTitle: t.caraci,
-      detailDesc: t.caraciDesc,
+      title: getText('heroSlide_caraci_title', t.caraci),
+      subtitle: getText('heroSlide_caraci_sub', t.caraciSub),
+      image: getImage('image_heroSlide_caraci', "/images/kadaif_thumbnail.png"),
+      detailTitle: getText('detail_caraci_title', t.caraci),
+      detailDesc: getText('detail_caraci_desc', t.caraciDesc),
       productId: 'caraci'
     },
     {
-      title: t.generalMills,
-      subtitle: t.generalMillsSub,
-      image: "/images/grnaola_thumbnail.png",
-      detailTitle: t.generalMills,
-      detailDesc: t.generalMillsDesc,
+      title: getText('heroSlide_generalmills_title', t.generalMills),
+      subtitle: getText('heroSlide_generalmills_sub', t.generalMillsSub),
+      image: getImage('image_heroSlide_general-mills', "/images/grnaola_thumbnail.png"),
+      detailTitle: getText('detail_generalmills_title', t.generalMills),
+      detailDesc: getText('detail_generalmills_desc', t.generalMillsDesc),
       productId: 'general-mills'
     }
-  ], [t]);
+  ], [t, activeOverrides]);
 
   // Preload next image and some important thumbnails after initial render
   useEffect(() => {
@@ -1323,6 +1450,21 @@ export default function App() {
 
           {/* Top Right Floating Controls */}
           <div className={`fixed top-4 right-4 z-50 flex items-center gap-3 p-2 px-4 rounded-full shadow-2xl border backdrop-blur-xl transition-all duration-300 ${isDarkMode ? 'bg-[#1a1a1a]/95 border-gray-700 shadow-black/50' : 'bg-white/95 border-gray-300 shadow-gray-200/50'}`}>
+            {/* If Admin Mode is active, show discreet active indicator */}
+            {isAdminActive && (
+              <>
+                <button
+                  onClick={() => setIsAdminPortalOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500 text-white shadow-md shadow-amber-500/30 cursor-pointer animate-fadeIn"
+                  title="관리자 / 직원 설정 열기"
+                >
+                  <ShieldCheck size={13} />
+                  <span>관리자 ON</span>
+                </button>
+                <div className={`w-px h-5 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
+              </>
+            )}
+
             <button 
               className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-blue-400 hover:bg-gray-800' : 'text-[#6D1B2A] hover:bg-gray-100'}`}
               onClick={() => setIsMobileMenuOpen(true)}
@@ -1410,11 +1552,31 @@ export default function App() {
                   );
                 })}
 
-                <div className="mt-8 flex gap-6 items-center justify-center pt-8 border-t border-gray-200 dark:border-gray-800">
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram" aria-label="Instagram"><Instagram size={24} /></a>
-                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube" aria-label="YouTube"><Youtube size={26} /></a>
-                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog" aria-label="Naver Blog"><BookOpen size={24} /></a>
-                  <a href="https://pf.kakao.com" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk" aria-label="KakaoTalk"><MessageSquare size={24} /></a>
+                <div className="mt-8 flex gap-5 items-center justify-center pt-8 border-t border-gray-200 dark:border-gray-800">
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={`transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Instagram" aria-label="Instagram"><Instagram size={24} /></a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={`transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="YouTube" aria-label="YouTube"><Youtube size={26} /></a>
+                  
+                  {/* Shield icon button next to Instagram and YouTube */}
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsAdminPortalOpen(true);
+                    }}
+                    className={`transition-all p-2 rounded-full cursor-pointer hover:scale-110 ${
+                      isAdminActive 
+                        ? 'text-amber-400 bg-amber-400/20 ring-2 ring-amber-400/40' 
+                        : isDarkMode 
+                        ? 'text-gray-400 hover:text-amber-400 hover:bg-gray-800' 
+                        : 'text-gray-600 hover:text-amber-600 hover:bg-gray-100'
+                    }`}
+                    title="관리자 & 직원 전용 보안 관리"
+                    aria-label="관리자 관리"
+                  >
+                    <ShieldCheck size={25} />
+                  </button>
+
+                  <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className={`transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="Naver Blog" aria-label="Naver Blog"><BookOpen size={24} /></a>
+                  <a href="https://pf.kakao.com" target="_blank" rel="noopener noreferrer" className={`transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} title="KakaoTalk" aria-label="KakaoTalk"><MessageSquare size={24} /></a>
                 </div>
               </div>
             </motion.div>
@@ -1475,9 +1637,38 @@ export default function App() {
                       visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
                       exit: { opacity: 0, y: -20, transition: { duration: 0.4 } }
                     }}
-                    className="text-4xl md:text-5xl lg:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-2xl"
+                    className="text-4xl md:text-5xl lg:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-2xl flex flex-wrap items-center gap-3"
                   >
-                    {heroSlides[activeSlide].title}
+                    <span>{heroSlides[activeSlide].title}</span>
+                    {isFeedbackModeActive && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const cur = heroSlides[activeSlide];
+                            triggerEdit(cur.productId === 'company' ? 'heroSlide_company_title' : `heroSlide_${cur.productId}_title`, `${cur.title} 타이틀`, cur.title);
+                          }}
+                          className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white shadow-lg cursor-pointer transform hover:scale-105 transition-transform"
+                          title="이 타이틀 문구 수정 제안하기"
+                        >
+                          <Edit3 size={13} />
+                          <span>문구 수정</span>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const cur = heroSlides[activeSlide];
+                            const key = `image_heroSlide_${cur.productId}`;
+                            triggerEditImage(key, `${cur.title} 슬라이드 배경 사진`, cur.image);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg cursor-pointer transform hover:scale-105 transition-transform"
+                          title="현재 슬라이드 배경 사진 변경 제안/적용하기"
+                        >
+                          <ImageIcon size={13} />
+                          <span>배경 사진 변경</span>
+                        </button>
+                      </div>
+                    )}
                   </motion.h1>
                   <motion.p 
                     variants={{
@@ -1485,9 +1676,23 @@ export default function App() {
                       visible: { opacity: 1, y: 0, transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] } },
                       exit: { opacity: 0, y: -15, transition: { duration: 0.4 } }
                     }}
-                    className="text-lg md:text-xl lg:text-2xl font-light text-gray-200 mb-8 md:mb-10 drop-shadow-lg tracking-wide"
+                    className="text-lg md:text-xl lg:text-2xl font-light text-gray-200 mb-8 md:mb-10 drop-shadow-lg tracking-wide flex flex-wrap items-center gap-3"
                   >
-                    {heroSlides[activeSlide].subtitle}
+                    <span>{heroSlides[activeSlide].subtitle}</span>
+                    {isFeedbackModeActive && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const cur = heroSlides[activeSlide];
+                          triggerEdit(cur.productId === 'company' ? 'heroSlide_company_sub' : `heroSlide_${cur.productId}_sub`, `${cur.title} 서브 슬로건`, cur.subtitle);
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white shadow-lg cursor-pointer transform hover:scale-105 transition-transform"
+                        title="이 서브 슬로건 문구 수정 제안하기"
+                      >
+                        <Edit3 size={12} />
+                        <span>문구 수정</span>
+                      </button>
+                    )}
                   </motion.p>
                   <motion.div
                     variants={{
@@ -1504,7 +1709,7 @@ export default function App() {
                         if (slide.productId === 'company') {
                           openModal(t.company, getCompanyIntro(currentLang, isDarkMode));
                         } else if (slide.productId === 'about-us') {
-                          openModal(t.aboutUs, getAboutUsContent(currentLang, isDarkMode));
+                          openModal(t.aboutUs, getAboutUsContent(currentLang, isDarkMode, getText, triggerEdit, isFeedbackModeActive, getImage, triggerEditImage));
                         } else if (slide.productId === 'whats-new') {
                           openModal(t.whatsNew, getWhatsNewContent(currentLang, isDarkMode), [slide.image]);
                         } else {
@@ -1654,18 +1859,48 @@ export default function App() {
                       <span className={`w-8 h-px ${isDarkMode ? 'bg-blue-400' : 'bg-[#6D1B2A]'}`}></span>
                       {t.hkonKorea}
                     </h2>
-                    <h3 className={`text-4xl md:text-5xl lg:text-6xl font-black ${isDarkMode ? 'text-white' : 'text-gray-900'} leading-[1.1] transition-colors duration-300 drop-shadow-sm`}>
-                      {heroSlides[activeDetailSlide].detailTitle}
-                    </h3>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h3 className={`text-4xl md:text-5xl lg:text-6xl font-black ${isDarkMode ? 'text-white' : 'text-gray-900'} leading-[1.1] transition-colors duration-300 drop-shadow-sm`}>
+                        {heroSlides[activeDetailSlide].detailTitle}
+                      </h3>
+                      {isFeedbackModeActive && (
+                        <button
+                          onClick={() => {
+                            const cur = heroSlides[activeDetailSlide];
+                            triggerEdit(cur.productId === 'company' ? 'detail_company_title' : `detail_${cur.productId}_title`, `${cur.detailTitle} 타이틀`, cur.detailTitle);
+                          }}
+                          className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white shadow-md cursor-pointer"
+                          title="이 타이틀 문구 수정 제안하기"
+                        >
+                          <Edit3 size={12} />
+                          <span>문구 수정</span>
+                        </button>
+                      )}
+                    </div>
                   </motion.div>
-                  <motion.p 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className={`text-lg md:text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed whitespace-pre-line transition-colors duration-300 font-medium`}
-                  >
-                    {heroSlides[activeDetailSlide].detailDesc}
-                  </motion.p>
+                  <div className="space-y-2">
+                    <motion.p 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5, duration: 0.6 }}
+                      className={`text-lg md:text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed whitespace-pre-line transition-colors duration-300 font-medium`}
+                    >
+                      {heroSlides[activeDetailSlide].detailDesc}
+                    </motion.p>
+                    {isFeedbackModeActive && (
+                      <button
+                        onClick={() => {
+                          const cur = heroSlides[activeDetailSlide];
+                          triggerEdit(cur.productId === 'company' ? 'detail_company_desc' : `detail_${cur.productId}_desc`, `${cur.detailTitle} 설명 문구`, cur.detailDesc);
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white shadow-md cursor-pointer"
+                        title="이 설명 문구 수정 제안하기"
+                      >
+                        <Edit3 size={11} />
+                        <span>문구 수정</span>
+                      </button>
+                    )}
+                  </div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1678,7 +1913,7 @@ export default function App() {
                         if (slide.productId === 'company') {
                           openModal(t.company, getCompanyIntro(currentLang, isDarkMode));
                         } else if (slide.productId === 'about-us') {
-                          openModal(t.aboutUs, getAboutUsContent(currentLang, isDarkMode));
+                          openModal(t.aboutUs, getAboutUsContent(currentLang, isDarkMode, getText, triggerEdit, isFeedbackModeActive, getImage, triggerEditImage));
                         } else if (slide.productId === 'whats-new') {
                           openModal(t.whatsNew, getWhatsNewContent(currentLang, isDarkMode), [slide.image]);
                         } else {
@@ -1740,11 +1975,26 @@ export default function App() {
                       <div className="relative group">
                         <div className={`absolute inset-0 rounded-[2.5rem] ${isDarkMode ? 'bg-blue-500/10' : 'bg-red-500/10'} blur-2xl transform group-hover:scale-105 transition-transform duration-500`} />
                         <TiltImage 
-                          src={product.image} 
+                          src={getImage(`image_product_${product.id}`, product.image)} 
                           alt={product.name[currentLang as keyof typeof product.name] || product.name.en} 
                           isDarkMode={isDarkMode}
-                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, getProductContent(product, currentLang, isDarkMode), [product.image, ...product.detailImages])}
+                          onClick={() => openModal(product.name[currentLang as keyof typeof product.name] || product.name.en, getProductContent(product, currentLang, isDarkMode), [getImage(`image_product_${product.id}`, product.image), ...product.detailImages])}
                         />
+                        {isFeedbackModeActive && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const curImg = getImage(`image_product_${product.id}`, product.image);
+                              const pName = product.name[currentLang as keyof typeof product.name] || product.name.en;
+                              triggerEditImage(`image_product_${product.id}`, `${pName} 대표 이미지`, curImg);
+                            }}
+                            className="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xl cursor-pointer hover:scale-105 transition-transform"
+                            title="이 제품 이미지 변경 제안/적용하기"
+                          >
+                            <ImageIcon size={13} />
+                            <span>이미지 변경</span>
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -1760,9 +2010,25 @@ export default function App() {
                       <h3 className={`text-4xl md:text-5xl lg:text-6xl font-black ${isDarkMode ? 'text-white' : 'text-gray-900'} leading-[1.1] tracking-tight`}>
                         {product.name[currentLang as keyof typeof product.name] || product.name.en}
                       </h3>
-                      <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed whitespace-pre-line font-medium`}>
-                        {product.shortDescription?.[currentLang as keyof typeof product.shortDescription] || product.description[currentLang as keyof typeof product.description] || product.description.en}
-                      </p>
+                      <div className="space-y-2">
+                        <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} leading-relaxed whitespace-pre-line font-medium`}>
+                          {getText(`${product.id}Desc`, product.shortDescription?.[currentLang as keyof typeof product.shortDescription] || product.description[currentLang as keyof typeof product.description] || product.description.en)}
+                        </p>
+                        {isFeedbackModeActive && (
+                          <button
+                            onClick={() => {
+                              const pName = product.name[currentLang as keyof typeof product.name] || product.name.en;
+                              const pDesc = getText(`${product.id}Desc`, product.shortDescription?.[currentLang as keyof typeof product.shortDescription] || product.description[currentLang as keyof typeof product.description] || product.description.en);
+                              triggerEdit(`${product.id}Desc`, `${pName} 설명 문구`, pDesc);
+                            }}
+                            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-bold rounded-xl bg-amber-500 hover:bg-amber-600 text-white shadow-md cursor-pointer"
+                            title="이 제품 설명 문구 수정 제안하기"
+                          >
+                            <Edit3 size={11} />
+                            <span>문구 수정</span>
+                          </button>
+                        )}
+                      </div>
                       
                       <ul className={`space-y-5 mt-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} font-medium text-lg`}>
                         <li className="flex items-start gap-4">
@@ -1873,16 +2139,32 @@ export default function App() {
                 <button onClick={() => openModal(t.sitemap, getFooterContent('sitemap', t.sitemap, isDarkMode, t))} className="hover:text-white transition-colors">{t.sitemap}</button>
                 <button onClick={() => openModal(t.location, getFooterContent('location', t.location, isDarkMode, t))} className="hover:text-white transition-colors">{t.location}</button>
                 <button onClick={() => openModal(t.resources, getResourcesContent(currentLang, isDarkMode))} className="flex items-center gap-2 hover:text-white transition-colors font-bold text-white"><MonitorPlay size={16} />{t.resources}</button>
-                <div className="hidden md:flex ml-2 gap-4 border-l border-gray-700 pl-4">
+                <div className="hidden md:flex ml-2 gap-4 border-l border-gray-700 pl-4 items-center">
                   <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Instagram"><Instagram size={16} /></a>
                   <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="YouTube"><Youtube size={17} /></a>
+                  <button
+                    onClick={() => setIsAdminPortalOpen(true)}
+                    className="hover:text-amber-400 text-gray-400 transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700 cursor-pointer"
+                    title="관리자 & 직원 전용 보안 관리"
+                    aria-label="관리자 보안 관리"
+                  >
+                    <ShieldCheck size={16} />
+                  </button>
                   <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Naver Blog"><BookOpen size={16} /></a>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-3 mt-4 md:mt-0">
-                <div className="flex md:hidden gap-3 mb-2">
+                <div className="flex md:hidden gap-3 mb-2 items-center">
                   <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Instagram"><Instagram size={18} /></a>
                   <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="YouTube"><Youtube size={19} /></a>
+                  <button
+                    onClick={() => setIsAdminPortalOpen(true)}
+                    className="hover:text-amber-400 text-gray-400 transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 cursor-pointer"
+                    title="관리자 & 직원 전용 보안 관리"
+                    aria-label="관리자 보안 관리"
+                  >
+                    <ShieldCheck size={18} />
+                  </button>
                   <a href="https://blog.naver.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors p-1.5 rounded-full bg-gray-800 hover:bg-gray-700" aria-label="Naver Blog"><BookOpen size={18} /></a>
                 </div>
                 <p>{t.footerText}</p>
@@ -1903,6 +2185,21 @@ export default function App() {
           {t.inquiry}
         </span>
       </button>
+
+      {/* Staff Feedback & Firebase Review Management System */}
+      <FeedbackSystem
+        isDarkMode={isDarkMode}
+        activeOverrides={activeOverrides}
+        isFeedbackModeActive={isFeedbackModeActive}
+        setIsFeedbackModeActive={setIsFeedbackModeActive}
+        targetSection={targetSection}
+        setTargetSection={setTargetSection}
+        onDirectApplyOptimistic={handleDirectApplyOptimistic}
+        isAdminActive={isAdminActive}
+        setIsAdminActive={setIsAdminActive}
+        isAdminPortalOpen={isAdminPortalOpen}
+        setIsAdminPortalOpen={setIsAdminPortalOpen}
+      />
     </div>
   );
 }
