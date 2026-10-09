@@ -986,48 +986,6 @@ export default function App() {
         variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } }}
         className={`space-y-8 ${dark ? 'text-gray-300' : 'text-gray-700'}`}
       >
-        {/* CEO Message Section */}
-        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className="mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className={`text-3xl font-black ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
-              {lang === 'ko' ? 'CEO 인사말' : lang === 'zh' ? 'CEO致辞' : 'CEO Greeting'}
-            </h3>
-            {isFeedbackModeActive && (
-              <button
-                onClick={() => {
-                  const defaultCeoText = "HKON은 전 세계의 다채로운 미식 문화를 국내에 소개하며, 고객의 식탁에 즐거움과 가치를 더하는 글로벌 종합 식품 유통 기업입니다. 우리는 단순히 해외 유명 브랜드를 수입하는 것에 그치지 않고, 고객이 원하고 필요로 하는 최상의 품질과 트렌드를 선제적으로 발굴하여 제안합니다.\n\n특히 당사는 국내 주요 메인 이커머스 플랫폼에서의 확고한 리더십과 글로벌 프리미엄 브랜드 '하겐다즈'의 온라인 전담 유통 주체로서 압도적인 역량을 증명해 왔습니다. 또한 선진화된 3PL 콜드체인 풀필먼트 센터를 자체적으로 구축하여, 안전하고 신선한 먹거리를 가장 빠르게 전달하는 완벽한 유통 인프라를 완성했습니다.\n\n앞으로도 HKON은 정직과 신뢰를 바탕으로 파트너사와 동반 성장하며, 끊임없는 혁신을 통해 대한민국 식문화의 새로운 기준을 제시하는 1등 푸드 라이프스타일 파트너가 되겠습니다. 감사합니다.";
-                  triggerEdit('ceoGreeting', 'CEO 인사말', getText('ceoGreeting', defaultCeoText));
-                }}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-md cursor-pointer"
-                title="CEO 인사말 문구 수정 제안하기"
-              >
-                <Edit3 size={12} />
-                <span>문구 수정</span>
-              </button>
-            )}
-          </div>
-          <div className={`p-8 md:p-10 rounded-3xl border ${dark ? 'bg-gray-800/80 border-gray-700 shadow-xl shadow-black/20' : 'bg-gray-50/80 border-gray-100 shadow-xl shadow-gray-200/50'} relative overflow-hidden`}>
-            {/* Quote Icon Background */}
-            <div className={`absolute top-4 left-6 text-6xl opacity-10 ${dark ? 'text-blue-300' : 'text-[#6D1B2A]'} font-serif`}>"</div>
-            <div className="relative z-10 space-y-6 text-lg leading-loose font-medium">
-              <p>
-                {lang === 'ko' ? '안녕하십니까, 에이치케이온 코리아(HKON Korea) 대표이사입니다.' : lang === 'zh' ? '您好，我是 HKON Korea 的代表理事。' : 'Greetings, I am the CEO of HKON Korea.'}
-              </p>
-              <div className="whitespace-pre-line leading-relaxed">
-                {getText('ceoGreeting', lang === 'ko' 
-                  ? "HKON은 전 세계의 다채로운 미식 문화를 국내에 소개하며, 고객의 식탁에 즐거움과 가치를 더하는 글로벌 종합 식품 유통 기업입니다. 우리는 단순히 해외 유명 브랜드를 수입하는 것에 그치지 않고, 고객이 원하고 필요로 하는 최상의 품질과 트렌드를 선제적으로 발굴하여 제안합니다.\n\n특히 당사는 국내 주요 메인 이커머스 플랫폼에서의 확고한 리더십과 글로벌 프리미엄 브랜드 '하겐다즈'의 온라인 전담 유통 주체로서 압도적인 역량을 증명해 왔습니다. 또한 선진화된 3PL 콜드체인 풀필먼트 센터를 자체적으로 구축하여, 안전하고 신선한 먹거리를 가장 빠르게 전달하는 완벽한 유통 인프라를 완성했습니다.\n\n앞으로도 HKON은 정직과 신뢰를 바탕으로 파트너사와 동반 성장하며, 끊임없는 혁신을 통해 대한민국 식문화의 새로운 기준을 제시하는 1등 푸드 라이프스타일 파트너가 되겠습니다. 감사합니다."
-                  : lang === 'zh'
-                  ? "HKON 是一家全球综合食品分销企业，致力于将世界各地丰富多彩的美食文化引入国内，为客户的餐桌增添欢乐与价值。\n\n特别值得一提的是，我们在国内主要电子商务平台上确立了坚实的领导地位，并作为全球高端品牌“哈根达斯”的独家在线分销主体，展现了压倒性的实力。\n\n未来，HKON 将继续以诚信和互信为基础，与合作伙伴共同成长，谢谢。"
-                  : "HKON is a global comprehensive food distribution company that introduces diverse gastronomic cultures from around the world to the domestic market, adding joy and value to our customers' dining tables.\n\nIn particular, we have proven our overwhelming capabilities through our firm leadership on major domestic e-commerce platforms and as the exclusive online distributor for the global premium brand 'Häagen-Dazs'.\n\nGoing forward, based on honesty and trust, HKON will continue to grow together with our partners. Thank you."
-                )}
-              </div>
-              <p className={`pt-6 border-t ${dark ? 'border-gray-700' : 'border-gray-200'} text-right font-black tracking-widest text-xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'}`}>
-                {lang === 'ko' ? '에이치케이온(주) 대표이사' : lang === 'zh' ? 'HKON株式会社 代表理事' : 'CEO of HKON Co., Ltd.'}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Company Overview */}
         <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} className={`${dark ? 'bg-blue-900/20 border-blue-800/50 hover:bg-blue-900/30' : 'bg-red-50 border-red-100 hover:bg-red-100/50'} p-8 md:p-10 rounded-3xl border transition-colors`}>
           <h4 className={`font-bold text-2xl ${dark ? 'text-blue-400' : 'text-[#6D1B2A]'} mb-6 flex items-center gap-3`}><Building2 size={28}/> {lang === 'ko' ? '회사 개요' : lang === 'zh' ? '公司简介' : 'Company Overview'}</h4>
@@ -1225,10 +1183,6 @@ export default function App() {
       let detailContent = "";
       let detailImage = "";
       switch(item) {
-        case "CEO 인사말":
-          detailContent = "에이치케이온 코리아를 찾아주신 여러분, 진심으로 환영합니다.\n\n우리는 전 세계의 다채로운 맛과 문화를 고객 여러분의 식탁에 전달하기 위해 끊임없이 노력하고 있습니다. 에이치케이온은 단순한 유통을 넘어, 최고 품질의 제품을 가장 신선하고 안전하게 제공하는 것을 우리의 핵심 사명으로 삼고 있습니다.\n\n앞으로도 신뢰받는 파트너로서 최선을 다하겠습니다.\n\nCEO 올림";
-          detailImage = "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80";
-          break;
         case "회사개요":
           detailContent = "에이치케이온(HKON)은 독보적인 글로벌 소싱 네트워크와 철저한 품질 관리를 통해 세계 최상급 F&B 브랜드를 국내 소비자에게 이어주는 프리미엄 식품 유통사입니다.\n\n설립일: 2020년\n사업 분야: 프리미엄 식품 유통, 3PL (제3자 물류) 서비스\n주요 브랜드: 하겐다즈, 제너럴밀즈, 란티코, 카라치 등";
           detailImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80";
@@ -1283,7 +1237,6 @@ export default function App() {
 
   const menuData: { [key: string]: { name: string; hasSub?: boolean, content?: string }[] } = {
     [t.company]: [
-      { name: "CEO 인사말" },
       { name: "회사개요" },
       { name: "회사연혁" },
       { name: "CI 소개" },

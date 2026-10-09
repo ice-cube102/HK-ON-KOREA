@@ -626,3 +626,17 @@ export async function removeAdminUser(
     throw error;
   }
 }
+
+/**
+ * Delete an activity log record
+ */
+export async function deleteActivityLog(logId: string): Promise<void> {
+  const logRef = doc(db, 'activity_logs', logId);
+  try {
+    await deleteDoc(logRef);
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `activity_logs/${logId}`);
+    throw error;
+  }
+}
+

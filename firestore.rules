@@ -119,7 +119,7 @@ service cloud.firestore {
     match /activity_logs/{logId} {
       allow read: if isSignedIn() && isAdmin();
       allow create: if isSignedIn() && isAdmin() && isValidId(logId);
-      allow delete: if isSignedIn() && isDeveloper() && isValidId(logId);
+      allow delete: if isSignedIn() && isAdmin() && isValidId(logId);
     }
   }
 }
