@@ -362,7 +362,7 @@ export const PRODUCTS: Product[] = [
     image: '/images/sweet.png',
     detailImages: [
       '/images/pure.png',
-      '/images/pesto.png',
+      '/images/Pesto.png',
       '/images/sweet.png',
       '/images/nutty.png',
       '/images/Kataifi.png',
@@ -454,7 +454,7 @@ export const CARACI_SLIDES: CaraciProductSlide[] = [
     desc: '최상급 원물과 엑스트라 버진 올리브오일이 어우러져 파스타, 샐러드, 스테이크의 품격을 높여주는 정통 시칠리안 페스토.',
     descEn: 'Authentic Sicilian pesto combining premier raw harvest and extra virgin olive oil to elevate pastas, salads, and steaks.',
     descZh: '顶级天然原料与特级初榨橄榄油完美交融，显著提升意面、沙拉与牛排风味的正统西西里香蒜酱。',
-    image: '/images/pesto.png',
+    image: '/images/Pesto.png',
     badge: '',
     keywords: ['올리브오일과의 조화', '고소함과 은은한 감칠맛의 깊이', '파스타 및 요리에 최적화된 고메 풍미'],
     keywordsEn: ['Balance with cold-pressed olive oil', 'Subtle umami and savory depth', 'Gourmet profile optimized for culinary dishes'],

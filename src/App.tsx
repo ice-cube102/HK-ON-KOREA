@@ -1757,7 +1757,7 @@ export default function App() {
     {
       title: getText('heroSlide_caraci_title', t.caraci),
       subtitle: getText('heroSlide_caraci_sub', t.caraciSub),
-      image: getImage('image_heroSlide_caraci', "/images/harvest_farm.jpg"),
+      image: getImage('image_heroSlide_caraci', "/images/sweet.png"),
       detailTitle: getText('detail_caraci_title', t.caraci),
       detailDesc: getText('detail_caraci_desc', t.caraciDesc),
       productId: 'caraci'

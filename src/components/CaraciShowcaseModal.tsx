@@ -74,12 +74,12 @@ export const CaraciShowcaseModal: React.FC<CaraciShowcaseModalProps> = ({
     : rawImage;
 
   const CARACI_FALLBACKS: Record<string, string[]> = {
-    pure: ['/images/pure.png', '/images/pure_190g.jpg'],
-    pesto: ['/images/pesto.png', '/images/pesto.jpg'],
-    sweet: ['/images/sweet.png', '/images/sweet_190g.jpg'],
-    nutty: ['/images/nutty.png', '/images/nutty_190g.jpg'],
-    kataifi: ['/images/Kataifi.png', '/images/kataifi.png', '/images/kadaif_190g.jpg'],
-    dark: ['/images/dark_choco.png', '/images/dark_190g.jpg']
+    pure: ['/images/pure.png'],
+    pesto: ['/images/Pesto.png', '/images/pesto.png'],
+    sweet: ['/images/sweet.png'],
+    nutty: ['/images/nutty.png'],
+    kataifi: ['/images/Kataifi.png', '/images/kataifi.png'],
+    dark: ['/images/dark_choco.png']
   };
 
   const handleNext = () => {
