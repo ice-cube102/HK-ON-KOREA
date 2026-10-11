@@ -46,9 +46,9 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     lantico: "L'Antico",
     lanticoSub: "Authentic Italian Taste",
     lanticoDesc: "Premium products made adhering to traditional Italian methods, delivering the authentic taste of Italy to your table.",
-    caraci: "Caraci",
-    caraciSub: "Flavor of Premium Pistachios",
-    caraciDesc: "Caraci Pistachio Cream. A luxurious spread made with premium pistachios. Perfect for spreading on toast, adding to desserts, or enjoying straight from the jar.",
+    caraci: "CARACI",
+    caraciSub: "The Authentic Italian Taste",
+    caraciDesc: "CARACI Premium Spread. A luxurious spread crafted in Bronte, Sicily (190g). Perfect for pairing with artisanal breads, morning toasts, and gourmet desserts.",
     fruitByTheFoot: "Fruit By The Foot",
     fruitByTheFootSub: "Fun to Unroll and Eat",
     fruitByTheFootDesc: "1M long roll-type jelly! Fun to unroll and eat.\nContains 12% fruit puree (berry & strawberry).\nPerfect for kids snacks, playtime, kindergarten/school events, and special gifts.",
@@ -145,9 +145,9 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     lantico: "란티코",
     lanticoSub: "이탈리아 커피 장인의 숨결",
     lanticoDesc: "이탈리아 전통 로스팅 기법을 고스란히 담아낸 프리미엄 커피. 란티코 한 잔으로 이탈리아 피아짜(Piazza)에 앉아있는 듯한 진한 아로마와 깊은 여운을 만끽하세요.",
-    caraci: "카라치",
-    caraciSub: "시칠리아 피스타치오의 마법",
-    caraciDesc: "시칠리아에서 자란 최고급 피스타치오만을 엄선해 만든 프리미엄 카라치 크림. 빵에 부드럽게 발라 먹거나 디저트에 곁들이면 평범한 식탁이 미슐랭 레스토랑의 디저트로 변신합니다.",
+    caraci: "CARACI",
+    caraciSub: "이탈리안 본연의 맛",
+    caraciDesc: "시칠리아 수입산임을 증명하는 이탈리안 본연의 맛. 100% 시칠리아 프리미엄 스프레드 (190g).\n비옥한 화산재 대지에서 수확한 원물 본연의 깊고 진한 풍미로 평범한 식탁을 미슐랭 레스토랑의 디저트로 변신시킵니다.",
     fruitByTheFoot: "후룻바이더풋",
     fruitByTheFootSub: "돌돌 풀어먹는 끝없는 즐거움",
     fruitByTheFootDesc: "무려 1미터 길이로 돌돌 풀리는 재미만점 롤 타입 젤리!\n천연 과일 퓨레(베리&딸기)를 12% 함유해 안심하고 먹을 수 있습니다.\n아이들의 생일파티, 소풍, 어린이집 이벤트 간식으로 최고의 인기를 누리고 있습니다.",
@@ -159,8 +159,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     greenGiantSub: "가장 신선한 순간을 담다",
     greenGiantDesc: "태양의 기운을 머금고 자란 채소를 가장 신선할 때 수확하여 그대로 담았습니다. 건강한 식단을 위한 고품질 스위트콘과 채소들을 만나보세요.",
     premiumQuality: "Premium Selection",
-    feature1: "전 세계를 누비며 직접 발굴한 타협 없는 최고급 품질 인증.",
-    feature2: "고객만족도 1위를 향한 까다롭고 철저한 콜드체인 유통 시스템.",
+    feature1: "엄격한 현지 소싱 및 품질 기준을 통과한 글로벌 프리미엄 셀렉션.",
+    feature2: "식품 안전과 신선도를 극대화하는 선진화된 콜드체인 물류 시스템.",
     expertConsultation: "B2B / B2C 납품 상담",
     remoteHelp: "신규 입점 및 파트너십",
     smartMonitoring: "공식 카탈로그 요청",
@@ -178,7 +178,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     quickLinks: "Quick Links",
     introDesc: "HK ON은 압도적인 글로벌 소싱 네트워크를 통해 세계 최상급 브랜드를 국내 소비자에게 이어주는 프리미엄 식품 유통사입니다.",
     coreCompetency: "핵심 경쟁력",
-    core1: "하겐다즈, 카라치, 제너럴밀즈, 란티코 등 글로벌 프리미엄 브랜드의 공식 유통 파트너.",
+    core1: "하겐다즈, CARACI, 제너럴밀즈, 란티코 등 글로벌 프리미엄 브랜드의 공식 유통 파트너.",
     core2: "식품 안전과 신선도를 극대화하는 선진화된 통합 물류·유통 시스템 운영.",
     core3: "이커머스 채널을 아우르는 최적화된 마케팅으로 폭발적인 성장을 견인.",
     vision: "우리의 비전",
@@ -244,9 +244,9 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     lantico: "兰蒂科",
     lanticoSub: "纯正意大利咖啡的传承",
     lanticoDesc: "坚持意大利百年传统烘焙工艺，为您呈现香气浓郁、风味深沉的优质咖啡豆，将罗马街头的咖啡香带到您的餐桌。",
-    caraci: "卡拉奇",
-    caraciSub: "西西里开心果的奢华风味",
-    caraciDesc: "卡拉奇开心果奶油。100%精选优质开心果制成的奢华涂抹酱。无论涂抹在吐司、可丽饼上，还是直接食用，都能带来无限惊喜。",
+    caraci: "CARACI",
+    caraciSub: "意大利原汁原味",
+    caraciDesc: "CARACI 100% 西西里特级涂抹酱 (190g)。精选优质西西里自然原料，无论涂抹在吐司、可丽饼上，还是直接食用，都能带来极致美味。",
     fruitByTheFoot: "果丹皮卷 (Fruit By The Foot)",
     fruitByTheFootSub: "好吃又好玩的童年记忆",
     fruitByTheFootDesc: "长达1米的水果卷筒凝胶糖果！解开的一瞬间充满欢乐。含有12%的真实水果泥（草莓与混合浆果），是派对与零食的绝佳选择。",
@@ -348,19 +348,26 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'caraci',
-    name: { en: 'Caraci', ko: '카라치', zh: '卡拉奇' },
+    name: { en: 'CARACI', ko: 'CARACI', zh: 'CARACI' },
     description: { 
-      en: 'Caraci Pistachio Cream. A luxurious spread made with premium pistachios. Perfect for spreading on toast, adding to desserts, or enjoying straight from the jar.',
-      ko: '시칠리아 피스타치오의 마법, 카라치.\n시칠리아에서 자란 최고급 피스타치오만을 엄선해 만든 프리미엄 단스프레드 크림. 빵에 부드럽게 발라 먹거나 디저트에 곁들이면 평범한 식탁이 미슐랭 레스토랑 디저트로 변신합니다.',
-      zh: '卡拉奇开心果奶油。100%精选优质开心果制成的奢华涂抹酱。无论涂抹在吐司、可丽饼上，还是直接食用，都能带来无限惊喜。'
+      en: 'The Authentic Italian Taste. 100% Sicilian Premium Spread (190g).',
+      ko: '시칠리아 수입산임을 증명하는 이탈리안 본연의 맛. 100% 시칠리아 프리미엄 스프레드 (190g).',
+      zh: '意大利原汁原味 100% 西西里特级涂抹酱 (190g)。'
     },
     shortDescription: {
-      en: 'A luxurious pistachio cream made with premium Sicilian pistachios.',
-      ko: '시칠리아에서 자란 최고급 피스타치오만을 엄선해 만든 프리미엄 스프레드.',
-      zh: '100%精选西西里开心果制成的奢华奶油涂抹酱。'
+      en: 'The Authentic Italian Taste. 100% Sicilian Premium Spread (190g).',
+      ko: '시칠리아 수입산임을 증명하는 이탈리안 본연의 맛. 100% 시칠리아 프리미엄 스프레드 (190g).',
+      zh: '意大利原汁原味 100% 西西里特级涂抹酱 (190g)。'
     },
-    image: '/images/kadaif_thumbnail.png',
-    detailImages: ['/images/kadaif.png', '/images/dark_choco_thumbnail.png'],
+    image: '/images/sweet.png',
+    detailImages: [
+      '/images/pure.png',
+      '/images/pesto.png',
+      '/images/sweet.png',
+      '/images/nutty.png',
+      '/images/Kataifi.png',
+      '/images/dark_choco.png'
+    ],
     color: '#AAB85C',
     website: 'https://www.caraci.it/'
   },
@@ -396,3 +403,134 @@ export const LANGUAGES = [
   { code: 'en', name: 'English' },
   { code: 'zh', name: 'Chinese' }
 ];
+
+export interface CaraciProductSlide {
+  id: string;
+  name: string;
+  nameEn: string;
+  nameZh?: string;
+  weight: string;
+  tagline: string;
+  taglineEn?: string;
+  taglineZh?: string;
+  desc: string;
+  descEn?: string;
+  descZh?: string;
+  image: string;
+  badge: string;
+  keywords: string[];
+  keywordsEn?: string[];
+  keywordsZh?: string[];
+}
+
+export const CARACI_SLIDES: CaraciProductSlide[] = [
+  {
+    id: 'pure',
+    name: 'Pure',
+    nameEn: 'Pasta Pura Single Origin',
+    nameZh: '原粹纯品 (Pure)',
+    weight: '190g',
+    tagline: '100% 무가당 순수 원물',
+    taglineEn: '100% Sugar-Free Pure Raw Origin',
+    taglineZh: '100% 无糖纯天然原粹',
+    desc: '첨가물 0%, 최상급 원물 그대로를 곱게 갈아 만든 초고순도 무가당 스프레드.',
+    descEn: 'Zero additives. Finely milled from top-grade raw harvests into an ultra-pure sugar-free gourmet spread.',
+    descZh: '0添加物，严选顶级西西里天然原物研磨而成的超高纯度无糖特级涂抹酱。',
+    image: '/images/pure.png',
+    badge: '',
+    keywords: ['본연의 순수한 고소함', '무가당 초고순도 원물', '묵직하고 진한 프리미엄 풍미'],
+    keywordsEn: ['Pure unadulterated nuttiness', 'Zero-sugar ultra-pure origin', 'Rich and dense gourmet profile'],
+    keywordsZh: ['源自原物的纯粹醇香', '无糖超高纯度原料', '浓郁沉稳的高端风味']
+  },
+  {
+    id: 'pesto',
+    name: 'Pesto',
+    nameEn: 'Pesto Tradizionale',
+    nameZh: '传统香蒜酱 (Pesto)',
+    weight: '190g',
+    tagline: '신선한 올리브오일과의 조화',
+    taglineEn: 'Harmony with Extra Virgin Olive Oil',
+    taglineZh: '特级初榨橄榄油的黄金融合',
+    desc: '최상급 원물과 엑스트라 버진 올리브오일이 어우러져 파스타, 샐러드, 스테이크의 품격을 높여주는 정통 시칠리안 페스토.',
+    descEn: 'Authentic Sicilian pesto combining premier raw harvest and extra virgin olive oil to elevate pastas, salads, and steaks.',
+    descZh: '顶级天然原料与特级初榨橄榄油完美交融，显著提升意面、沙拉与牛排风味的正统西西里香蒜酱。',
+    image: '/images/pesto.png',
+    badge: '',
+    keywords: ['올리브오일과의 조화', '고소함과 은은한 감칠맛의 깊이', '파스타 및 요리에 최적화된 고메 풍미'],
+    keywordsEn: ['Balance with cold-pressed olive oil', 'Subtle umami and savory depth', 'Gourmet profile optimized for culinary dishes'],
+    keywordsZh: ['与橄榄油的圆润和谐', '香醇中带微咸回甘的层次感', '专为主食料理优化的美食风味']
+  },
+  {
+    id: 'sweet',
+    name: 'Sweet',
+    nameEn: 'Dolce Signature Spread',
+    nameZh: '经典甜感 (Sweet)',
+    weight: '190g',
+    tagline: '부드럽고 달콤한 클래식 스프레드',
+    taglineEn: 'Silky Smooth Classic Sweet Spread',
+    taglineZh: '丝滑香甜经典涂抹酱',
+    desc: '부드럽게 녹아내리는 극상의 달콤함. 갓 구운 토스트나 크루아상에 듬뿍 발라 즐기는 대표 시그니처 스프레드.',
+    descEn: 'Melt-in-your-mouth sweetness. The iconic signature spread crafted for freshly toasted breads, brioches, and croissants.',
+    descZh: '入口即化的极致丝滑与香甜。抹在刚出炉的吐司或羊角面包上的代表性招牌涂抹酱。',
+    image: '/images/sweet.png',
+    badge: '',
+    keywords: ['부드럽고 달콤한 스프레드', '진하고 고소한 단맛', '은은하게 감도는 부드러운 여운'],
+    keywordsEn: ['Velvety sweet texture', 'Deep aromatic richness', 'Gentle lingering finish'],
+    keywordsZh: ['柔滑香甜质地', '浓郁芳香的甘美', '温润绵长的余韵']
+  },
+  {
+    id: 'nutty',
+    name: 'Nutty',
+    nameEn: 'Granella Crunchy Spread',
+    nameZh: '香脆颗粒 (Nutty)',
+    weight: '190g',
+    tagline: '원물 알갱이의 바삭한 식감',
+    taglineEn: 'Crunchy Texture with Granella Bits',
+    taglineZh: '天然颗粒带来的香脆丰富口感',
+    desc: '원물 알갱이(Granella)를 아낌없이 담아 씹을 때마다 고소함이 톡톡 터지는 풍부한 너티 텍스처.',
+    descEn: 'Generously loaded with real chopped granella pieces, delivering an explosion of nutty crunch with every bite.',
+    descZh: '慷慨融入丰富天然果仁碎粒（Granella），每次咀嚼都能绽放香脆层次的浓郁质感。',
+    image: '/images/nutty.png',
+    badge: '',
+    keywords: ['바삭하게 씹히는 원물 크런치', '씹을수록 배가되는 고소한 풍미', '풍성하고 깊은 견과 텍스처'],
+    keywordsEn: ['Crispy raw nut crunches', 'Multiplying roasted aroma as you chew', 'Voluminous and deep texture'],
+    keywordsZh: ['口口香脆的天然果仁碎', '越嚼越香的浓郁回甘', '丰盈且有深度的坚果质地']
+  },
+  {
+    id: 'kataifi',
+    name: 'Kataifi',
+    nameEn: 'Kataifi Crispy Selection',
+    nameZh: '卡达耶夫酥脆 (Kataifi)',
+    weight: '190g',
+    tagline: '바삭한 카다이프와의 황금 배합',
+    taglineEn: 'Golden Fusion with Crispy Kataifi',
+    taglineZh: '黄金比例融合酥脆中东面丝',
+    desc: '버터에 바삭하게 로스팅한 카다이프면과 진한 스프레드의 환상적 조화. 트렌디한 식감의 정수.',
+    descEn: 'A sensational harmony of butter-toasted crispy kataifi threads and rich spread. The pinnacle of trendy textures.',
+    descZh: '黄油烘烤至金黄酥脆的卡达耶夫面丝与醇厚涂抹酱的奇妙结合，风靡全球的潮流质感巅峰。',
+    image: '/images/Kataifi.png',
+    badge: '',
+    keywords: ['버터 풍미의 바삭한 카다이프', '황금 밸런스의 조화', '트렌디하고 크리스피한 식감'],
+    keywordsEn: ['Buttery roasted crispy kataifi', 'Golden balanced harmony', 'Trendy ultra-crispy mouthfeel'],
+    keywordsZh: ['浓郁黄油香的酥脆卡达耶夫', '黄金配比的平衡层次', '引领潮流的酥脆口感']
+  },
+  {
+    id: 'dark',
+    name: 'Dark Chocolate',
+    nameEn: 'Cioccolato Fondente Selection',
+    nameZh: '黑巧特选 (Dark Chocolate)',
+    weight: '190g',
+    tagline: '깊은 다크 카카오와의 마리아주',
+    taglineEn: 'Deep Marriage with Dark Cacao',
+    taglineZh: '与浓郁黑可可的奢华融合',
+    desc: '깊고 쌉싸름한 다크 카카오와 고소한 풍미가 만나 빚어낸 묵직하고 매혹적인 프리미엄 초콜릿 스프레드.',
+    descEn: 'A bold, enchanting union of deep bitter-sweet dark cacao and rich roasted notes in a luxurious gourmet chocolate spread.',
+    descZh: '深邃微苦的高品质黑可可与醇厚坚果风味交织，缔造出沉稳迷人的特级巧克力涂抹酱。',
+    image: '/images/dark_choco.png',
+    badge: '',
+    keywords: ['진한 다크 카카오의 깊이', '달지 않고 묵직한 카카오 풍미', '달콤 쌉싸름한 마리아주'],
+    keywordsEn: ['Intense dark cacao depth', 'Rich, non-cloying cacao profile', 'Bittersweet enchanting balance'],
+    keywordsZh: ['浓郁深邃的黑可可层次', '甜而不腻的醇厚风味', '甘苦平衡的迷人体验']
+  }
+];
+

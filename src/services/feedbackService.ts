@@ -7,7 +7,7 @@ import {
   onSnapshot, 
   Unsubscribe 
 } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../firebase';
+import { db, auth, handleFirestoreError, OperationType } from '../firebase';
 
 export interface AdminPermissions {
   canDirectApply: boolean;       // 즉시 라이브 승인/적용 권한
@@ -126,6 +126,10 @@ export async function logActivity(
 export function subscribeActivityLogs(
   callback: (logs: ActivityLog[]) => void
 ): Unsubscribe {
+  if (!auth.currentUser) {
+    callback([]);
+    return () => {};
+  }
   const colRef = collection(db, 'activity_logs');
   return onSnapshot(
     colRef,
@@ -138,7 +142,8 @@ export function subscribeActivityLogs(
       callback(list);
     },
     (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'activity_logs');
+      console.warn('Activity logs subscription restricted or failed:', error.message);
+      callback([]);
     }
   );
 }
@@ -172,6 +177,10 @@ export async function createSiteVersion(
 export function subscribeSiteVersions(
   callback: (versions: SiteVersion[]) => void
 ): Unsubscribe {
+  if (!auth.currentUser) {
+    callback([]);
+    return () => {};
+  }
   const colRef = collection(db, 'site_versions');
   return onSnapshot(
     colRef,
@@ -184,7 +193,8 @@ export function subscribeSiteVersions(
       callback(list);
     },
     (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'site_versions');
+      console.warn('Site versions subscription restricted or failed:', error.message);
+      callback([]);
     }
   );
 }
@@ -541,6 +551,10 @@ export async function revertSiteOverride(
 export function subscribeAdminUsers(
   callback: (admins: AdminUser[]) => void
 ): Unsubscribe {
+  if (!auth.currentUser) {
+    callback([]);
+    return () => {};
+  }
   const colRef = collection(db, 'admins');
   return onSnapshot(
     colRef,
@@ -552,7 +566,8 @@ export function subscribeAdminUsers(
       callback(list);
     },
     (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'admins');
+      console.warn('Admin users subscription restricted or failed:', error.message);
+      callback([]);
     }
   );
 }
@@ -639,4 +654,102 @@ export async function deleteActivityLog(logId: string): Promise<void> {
     throw error;
   }
 }
+
+export interface GlobalMediaItem {
+  id: string;
+  name: string;
+  url: string;
+  mediaType: 'image' | 'video';
+  sizeFormatted?: string;
+  uploadedBy?: string;
+  createdAt: string;
+}
+
+/**
+ * Subscribe to the shared global media library in Firestore
+ */
+export function subscribeToGlobalMedia(
+  callback: (items: GlobalMediaItem[]) => void
+): Unsubscribe {
+  const colRef = collection(db, 'global_media');
+  return onSnapshot(
+    colRef,
+    (snapshot) => {
+      const items: GlobalMediaItem[] = [];
+      snapshot.forEach((d) => {
+        items.push({ id: d.id, ...(d.data() as Omit<GlobalMediaItem, 'id'>) });
+      });
+      // Sort newest first
+      items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      callback(items);
+    },
+    (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'global_media');
+    }
+  );
+}
+
+/**
+ * Add an image or video to the shared global media library in Firestore
+ */
+export async function addGlobalMedia(
+  name: string,
+  url: string,
+  mediaType: 'image' | 'video' = 'image',
+  uploadedBy: string = 'admin',
+  sizeFormatted?: string
+): Promise<void> {
+  const mediaId = `media_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const docRef = doc(db, 'global_media', mediaId);
+
+  const payload: Omit<GlobalMediaItem, 'id'> = {
+    name: name.trim() || '미디어 파일',
+    url,
+    mediaType,
+    sizeFormatted: sizeFormatted || '',
+    uploadedBy,
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    await setDoc(docRef, payload);
+    await logActivity({
+      actionType: 'apply',
+      target: mediaId,
+      targetTitle: name,
+      userEmail: uploadedBy,
+      userName: uploadedBy.split('@')[0],
+      details: `새 ${mediaType === 'video' ? '동영상' : '사진'} 자산 서버 보관함 등록`
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `global_media/${mediaId}`);
+    throw error;
+  }
+}
+
+/**
+ * Delete a media item from the shared global media library
+ */
+export async function deleteGlobalMedia(
+  mediaId: string,
+  operatorEmail: string = 'admin',
+  mediaName?: string
+): Promise<void> {
+  const docRef = doc(db, 'global_media', mediaId);
+  try {
+    await deleteDoc(docRef);
+    await logActivity({
+      actionType: 'delete',
+      target: mediaId,
+      targetTitle: mediaName || mediaId,
+      userEmail: operatorEmail,
+      userName: operatorEmail.split('@')[0],
+      details: `보관함 미디어 자산 삭제`
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `global_media/${mediaId}`);
+    throw error;
+  }
+}
+
 

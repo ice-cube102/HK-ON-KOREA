@@ -28,7 +28,10 @@ service cloud.firestore {
     }
 
     function isDeveloper() {
-      return isSignedIn() && request.auth.token.email == 'galaxynoob102@gmail.com';
+      return isSignedIn() && request.auth.token.email != null && (
+        request.auth.token.email == 'galaxynoob102@gmail.com' ||
+        request.auth.token.email == 'galaxynoob02@gmail.com'
+      );
     }
 
     function isAdmin() {
@@ -105,7 +108,7 @@ service cloud.firestore {
     match /admins/{adminId} {
       allow read: if isSignedIn();
       allow create, update: if isAdmin() && isValidId(adminId) && isValidAdminUser(incoming());
-      allow delete: if isAdmin() && isValidId(adminId) && adminId != 'galaxynoob102@gmail.com';
+      allow delete: if isAdmin() && isValidId(adminId) && adminId != 'galaxynoob102@gmail.com' && adminId != 'galaxynoob02@gmail.com';
     }
 
     // Historical version snapshots for rollbacks & restore points
@@ -120,6 +123,13 @@ service cloud.firestore {
       allow read: if isSignedIn() && isAdmin();
       allow create: if isSignedIn() && isAdmin() && isValidId(logId);
       allow delete: if isSignedIn() && isAdmin() && isValidId(logId);
+    }
+
+    // Global media library (Shared images and videos across all admins)
+    match /global_media/{mediaId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isAdmin() && isValidId(mediaId);
+      allow delete: if isSignedIn() && isAdmin() && isValidId(mediaId);
     }
   }
 }
